@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}View Resume - NFC Networking Assistant{% endblock %}
+
+{% block styles %}
+        body {
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+        }
+        
+        .resume-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .resume-info h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+        
+        .pdf-viewer {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .pdf-viewer h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .pdf-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .pdf-embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .flash-messages {
+            margin-bottom: 30px;
+        }
+        
+        .flash {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .flash.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .flash.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .no-pdf-message {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px dashed #e9ecef;
+        }
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="header">
+            <h1>View Resume</h1>
+            <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="resume-info">
+            <h2>Resume Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">File Name</span>
+                    <span class="info-value">{{ resume.original_name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Event</span>
+                    <span class="info-value">{{ resume.event.name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">File Size</span>
+                    <span class="info-value">{{ "%.1f"|format(resume.file_size / 1024) }} KB</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Uploaded</span>
+                    <span class="info-value">{{ resume.uploaded_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pdf-viewer">
+            <h3>Resume Preview</h3>
+            {% if resume.mime_type == 'application/pdf' %}
+                <div class="pdf-container">
+                    <embed src="{{ url_for('uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
+                           type="application/pdf" 
+                           class="pdf-embed">
+                </div>
+                <a href="{{ url_for('uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
+                   download="{{ resume.original_name }}" 
+                   class="download-btn">Download Resume</a>
+            {% else %}
+                <div class="no-pdf-message">
+                    <p>This file type cannot be previewed in the browser.</p>
+                    <p>You can download the file to view it.</p>
+                    <a href="{{ url_for('uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
+                       download="{{ resume.original_name }}" 
+                       class="download-btn">Download Resume</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

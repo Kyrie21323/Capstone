@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - NFC Networking Assistant{% endblock %}
+
+{% block styles %}
+        body {
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .welcome-text {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            font-weight: 300;
+        }
+        
+        .logout-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+        }
+        
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .event-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .event-name {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .event-code {
+            color: #7f8c8d;
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+        
+        .event-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        
+        .resume-status {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .resume-uploaded {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .resume-missing {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .upload-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(23, 162, 184, 0.3);
+        }
+        
+        .join-event-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .join-event-section h2 {
+            margin-bottom: 20px;
+        }
+        
+        .join-event-section p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        
+        .join-form {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .join-event-btn {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .join-event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .no-events {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 60px 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px dashed #e9ecef;
+        }
+        
+        .no-events p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .flash-messages {
+            margin-bottom: 30px;
+        }
+        
+        .flash {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .flash.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .flash.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .flash.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="header">
+            <h1>Dashboard</h1>
+            <div class="user-info">
+                <span class="welcome-text">Welcome, {{ current_user.name }}</span>
+                {% if current_user.is_administrator() %}
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            </div>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="section">
+            <h2>Your Events</h2>
+            {% if memberships %}
+                {% for membership in memberships %}
+                    <div class="event-card">
+                        <div class="event-name">{{ membership.event.name }}</div>
+                        <div class="event-code">Code: {{ membership.event.code }}</div>
+                        {% if membership.event.description %}
+                            <div class="event-description">{{ membership.event.description }}</div>
+                        {% endif %}
+                        
+                        {% set user_resume = resumes | selectattr('event_id', 'equalto', membership.event.id) | first %}
+                        {% if user_resume %}
+                            <div class="resume-status resume-uploaded">
+                                Resume uploaded: {{ user_resume.original_name }}
+                            </div>
+                            <div style="margin-top: 12px;">
+                                <a href="{{ url_for('view_resume', resume_id=user_resume.id) }}" class="upload-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-right: 10px;">View Resume</a>
+                                <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Re-upload Resume</a>
+                            </div>
+                        {% else %}
+                            <div class="resume-status resume-missing">
+                                No resume uploaded yet
+                            </div>
+                            <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload Resume</a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-events">
+                    <p>You haven't joined any events yet.</p>
+                    <p>Use an event code to join an event!</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="section">
+            <div class="join-event-section">
+                <h2>Join New Event</h2>
+                <p>Enter an event code to join a new event:</p>
+                <form method="POST" action="{{ url_for('join_event') }}" class="join-form">
+                    <div class="form-group">
+                        <label for="event_code">Event Code</label>
+                        <input type="text" id="event_code" name="event_code" placeholder="Enter event code (e.g., NYUAD2025)" required>
+                    </div>
+                    <button type="submit" class="join-event-btn">Join Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
