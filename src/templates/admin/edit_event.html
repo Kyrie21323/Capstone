@@ -224,8 +224,11 @@
             
             <div class="form-group">
                 <label for="description">Event Description (Optional)</label>
-                <textarea id="description" name="description" placeholder="Describe what this event is about, its purpose, and what participants can expect...">{{ event.description or '' }}</textarea>
-                <div class="help-text">This description will be visible to users when they view the event</div>
+                <textarea id="description" name="description" placeholder="Describe what this event is about, its purpose, and what participants can expect..." maxlength="2000" oninput="updateWordCount()">{{ event.description or '' }}</textarea>
+                <div class="help-text">
+                    This description will be visible to users when they view the event
+                    <span id="word-count" style="float: right; color: #7f8c8d; font-size: 0.85rem;">0/300 words</span>
+                </div>
             </div>
             
             <div class="form-row">
@@ -243,4 +246,50 @@
             <button type="submit" class="btn">Update Event</button>
         </form>
     </div>
+
+    <script>
+        function updateWordCount() {
+            const textarea = document.getElementById('description');
+            const wordCountSpan = document.getElementById('word-count');
+            const text = textarea.value.trim();
+            
+            // Count words (split by whitespace and filter out empty strings)
+            const words = text.split(/\s+/).filter(word => word.length > 0);
+            const wordCount = words.length;
+            
+            // Update the display
+            wordCountSpan.textContent = `${wordCount}/300 words`;
+            
+            // Change color based on word count
+            if (wordCount > 300) {
+                wordCountSpan.style.color = '#dc3545'; // Red
+                textarea.style.borderColor = '#dc3545';
+            } else if (wordCount > 250) {
+                wordCountSpan.style.color = '#ffc107'; // Yellow
+                textarea.style.borderColor = '#ffc107';
+            } else {
+                wordCountSpan.style.color = '#7f8c8d'; // Gray
+                textarea.style.borderColor = '#e9ecef';
+            }
+        }
+
+        // Add form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const textarea = document.getElementById('description');
+            const text = textarea.value.trim();
+            const words = text.split(/\s+/).filter(word => word.length > 0);
+            
+            if (words.length > 300) {
+                e.preventDefault();
+                alert('Description cannot exceed 300 words. Please shorten your description.');
+                textarea.focus();
+                return false;
+            }
+        });
+
+        // Initialize word count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateWordCount();
+        });
+    </script>
 {% endblock %}

@@ -333,6 +333,13 @@ def admin_create_event():
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
         
+        # Validate description word count
+        if description:
+            word_count = len(description.split())
+            if word_count > 300:
+                flash('Description cannot exceed 300 words. Please shorten your description.', 'error')
+                return render_template('admin/create_event.html')
+        
         # Check if event code already exists
         if Event.query.filter_by(code=code).first():
             flash(f'Event code "{code}" already exists!', 'error')
@@ -366,6 +373,13 @@ def admin_edit_event(event_id):
         description = request.form.get('description', '').strip()
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
+        
+        # Validate description word count
+        if description:
+            word_count = len(description.split())
+            if word_count > 300:
+                flash('Description cannot exceed 300 words. Please shorten your description.', 'error')
+                return render_template('admin/edit_event.html', event=event)
         
         # Check if event code already exists (excluding current event)
         existing_event = Event.query.filter_by(code=event.code).first()
