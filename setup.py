@@ -44,9 +44,7 @@ def main():
     if not run_command(f'{pip_cmd} install -r requirements.txt', 'Dependencies installation'):
         return False
     
-    print("🗃️  Initializing database...")
-    if not run_command(f'{pip_cmd} install -e .', 'Package installation'):
-        pass  # This might fail, but it's not critical
+    print("🗃️  Database will be initialized when you first run the application")
     
     print("\n🎉 Setup completed successfully!")
     print("\n📋 Next steps:")
