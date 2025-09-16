@@ -43,6 +43,8 @@ This platform provides:
 - **File Management**: Secure file uploads with validation
 - **Database Migrations**: Flask-Migrate for schema management
 
+> **📚 For detailed technical information, see [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md)**
+
 ### Target Audience
 - **Event Organizers**: Conference planners, career fair coordinators, networking event hosts
 - **Professional Attendees**: Job seekers, entrepreneurs, industry professionals
@@ -91,6 +93,6 @@ python main.py
 - **TECH2025** - Tech Conference Dubai  
 - **STARTUP2025** - Startup Networking Event
 
-## Project Structure
+## Documentation
 
-See `PROJECT_STRUCTURE.md` for detailed information about the codebase organization.
+- **[TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md)** - Complete technical reference, architecture, implementation details, and project structure
