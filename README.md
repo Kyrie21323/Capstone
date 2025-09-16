@@ -43,8 +43,6 @@ This platform provides:
 - **File Management**: Secure file uploads with validation
 - **Database Migrations**: Flask-Migrate for schema management
 
-> **📚 For detailed technical information, see [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md)**
-
 ### Target Audience
 - **Event Organizers**: Conference planners, career fair coordinators, networking event hosts
 - **Professional Attendees**: Job seekers, entrepreneurs, industry professionals
