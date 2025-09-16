@@ -7,11 +7,9 @@ This document provides comprehensive technical details about the NFC Networking 
 1. [Architecture Overview](#architecture-overview)
 2. [Database Models](#database-models)
 3. [Security Implementation](#security-implementation)
-4. [File Management System](#file-management-system)
-5. [Feature Implementation Details](#feature-implementation-details)
-6. [User Interface Architecture](#user-interface-architecture)
-7. [API Routes and Endpoints](#api-routes-and-endpoints)
-8. [Development Setup](#development-setup)
+4. [Feature Implementation Details](#feature-implementation-details)
+5. [User Interface Architecture](#user-interface-architecture)
+6. [API Routes and Endpoints](#api-routes-and-endpoints)
 
 ## Architecture Overview
 
@@ -205,28 +203,6 @@ def uploaded_file(filename):
         return redirect(url_for('dashboard'))
 ```
 
-## File Management System
-
-### Upload Organization
-
-- **Directory Structure**: `uploads/{event_id}/{unique_filename}`
-- **Event Isolation**: Files organized by event for better management
-- **Unique Naming**: `{user_id}_{event_id}_{timestamp}_{original_filename}`
-
-### File Validation Pipeline
-
-1. **File Type Check**: Validate extension against allowed types
-2. **Size Validation**: Check against 16MB limit
-3. **Security Scan**: Use `secure_filename()` for safe naming
-4. **Database Record**: Create Resume model entry with metadata
-5. **File Storage**: Save to event-specific directory
-
-### Cleanup Utilities
-
-- **Orphaned File Detection**: Find files without database records
-- **Bulk Cleanup**: Remove orphaned files automatically
-- **Cascade Deletion**: Clean up files when users/events are deleted
-
 ## Feature Implementation Details
 
 ### User Authentication System
@@ -360,26 +336,6 @@ def upload_resume(event_id):
 - Database metadata tracking
 - File organization by event
 
-#### File Access Control
-
-```python
-@app.route('/view_resume/<int:resume_id>')
-@login_required
-def view_resume(resume_id):
-    resume = Resume.query.get(resume_id)
-    
-    # Check ownership
-    if resume.user_id != current_user.id:
-        flash('You are not authorized to view this resume!', 'error')
-        return redirect(url_for('dashboard'))
-```
-
-**Features:**
-- User-specific file access
-- Event membership validation
-- Secure file serving
-- Authorization checks
-
 ### Admin Panel Features
 
 #### Dashboard Analytics
@@ -429,48 +385,6 @@ def admin_delete_user(user_id):
 - User deletion with data cleanup
 - Self-protection mechanisms
 
-## User Interface Architecture
-
-### Custom Notification System
-
-The application replaces Flask's default flash messages with a modern notification system:
-
-```javascript
-class NotificationSystem {
-    show(message, type = 'success', title = null) {
-        const notification = this.createNotification(message, type, title);
-        this.container.appendChild(notification);
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            this.remove(notification);
-        }, 5000);
-    }
-}
-```
-
-**Features:**
-- Modern popup notifications
-- Animated slide-in effects
-- Auto-dismiss with progress bars
-- Color-coded message types
-- Manual close functionality
-
-### Responsive Design
-
-- **Mobile-First**: CSS designed for mobile devices first
-- **Gradient Backgrounds**: Modern aesthetic with CSS gradients
-- **Card-Based Layout**: Clean, organized content presentation
-- **Hover Effects**: Interactive elements with smooth transitions
-- **Professional Typography**: Consistent font hierarchy and spacing
-
-### Template Structure
-
-- **Base Template**: `base.html` with common layout and notification system
-- **Admin Templates**: Separate admin-specific pages in `/admin/` directory
-- **User Templates**: Clean, focused user-facing pages
-- **Jinja2 Integration**: Dynamic content rendering with template inheritance
-
 ## API Routes and Endpoints
 
 ### Public Routes
@@ -502,88 +416,5 @@ class NotificationSystem {
 - `POST /admin/users/<id>/delete` - Delete user
 - `POST /admin/cleanup-files` - Cleanup orphaned files
 
-## Development Setup
-
-### Database Initialization
-
-```python
-def init_database():
-    with app.app_context():
-        db.create_all()
-        
-        # Create sample data
-        create_sample_events()
-        create_sample_users()
-        
-        db.session.commit()
-```
-
-### Sample Data Creation
-
-The system includes pre-populated sample data:
-- **Super Admin**: admin@nfcnetworking.com / admin123
-- **Sample Events**: NYUAD2025, TECH2025, STARTUP2025
-- **Sample Users**: John Smith, Sarah Johnson, Ahmed Al-Rashid
-
-### Migration Management
-
-```bash
-# Initialize migrations
-flask db init
-
-# Create migration
-flask db migrate -m "Description of changes"
-
-# Apply migration
-flask db upgrade
-```
-
-### File System Setup
-
-- **Upload Directory**: Automatically created on startup
-- **Event Directories**: Created dynamically when needed
-- **Permissions**: Proper file permissions for uploads
-- **Cleanup**: Orphaned file detection and removal
-
-## Development Notes
-
-- **Template System**: All templates extend `base.html` for consistency
-- **File Uploads**: Stored in `uploads/` with event-based organization
-- **Admin Access**: Requires `is_admin=True` flag in user account
-- **Security**: Passwords hashed with Werkzeug, file type validation
-- **Notifications**: Custom popup system replaces Flask flash messages
-
-## Running the Application
-
-1. **Activate virtual environment**:
-   ```bash
-   .venv\Scripts\activate  # Windows
-   source .venv/bin/activate  # Linux/Mac
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Run the application**:
-   ```bash
-   python main.py
-   ```
-
-4. **Access the application**:
-   - Main site: http://127.0.0.1:5000
-   - Admin panel: http://127.0.0.1:5000/admin
-
-## Database Management
-
-- **Database**: SQLite (stored in `instance/nfc_networking.db`)
-- **Migrations**: Managed by Flask-Migrate
-- **Commands**:
-  ```bash
-  flask db init      # Initialize migrations
-  flask db migrate   # Create migration
-  flask db upgrade   # Apply migrations
-  ```
 
 This technical documentation provides a comprehensive overview of the NFC Networking Assistant's implementation, covering all major aspects of the system architecture, security, and functionality.
