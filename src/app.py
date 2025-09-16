@@ -13,7 +13,8 @@ app = Flask(__name__,
 app.config['SECRET_KEY'] = 'your-secret-key-change-this-in-production'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../instance/nfc_networking.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
+print(f"Upload folder set to: {app.config['UPLOAD_FOLDER']}")
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Initialize extensions
@@ -183,10 +184,13 @@ def upload_resume(event_id):
         
         # Create event-specific upload directory
         upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], str(event_id))
+        print(f"Creating upload directory: {upload_dir}")
         os.makedirs(upload_dir, exist_ok=True)
         
         file_path = os.path.join(upload_dir, unique_filename)
+        print(f"Saving file to: {file_path}")
         file.save(file_path)
+        print(f"File saved successfully!")
         
         # Check if user already has a resume for this event
         existing_resume = Resume.query.filter_by(
@@ -460,27 +464,115 @@ def admin_delete_user(user_id):
     # Store user name for flash message
     user_name = user.name
     
-    # Delete associated data first
-    # Delete memberships
-    Membership.query.filter_by(user_id=user_id).delete()
+    try:
+        # Delete associated data first
+        # Delete memberships
+        Membership.query.filter_by(user_id=user_id).delete()
+        
+        # Delete resumes and associated files
+        resumes = Resume.query.filter_by(user_id=user_id).all()
+        deleted_files = []
+        failed_files = []
+        
+        for resume in resumes:
+            # Construct the file path using the correct upload folder
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(resume.event_id), resume.filename)
+            
+            # Debug: Print the file path being checked
+            print(f"Attempting to delete file: {file_path}")
+            
+            # Check if file exists and delete it
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                    deleted_files.append(resume.filename)
+                    print(f"Successfully deleted: {file_path}")
+                except Exception as e:
+                    failed_files.append(f"{resume.filename}: {str(e)}")
+                    print(f"Failed to delete {file_path}: {str(e)}")
+            else:
+                print(f"File not found: {file_path}")
+                failed_files.append(f"{resume.filename}: File not found")
+        
+        # Delete resume records from database
+        Resume.query.filter_by(user_id=user_id).delete()
+        
+        # Finally delete the user
+        db.session.delete(user)
+        db.session.commit()
+        
+        # Create success message with file deletion details
+        success_msg = f'User {user_name} has been deleted successfully!'
+        if deleted_files:
+            success_msg += f' Deleted {len(deleted_files)} resume file(s).'
+        if failed_files:
+            success_msg += f' Warning: {len(failed_files)} file(s) could not be deleted.'
+        
+        flash(success_msg, 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting user {user_name}: {str(e)}', 'error')
+        print(f"Error in admin_delete_user: {str(e)}")
     
-    # Delete resumes and associated files
-    resumes = Resume.query.filter_by(user_id=user_id).all()
-    for resume in resumes:
-        # Delete the file from filesystem
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(resume.event_id), resume.filename)
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    
-    # Delete resume records
-    Resume.query.filter_by(user_id=user_id).delete()
-    
-    # Finally delete the user
-    db.session.delete(user)
-    db.session.commit()
-    
-    flash(f'User {user_name} has been deleted successfully!', 'success')
     return redirect(url_for('admin_users'))
+
+@app.route('/admin/cleanup-files', methods=['POST'])
+@login_required
+@admin_required
+def admin_cleanup_files():
+    """Admin route to clean up orphaned files"""
+    try:
+        orphaned_count = cleanup_orphaned_files()
+        if orphaned_count > 0:
+            flash(f'Cleaned up {orphaned_count} orphaned file(s)!', 'success')
+        else:
+            flash('No orphaned files found.', 'info')
+    except Exception as e:
+        flash(f'Error during cleanup: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_users'))
+
+def cleanup_orphaned_files():
+    """Clean up files that exist in filesystem but not in database"""
+    try:
+        upload_folder = app.config['UPLOAD_FOLDER']
+        orphaned_files = []
+        
+        # Walk through all files in uploads directory
+        for root, dirs, files in os.walk(upload_folder):
+            for file in files:
+                file_path = os.path.join(root, file)
+                relative_path = os.path.relpath(file_path, upload_folder)
+                
+                # Extract event_id and filename from path
+                path_parts = relative_path.split(os.sep)
+                if len(path_parts) >= 2:
+                    event_id = path_parts[0]
+                    filename = path_parts[1]
+                    
+                    # Check if this file exists in database
+                    resume = Resume.query.filter_by(
+                        event_id=int(event_id),
+                        filename=filename
+                    ).first()
+                    
+                    if not resume:
+                        orphaned_files.append(file_path)
+        
+        # Delete orphaned files
+        for file_path in orphaned_files:
+            try:
+                os.remove(file_path)
+                print(f"Deleted orphaned file: {file_path}")
+            except Exception as e:
+                print(f"Failed to delete orphaned file {file_path}: {str(e)}")
+        
+        return len(orphaned_files)
+        
+    except Exception as e:
+        print(f"Error in cleanup_orphaned_files: {str(e)}")
+        return 0
 
 def create_sample_events():
     """Create sample events for testing"""

@@ -246,6 +246,9 @@
         <div class="header">
             <h1>Admin Dashboard</h1>
             <div class="header-actions">
+                <form method="POST" action="{{ url_for('admin_cleanup_files') }}" style="display: inline; margin-right: 10px;" onsubmit="return confirm('This will delete any files that exist in the filesystem but are not referenced in the database. Continue?')">
+                    <button type="submit" class="btn btn-warning">Cleanup Files</button>
+                </form>
                 <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
             </div>
         </div>
