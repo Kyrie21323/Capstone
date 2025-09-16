@@ -8,8 +8,7 @@ This document provides comprehensive technical details about the NFC Networking 
 2. [Database Models](#database-models)
 3. [Security Implementation](#security-implementation)
 4. [Feature Implementation Details](#feature-implementation-details)
-5. [User Interface Architecture](#user-interface-architecture)
-6. [API Routes and Endpoints](#api-routes-and-endpoints)
+5. [API Routes and Endpoints](#api-routes-and-endpoints)
 
 ## Architecture Overview
 
