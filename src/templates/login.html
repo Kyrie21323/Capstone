@@ -132,6 +132,65 @@
         .register-link a:hover {
             color: #764ba2;
         }
+        
+        /* Role Selection Styles */
+        .role-selection {
+            margin-bottom: 30px;
+        }
+        
+        .role-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .role-tab {
+            flex: 1;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .role-tab:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+        }
+        
+        .role-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .role-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .role-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+        
+        .role-desc {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+        
+        .role-tab.active .role-desc {
+            opacity: 0.9;
+        }
 {% endblock %}
 
 {% block content %}
@@ -151,18 +210,36 @@
             {% endif %}
         {% endwith %}
         
-        <form method="POST">
+        <!-- Role Selection -->
+        <div class="role-selection">
+            <div class="role-tabs">
+                <button type="button" class="role-tab active" data-role="attendee">
+                    <i class="role-icon">👥</i>
+                    <span class="role-title">Event Attendee</span>
+                    <span class="role-desc">Join events and network</span>
+                </button>
+                <button type="button" class="role-tab" data-role="manager">
+                    <i class="role-icon">⚙️</i>
+                    <span class="role-title">Event Manager</span>
+                    <span class="role-desc">Manage events and users</span>
+                </button>
+            </div>
+        </div>
+        
+        <form method="POST" id="loginForm">
+            <input type="hidden" id="user_role" name="user_role" value="attendee">
+            
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <input type="email" id="email" name="email" placeholder="Enter your email">
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <input type="password" id="password" name="password" placeholder="Enter your password">
             </div>
             
-            <button type="submit" class="btn">Sign In</button>
+            <button type="submit" class="btn" id="loginBtn">Sign In as Attendee</button>
         </form>
         
         <div class="register-link">
@@ -170,4 +247,53 @@
             <a href="{{ url_for('register') }}">Create Account</a>
         </div>
     </div>
+    
+    <script>
+        // Add form validation
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            
+            // Validate email
+            if (!emailInput.value.trim()) {
+                e.preventDefault();
+                notificationSystem.show('Please enter your email address.', 'error', 'Email Required');
+                emailInput.focus();
+                return false;
+            }
+            
+            // Validate password
+            if (!passwordInput.value.trim()) {
+                e.preventDefault();
+                notificationSystem.show('Please enter your password.', 'error', 'Password Required');
+                passwordInput.focus();
+                return false;
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleTabs = document.querySelectorAll('.role-tab');
+            const userRoleInput = document.getElementById('user_role');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            roleTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    roleTabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Update hidden input and button text
+                    const role = this.getAttribute('data-role');
+                    userRoleInput.value = role;
+                    
+                    if (role === 'attendee') {
+                        loginBtn.textContent = 'Sign In as Attendee';
+                    } else if (role === 'manager') {
+                        loginBtn.textContent = 'Sign In as Manager';
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

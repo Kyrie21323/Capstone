@@ -188,10 +188,10 @@
             {% endif %}
         {% endwith %}
         
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" id="uploadResumeForm">
             <div class="form-group">
                 <label for="resume">Select Resume File</label>
-                <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required>
+                <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx">
                 <div class="file-info">
                     <strong>Accepted formats:</strong> PDF, DOC, DOCX<br>
                     <strong>Maximum size:</strong> 16MB
@@ -201,4 +201,40 @@
             <button type="submit" class="btn">Upload Resume</button>
         </form>
     </div>
+    
+    <script>
+        // Add form validation
+        document.getElementById('uploadResumeForm').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('resume');
+            
+            // Validate file selection
+            if (!fileInput.files || fileInput.files.length === 0) {
+                e.preventDefault();
+                notificationSystem.show('Please select a resume file to upload.', 'error', 'File Required');
+                fileInput.focus();
+                return false;
+            }
+            
+            // Validate file type
+            const file = fileInput.files[0];
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            const allowedExtensions = ['.pdf', '.doc', '.docx'];
+            const fileName = file.name.toLowerCase();
+            
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.some(ext => fileName.endsWith(ext))) {
+                e.preventDefault();
+                notificationSystem.show('Please select a valid file format (PDF, DOC, or DOCX).', 'error', 'Invalid File Type');
+                fileInput.focus();
+                return false;
+            }
+            
+            // Validate file size (16MB = 16 * 1024 * 1024 bytes)
+            if (file.size > 16 * 1024 * 1024) {
+                e.preventDefault();
+                notificationSystem.show('File size cannot exceed 16MB. Please select a smaller file.', 'error', 'File Too Large');
+                fileInput.focus();
+                return false;
+            }
+        });
+    </script>
 {% endblock %}

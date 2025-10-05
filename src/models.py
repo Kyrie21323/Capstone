@@ -42,6 +42,7 @@ class Membership(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    keywords = db.Column(db.Text, nullable=True)  # Store keywords as comma-separated string
     joined_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Ensure unique user-event pairs
@@ -49,6 +50,12 @@ class Membership(db.Model):
     
     def __repr__(self):
         return f'<Membership User {self.user_id} -> Event {self.event_id}>'
+    
+    def get_keywords_list(self):
+        """Return keywords as a list"""
+        if self.keywords:
+            return [keyword.strip() for keyword in self.keywords.split(',') if keyword.strip()]
+        return []
 
 class Resume(db.Model):
     id = db.Column(db.Integer, primary_key=True)

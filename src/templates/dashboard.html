@@ -80,6 +80,7 @@
             margin-bottom: 20px;
             border-left: 5px solid #667eea;
             transition: all 0.3s ease;
+            position: relative;
         }
         
         .event-card:hover {
@@ -112,6 +113,109 @@
             font-style: italic;
         }
         
+        .event-keywords {
+            margin: 12px 0;
+            padding: 10px 0;
+        }
+        
+        .event-keywords strong {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            margin-right: 8px;
+        }
+        
+        .keyword-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 2px 4px 2px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .keyword-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Keywords Input Container */
+        .keywords-input-container {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .keywords-input-container:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .keywords-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            min-height: 20px;
+        }
+        
+        .keywords-input-container input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 8px 0;
+            font-size: 1rem;
+            background: transparent;
+        }
+        
+        .keywords-input-container input::placeholder {
+            color: #adb5bd;
+        }
+        
+        .input-tag {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 2px;
+            animation: tagAppear 0.3s ease;
+        }
+        
+        .input-tag .remove-tag {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+        
+        .input-tag .remove-tag:hover {
+            opacity: 1;
+        }
+        
+        @keyframes tagAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
         .resume-status {
             margin-top: 15px;
             padding: 12px 16px;
@@ -127,9 +231,13 @@
         }
         
         .resume-missing {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
         
         .upload-link {
@@ -150,6 +258,25 @@
             box-shadow: 0 8px 16px rgba(23, 162, 184, 0.3);
         }
         
+        .delete-resume-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-resume-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(220, 53, 69, 0.3);
+        }
+        
         .join-event-section {
             background: #f8f9fa;
             padding: 30px;
@@ -168,6 +295,12 @@
         }
         
         .join-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-row {
             display: flex;
             gap: 15px;
             align-items: end;
@@ -263,6 +396,30 @@
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
+        
+        .leave-event-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        
+        .leave-event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(220, 53, 69, 0.3);
+        }
+        
+        .leave-event-btn:active {
+            transform: translateY(0);
+        }
 {% endblock %}
 
 {% block content %}
@@ -292,10 +449,23 @@
             {% if memberships %}
                 {% for membership in memberships %}
                     <div class="event-card">
+                        <button class="leave-event-btn" data-event-name="{{ membership.event.name }}" data-event-id="{{ membership.event.id }}">
+                            Leave Event
+                        </button>
+                        
                         <div class="event-name">{{ membership.event.name }}</div>
                         <div class="event-code">Code: {{ membership.event.code }}</div>
                         {% if membership.event.description %}
                             <div class="event-description">{{ membership.event.description }}</div>
+                        {% endif %}
+                        
+                        {% if membership.keywords %}
+                            <div class="event-keywords">
+                                <strong>Your Interests:</strong>
+                                {% for keyword in membership.get_keywords_list() %}
+                                    <span class="keyword-tag">{{ keyword }}</span>
+                                {% endfor %}
+                            </div>
                         {% endif %}
                         
                         {% set user_resume = resumes | selectattr('event_id', 'equalto', membership.event.id) | first %}
@@ -305,11 +475,13 @@
                             </div>
                             <div style="margin-top: 12px;">
                                 <a href="{{ url_for('view_resume', resume_id=user_resume.id) }}" class="upload-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-right: 10px;">View Resume</a>
-                                <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Re-upload Resume</a>
+                                <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link" style="margin-right: 10px;">Re-upload Resume</a>
+                                <button type="button" class="delete-resume-btn" data-resume-id="{{ user_resume.id }}" data-resume-name="{{ user_resume.original_name }}">Delete Resume</button>
                             </div>
                         {% else %}
                             <div class="resume-status resume-missing">
-                                No resume uploaded yet
+                                <strong>💡 Resume Upload Recommended</strong><br>
+                                It is recommended to upload your resume/portfolio to let the system get better matching for you and your interests. This helps connect you with more relevant opportunities.
                             </div>
                             <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload Resume</a>
                         {% endif %}
@@ -326,15 +498,279 @@
         <div class="section">
             <div class="join-event-section">
                 <h2>Join New Event</h2>
-                <p>Enter an event code to join a new event:</p>
-                <form method="POST" action="{{ url_for('join_event') }}" class="join-form">
-                    <div class="form-group">
-                        <label for="event_code">Event Code</label>
-                        <input type="text" id="event_code" name="event_code" placeholder="Enter event code (e.g., NYUAD2025)" required>
+                <p>Enter an event code and your areas of interest to join a new event:</p>
+                <form method="POST" action="{{ url_for('join_event') }}" class="join-form" id="joinEventForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="event_code">Event Code</label>
+                            <input type="text" id="event_code" name="event_code" placeholder="Enter event code (e.g., NYUAD2025)">
+                        </div>
+                        <button type="submit" class="join-event-btn">Join Event</button>
                     </div>
-                    <button type="submit" class="join-event-btn">Join Event</button>
+                    <div class="form-group">
+                        <label for="keywords">Areas of Interest (at least 2 keywords)</label>
+                        <div class="keywords-input-container">
+                            <div class="keywords-tags" id="keywordsTags"></div>
+                            <input type="text" id="keywords" name="keywords" placeholder="Type keywords and press Enter..." autocomplete="off">
+                        </div>
+                        <small style="color: #7f8c8d; font-size: 0.8rem; margin-top: 5px; display: block;">
+                            Type keywords and press Enter to create tags. Minimum 2 keywords required.
+                        </small>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to all leave event buttons
+            document.querySelectorAll('.leave-event-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const eventName = this.getAttribute('data-event-name');
+                    const eventId = this.getAttribute('data-event-id');
+                    confirmLeaveEvent(eventName, eventId);
+                });
+            });
+            
+            // Add event listeners to all delete resume buttons
+            document.querySelectorAll('.delete-resume-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const resumeId = this.getAttribute('data-resume-id');
+                    const resumeName = this.getAttribute('data-resume-name');
+                    confirmDeleteResume(resumeId, resumeName);
+                });
+            });
+            
+            // Add form validation for keywords
+            const joinForm = document.getElementById('joinEventForm');
+            if (joinForm) {
+                joinForm.addEventListener('submit', function(e) {
+                    const eventCodeInput = document.getElementById('event_code');
+                    const keywordsInput = document.getElementById('keywords');
+                    const keywordsTags = document.getElementById('keywordsTags');
+                    const tags = keywordsTags.querySelectorAll('.input-tag');
+                    
+                    // Validate event code
+                    if (!eventCodeInput.value.trim()) {
+                        e.preventDefault();
+                        notificationSystem.show('Please enter an event code.', 'error', 'Event Code Required');
+                        eventCodeInput.focus();
+                        return false;
+                    }
+                    
+                    // Validate keywords
+                    if (tags.length < 2) {
+                        e.preventDefault();
+                        if (tags.length === 0) {
+                            notificationSystem.show('Please enter at least 2 keywords. Type keywords and press Enter to create tags.', 'error', 'Keywords Required');
+                        } else {
+                            notificationSystem.show('Please enter at least 2 keywords. You currently have ' + tags.length + ' keyword(s).', 'error', 'More Keywords Needed');
+                        }
+                        keywordsInput.focus();
+                        return false;
+                    }
+                    
+                    // Convert tags to comma-separated string for form submission
+                    const keywordValues = Array.from(tags).map(tag => tag.textContent.replace('×', '').trim());
+                    keywordsInput.value = keywordValues.join(',');
+                });
+            }
+            
+            // Handle tag-based keywords input
+            const keywordsInput = document.getElementById('keywords');
+            const keywordsTags = document.getElementById('keywordsTags');
+            
+            if (keywordsInput && keywordsTags) {
+                keywordsInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const value = this.value.trim();
+                        if (value && !isDuplicateTag(value)) {
+                            addTag(value);
+                            this.value = '';
+                        }
+                    }
+                });
+                
+                keywordsInput.addEventListener('blur', function() {
+                    const value = this.value.trim();
+                    if (value && !isDuplicateTag(value)) {
+                        addTag(value);
+                        this.value = '';
+                    }
+                });
+            }
+            
+            function addTag(text) {
+                const tag = document.createElement('div');
+                tag.className = 'input-tag';
+                tag.innerHTML = text + '<span class="remove-tag" onclick="removeTag(this)">×</span>';
+                keywordsTags.appendChild(tag);
+            }
+            
+            function removeTag(element) {
+                element.parentElement.remove();
+            }
+            
+            function isDuplicateTag(text) {
+                const existingTags = keywordsTags.querySelectorAll('.input-tag');
+                return Array.from(existingTags).some(tag => 
+                    tag.textContent.replace('×', '').trim().toLowerCase() === text.toLowerCase()
+                );
+            }
+            
+            // Make functions globally available
+            window.removeTag = removeTag;
+        });
+        
+        function confirmLeaveEvent(eventName, eventId) {
+            showConfirmationModal(
+                'Leave Event',
+                `Are you sure you want to leave "${eventName}"?`,
+                'This will remove you from the event and delete your uploaded resume (if any). This action cannot be undone.',
+                'Leave Event',
+                'Cancel',
+                function() {
+                    // Create a form to submit the leave request
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ url_for("leave_event") }}';
+                    
+                    const eventIdInput = document.createElement('input');
+                    eventIdInput.type = 'hidden';
+                    eventIdInput.name = 'event_id';
+                    eventIdInput.value = eventId;
+                    
+                    form.appendChild(eventIdInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            );
+        }
+        
+        function confirmDeleteResume(resumeId, resumeName) {
+            showConfirmationModal(
+                'Delete Resume',
+                `Are you sure you want to delete "${resumeName}"?`,
+                'This will permanently remove your resume from the system. You can always upload a new one later.',
+                'Delete Resume',
+                'Cancel',
+                function() {
+                    // Create a form to submit the delete request
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/delete_resume/${resumeId}`;
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            );
+        }
+        
+        function showConfirmationModal(title, message, details, confirmText, cancelText, onConfirm) {
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                padding: 24px;
+                max-width: 400px;
+                width: 90%;
+                transform: scale(0.9);
+                transition: transform 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <div style="margin-bottom: 16px;">
+                    <h3 style="color: #2c3e50; font-size: 18px; font-weight: 600; margin-bottom: 8px;">${title}</h3>
+                    <p style="color: #6c757d; font-size: 14px; line-height: 1.4;">${message}</p>
+                    ${details ? `<p style="color: #6c757d; font-size: 13px; line-height: 1.4; margin-top: 8px;">${details}</p>` : ''}
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button id="cancelBtn" style="
+                        background: #6c757d;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 500;
+                        transition: background 0.2s ease;
+                    ">${cancelText}</button>
+                    <button id="confirmBtn" style="
+                        background: #dc3545;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 500;
+                        transition: background 0.2s ease;
+                    ">${confirmText}</button>
+                </div>
+            `;
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Animate in
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                modal.style.transform = 'scale(1)';
+            }, 10);
+            
+            // Add event listeners
+            const cancelBtn = modal.querySelector('#cancelBtn');
+            const confirmBtn = modal.querySelector('#confirmBtn');
+            
+            const closeModal = () => {
+                overlay.style.opacity = '0';
+                modal.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    document.body.removeChild(overlay);
+                }, 300);
+            };
+            
+            cancelBtn.addEventListener('click', closeModal);
+            confirmBtn.addEventListener('click', () => {
+                closeModal();
+                onConfirm();
+            });
+            
+            // Close on overlay click
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    closeModal();
+                }
+            });
+            
+            // Close on escape key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        }
+    </script>
 {% endblock %}

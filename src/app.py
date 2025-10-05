@@ -19,7 +19,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Initialize extensions
 db.init_app(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, directory='../migrations')
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -72,13 +72,29 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        user_role = request.form.get('user_role', 'attendee')
         
         user = User.query.filter_by(email=email).first()
         
         if user and check_password_hash(user.password_hash, password):
+            # Check if user role matches the selected login role
+            is_admin = user.is_admin
+            
+            if user_role == 'manager' and not is_admin:
+                flash('Access denied! You are not authorized to log in as an Event Manager.', 'error')
+                return render_template('login.html')
+            elif user_role == 'attendee' and is_admin:
+                flash('Access denied! Administrators must log in as Event Manager.', 'error')
+                return render_template('login.html')
+            
             login_user(user)
-            flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
+            
+            if is_admin:
+                flash('Login successful! Welcome, Event Manager.', 'success')
+                return redirect(url_for('admin_dashboard'))
+            else:
+                flash('Login successful! Welcome, Event Attendee.', 'success')
+                return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password!', 'error')
     
@@ -108,6 +124,22 @@ def dashboard():
 @login_required
 def join_event():
     event_code = request.form['event_code'].strip()
+    keywords = request.form.get('keywords', '').strip()
+    
+    # Validate event code
+    if not event_code:
+        flash('Please enter an event code.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Validate keywords
+    if keywords:
+        keyword_list = [k.strip() for k in keywords.split(',') if k.strip()]
+        if len(keyword_list) < 2:
+            flash('Please enter at least 2 keywords. Type keywords and press Enter to create tags.', 'error')
+            return redirect(url_for('dashboard'))
+    else:
+        flash('Please enter your areas of interest (at least 2 keywords).', 'error')
+        return redirect(url_for('dashboard'))
     
     # Find event by code
     event = Event.query.filter_by(code=event_code).first()
@@ -126,15 +158,67 @@ def join_event():
         flash(f'You are already a member of "{event.name}"!', 'info')
         return redirect(url_for('dashboard'))
     
-    # Create new membership
+    # Create new membership with keywords
     membership = Membership(
         user_id=current_user.id,
-        event_id=event.id
+        event_id=event.id,
+        keywords=keywords
     )
     db.session.add(membership)
     db.session.commit()
     
-    flash(f'Successfully joined "{event.name}"!', 'success')
+    flash(f'Successfully joined "{event.name}" with interests: {", ".join(keyword_list)}!', 'success')
+    return redirect(url_for('dashboard'))
+
+@app.route('/leave_event', methods=['POST'])
+@login_required
+def leave_event():
+    event_id = request.form['event_id']
+    
+    # Find the membership
+    membership = Membership.query.filter_by(
+        user_id=current_user.id, 
+        event_id=event_id
+    ).first()
+    
+    if not membership:
+        flash('You are not a member of this event!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    event = Event.query.get(event_id)
+    event_name = event.name if event else 'Unknown Event'
+    
+    try:
+        # Delete associated resume and file if exists
+        resume = Resume.query.filter_by(
+            user_id=current_user.id,
+            event_id=event_id
+        ).first()
+        
+        if resume:
+            # Delete the resume file
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(event_id), resume.filename)
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                    print(f"Deleted resume file: {file_path}")
+                except Exception as e:
+                    print(f"Failed to delete resume file {file_path}: {str(e)}")
+            
+            # Delete resume record from database
+            db.session.delete(resume)
+        
+        # Delete the membership
+        db.session.delete(membership)
+        db.session.commit()
+        
+        flash(f'Successfully left "{event_name}"! Your resume has been removed.', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error leaving event: {str(e)}', 'error')
+        print(f"Error in leave_event: {str(e)}")
+    
     return redirect(url_for('dashboard'))
 
 @app.route('/upload_resume/<int:event_id>', methods=['GET', 'POST'])
@@ -248,6 +332,41 @@ def view_resume(resume_id):
         return redirect(url_for('dashboard'))
     
     return render_template('view_resume.html', resume=resume, file_path=file_path)
+
+@app.route('/delete_resume/<int:resume_id>', methods=['POST'])
+@login_required
+def delete_resume(resume_id):
+    # Get the resume record
+    resume = Resume.query.get(resume_id)
+    
+    if not resume:
+        flash('Resume not found!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Check if the resume belongs to the current user
+    if resume.user_id != current_user.id:
+        flash('You are not authorized to delete this resume!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    try:
+        # Delete the resume file
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(resume.event_id), resume.filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"Deleted resume file: {file_path}")
+        
+        # Delete resume record from database
+        db.session.delete(resume)
+        db.session.commit()
+        
+        flash('Resume deleted successfully!', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Failed to delete resume {resume_id}: {str(e)}")
+        flash('Failed to delete resume. Please try again.', 'error')
+    
+    return redirect(url_for('dashboard'))
 
 @app.route('/uploads/<path:filename>')
 @login_required

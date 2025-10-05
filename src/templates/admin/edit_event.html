@@ -209,16 +209,16 @@
             </div>
         </div>
         
-        <form method="POST">
+        <form method="POST" id="editEventForm">
             <div class="form-group">
                 <label for="name">Event Name</label>
-                <input type="text" id="name" name="name" value="{{ event.name }}" required>
+                <input type="text" id="name" name="name" value="{{ event.name }}">
                 <div class="help-text">This will be displayed to users when they join the event</div>
             </div>
             
             <div class="form-group">
                 <label for="code">Event Code</label>
-                <input type="text" id="code" name="code" value="{{ event.code }}" required>
+                <input type="text" id="code" name="code" value="{{ event.code }}">
                 <div class="help-text">Users will use this code to join the event (e.g., NYUAD2025)</div>
             </div>
             
@@ -274,14 +274,34 @@
         }
 
         // Add form validation
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('editEventForm').addEventListener('submit', function(e) {
+            const nameInput = document.getElementById('name');
+            const codeInput = document.getElementById('code');
             const textarea = document.getElementById('description');
+            
+            // Validate event name
+            if (!nameInput.value.trim()) {
+                e.preventDefault();
+                notificationSystem.show('Please enter an event name.', 'error', 'Event Name Required');
+                nameInput.focus();
+                return false;
+            }
+            
+            // Validate event code
+            if (!codeInput.value.trim()) {
+                e.preventDefault();
+                notificationSystem.show('Please enter an event code.', 'error', 'Event Code Required');
+                codeInput.focus();
+                return false;
+            }
+            
+            // Validate word count
             const text = textarea.value.trim();
             const words = text.split(/\s+/).filter(word => word.length > 0);
             
             if (words.length > 300) {
                 e.preventDefault();
-                alert('Description cannot exceed 300 words. Please shorten your description.');
+                notificationSystem.show('Description cannot exceed 300 words. Please shorten your description.', 'error', 'Word Limit Exceeded');
                 textarea.focus();
                 return false;
             }
