@@ -1,0 +1,135 @@
+{
+  "user": [
+    {
+      "id": 1,
+      "name": "Super Admin",
+      "email": "admin@nfcnetworking.com",
+      "password_hash": "pbkdf2:sha256:600000$vBYbzajm1cclb4dj$bc7dbbea557bdda0348a3feb7587b5074d7291c2b6cba05921c236815c89fd9e",
+      "is_admin": 1,
+      "created_at": "2025-10-06 16:32:44.632929"
+    },
+    {
+      "id": 2,
+      "name": "John Smith",
+      "email": "john.smith@email.com",
+      "password_hash": "pbkdf2:sha256:600000$7kE6aGEzCiHuDjcz$76f2b68c610141dfd70fc008f39c0a7ab7eda8e9daf23293e93a3300c1f4c694",
+      "is_admin": 0,
+      "created_at": "2025-10-06 16:32:44.897971"
+    },
+    {
+      "id": 3,
+      "name": "Sarah Johnson",
+      "email": "sarah.johnson@email.com",
+      "password_hash": "pbkdf2:sha256:600000$JnV33MoA4Q26KZx5$c953d022f535a71bf13901cb96571eb78c270857ffd5c92ef82c65667aac9192",
+      "is_admin": 0,
+      "created_at": "2025-10-06 16:32:45.118947"
+    },
+    {
+      "id": 4,
+      "name": "Ahmed Al-Rashid",
+      "email": "ahmed.rashid@email.com",
+      "password_hash": "pbkdf2:sha256:600000$ZmrKgxjRGCdn8qd4$77666bfa548fa5df549bf6c8c700c1a96007677ec13bb96fcdd2e7a1c7239eb4",
+      "is_admin": 0,
+      "created_at": "2025-10-06 16:32:45.326577"
+    },
+    {
+      "id": 5,
+      "name": "Kun Woo Park",
+      "email": "kyrie@gmail.com",
+      "password_hash": "pbkdf2:sha256:600000$IG64QQ6blVx91TAF$81cbe5bb2ebce8efae945b336a30322295609a92089716826acb9f0f4a0bbbcd",
+      "is_admin": 0,
+      "created_at": "2025-10-06 16:42:20.124820"
+    },
+    {
+      "id": 6,
+      "name": "Junyong Moon",
+      "email": "jy@gmail.com",
+      "password_hash": "pbkdf2:sha256:600000$a69yyV9Bh4AzvLEl$2c0b46438982cefa235c60e1fee1c7d3ecc2d6ea589ce9f05364277db13b4c99",
+      "is_admin": 0,
+      "created_at": "2025-10-06 16:43:19.096895"
+    },
+    {
+      "id": 7,
+      "name": "Eunbom Jo",
+      "email": "ebjo@gmail.com",
+      "password_hash": "pbkdf2:sha256:600000$E13rnIDNZzIdZptx$178bf837624d64d668dbe0af7466b3bfffdf2c066cfcf10e89410c408142c57e",
+      "is_admin": 0,
+      "created_at": "2025-10-06 18:33:06.877470"
+    }
+  ],
+  "event": [
+    {
+      "id": 1,
+      "name": "NYUAD Career Fair 2025",
+      "code": "NYUAD2025",
+      "description": "Join us for the largest career fair at NYU Abu Dhabi! Connect with top employers from various industries including technology, finance, consulting, and more. This event brings together students, recent graduates, and industry professionals for meaningful networking opportunities and career exploration.",
+      "start_date": "2025-03-15 00:00:00.000000",
+      "end_date": "2025-03-15 00:00:00.000000",
+      "created_at": "2025-10-06 16:32:44.633214"
+    },
+    {
+      "id": 2,
+      "name": "Tech Conference Dubai",
+      "code": "TECH2025",
+      "description": "The premier technology conference in the Middle East featuring cutting-edge innovations, AI developments, and digital transformation strategies. Network with tech leaders, entrepreneurs, and developers while exploring the latest trends in software development, cybersecurity, and emerging technologies.",
+      "start_date": "2025-04-20 00:00:00.000000",
+      "end_date": "2025-04-22 00:00:00.000000",
+      "created_at": "2025-10-06 16:32:44.633291"
+    },
+    {
+      "id": 3,
+      "name": "Startup Networking Event",
+      "code": "STARTUP2025",
+      "description": "A dynamic networking event designed for entrepreneurs, investors, and startup enthusiasts. Share ideas, find co-founders, connect with potential investors, and learn from successful startup founders. Perfect for anyone looking to launch their next venture or join the startup ecosystem.",
+      "start_date": "2025-05-10 00:00:00.000000",
+      "end_date": "2025-05-10 00:00:00.000000",
+      "created_at": "2025-10-06 16:32:44.633320"
+    }
+  ],
+  "membership": [
+    {
+      "id": 1,
+      "user_id": 5,
+      "event_id": 1,
+      "joined_at": "2025-10-06 16:42:39.151294",
+      "keywords": "NLP,computer vision"
+    },
+    {
+      "id": 2,
+      "user_id": 6,
+      "event_id": 1,
+      "joined_at": "2025-10-06 16:43:48.475209",
+      "keywords": "LLM,machine learning,image mapping"
+    },
+    {
+      "id": 3,
+      "user_id": 7,
+      "event_id": 1,
+      "joined_at": "2025-10-06 18:33:34.633933",
+      "keywords": "political science,international relations"
+    }
+  ],
+  "resume": [
+    {
+      "id": 1,
+      "user_id": 5,
+      "event_id": 1,
+      "filename": "5_1_20251006_204246_Kyrie_Kun_Woo_Park_Resume.pdf",
+      "original_name": "Kyrie Kun Woo Park Resume.pdf",
+      "mime_type": "application/pdf",
+      "file_size": 95140,
+      "uploaded_at": "2025-10-06 16:42:46.484253"
+    }
+  ],
+  "match": [],
+  "user_interaction": [
+    {
+      "id": 1,
+      "user_id": 5,
+      "target_user_id": 6,
+      "event_id": 1,
+      "action": "pass",
+      "created_at": "2025-10-06 18:32:35.354124"
+    }
+  ]
+}
