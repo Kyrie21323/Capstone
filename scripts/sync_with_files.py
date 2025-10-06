@@ -91,10 +91,15 @@ def import_with_files():
     
     project_root = Path(__file__).parent.parent
     
-    # List available exports
+    # List available exports (check both root and exports directory)
     export_files = list(project_root.glob("database_export_*.json"))
+    exports_dir = project_root / "exports"
+    if exports_dir.exists():
+        export_files.extend(list(exports_dir.glob("database_export_*.json")))
+    
     if not export_files:
         print("❌ No export files found!")
+        print("💡 Make sure you have copied the export files to this device")
         return False
     
     print("📁 Available exports:")
@@ -111,9 +116,14 @@ def import_with_files():
         
         export_file = export_files[file_num]
         
-        # Find corresponding files export
+        # Find corresponding files export (check both root and exports directory)
         timestamp = export_file.stem.split('_')[-2] + '_' + export_file.stem.split('_')[-1]
         files_export_dir = project_root / f"files_export_{timestamp}"
+        exports_files_dir = project_root / "exports" / f"files_export_{timestamp}"
+        
+        # Use exports directory if it exists, otherwise root
+        if exports_files_dir.exists():
+            files_export_dir = exports_files_dir
         
         print(f"📥 Importing from: {export_file.name}")
         
