@@ -227,10 +227,6 @@ class MatchingEngine:
             if not user1_has_doc and not user2_has_doc:
                 # Both users have no documents - use keywords only
                 total_score = keyword_similarity
-                print(f"    📊 MATCHING ANALYSIS:")
-                print(f"    ├─ Strategy: Keywords only (both users have no documents)")
-                print(f"    ├─ Keyword similarity: {keyword_similarity:.4f}")
-                print(f"    └─ Total score: {total_score:.4f}")
                 
             elif user1_has_doc and not user2_has_doc:
                 # User1 has document, User2 doesn't - compare keywords to document
@@ -239,12 +235,6 @@ class MatchingEngine:
                     ", ".join(user2_data.get('keywords', []))
                 )
                 total_score = (keyword_similarity * 0.8) + (doc_similarity * 0.2)
-                print(f"    📊 MATCHING ANALYSIS:")
-                print(f"    ├─ Strategy: Keywords + User1's document vs User2's keywords")
-                print(f"    ├─ Keyword similarity: {keyword_similarity:.4f}")
-                print(f"    ├─ Document similarity: {doc_similarity:.4f}")
-                print(f"    ├─ Weighted: ({keyword_similarity:.4f} × 0.8) + ({doc_similarity:.4f} × 0.2)")
-                print(f"    └─ Total score: {total_score:.4f}")
                 
             elif not user1_has_doc and user2_has_doc:
                 # User2 has document, User1 doesn't - compare keywords to document
@@ -253,12 +243,6 @@ class MatchingEngine:
                     user2_data.get('document_text', '')
                 )
                 total_score = (keyword_similarity * 0.8) + (doc_similarity * 0.2)
-                print(f"    📊 MATCHING ANALYSIS:")
-                print(f"    ├─ Strategy: Keywords + User2's document vs User1's keywords")
-                print(f"    ├─ Keyword similarity: {keyword_similarity:.4f}")
-                print(f"    ├─ Document similarity: {doc_similarity:.4f}")
-                print(f"    ├─ Weighted: ({keyword_similarity:.4f} × 0.8) + ({doc_similarity:.4f} × 0.2)")
-                print(f"    └─ Total score: {total_score:.4f}")
                 
             else:
                 # Both users have documents - comprehensive comparison
@@ -286,14 +270,6 @@ class MatchingEngine:
                     kw1_to_doc2_similarity * 0.075 +
                     kw2_to_doc1_similarity * 0.075
                 )
-                print(f"    📊 MATCHING ANALYSIS:")
-                print(f"    ├─ Strategy: Comprehensive (both users have documents)")
-                print(f"    ├─ Keyword similarity: {keyword_similarity:.4f}")
-                print(f"    ├─ Document-to-Document similarity: {doc_to_doc_similarity:.4f}")
-                print(f"    ├─ User1 keywords vs User2 document: {kw1_to_doc2_similarity:.4f}")
-                print(f"    ├─ User2 keywords vs User1 document: {kw2_to_doc1_similarity:.4f}")
-                print(f"    ├─ Weighted: ({keyword_similarity:.4f} × 0.7) + ({doc_to_doc_similarity:.4f} × 0.15) + ({kw1_to_doc2_similarity:.4f} × 0.075) + ({kw2_to_doc1_similarity:.4f} × 0.075)")
-                print(f"    └─ Total score: {total_score:.4f}")
             
             return total_score
             

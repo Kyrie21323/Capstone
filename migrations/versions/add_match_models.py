@@ -1,7 +1,7 @@
 """Add Match and UserInteraction models for post-match functionality
 
 Revision ID: add_match_models
-Revises: 9276ecf7eb3c
+Revises: add_keywords_to_membership
 Create Date: 2025-01-06 05:30:00.000000
 
 """

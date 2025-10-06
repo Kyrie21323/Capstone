@@ -7,26 +7,28 @@ from models import db, User, Event, Membership, Resume, Match, UserInteraction
 import os
 from datetime import datetime
 
+# Get the project root directory (parent of src)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 app = Flask(__name__, 
             template_folder='templates',
             static_folder='static')
-app.config['SECRET_KEY'] = 'your-secret-key-change-this-in-production'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../instance/nfc_networking.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(PROJECT_ROOT, "instance", "nfc_networking.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
-print(f"Upload folder set to: {app.config['UPLOAD_FOLDER']}")
+app.config['UPLOAD_FOLDER'] = os.path.join(PROJECT_ROOT, 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Initialize extensions
 db.init_app(app)
-migrate = Migrate(app, db, directory='../migrations')
+migrate = Migrate(app, db, directory=os.path.join(PROJECT_ROOT, 'migrations'))
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Create upload directories
-os.makedirs('uploads', exist_ok=True)
-os.makedirs('../instance', exist_ok=True)
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(os.path.join(PROJECT_ROOT, 'instance'), exist_ok=True)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -44,9 +46,22 @@ def hello():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        
+        # Validate inputs
+        if not name or len(name) < 2 or len(name) > 100:
+            flash('Name must be 2-100 characters long.', 'error')
+            return render_template('register.html')
+        
+        if not email or '@' not in email or len(email) > 120:
+            flash('Please enter a valid email address.', 'error')
+            return render_template('register.html')
+        
+        if not password or len(password) < 6:
+            flash('Password must be at least 6 characters long.', 'error')
+            return render_template('register.html')
         
         # Check if user already exists
         if User.query.filter_by(email=email).first():
@@ -70,9 +85,18 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
         user_role = request.form.get('user_role', 'attendee')
+        
+        # Validate inputs
+        if not email or '@' not in email:
+            flash('Please enter a valid email address.', 'error')
+            return render_template('login.html')
+        
+        if not password:
+            flash('Please enter your password.', 'error')
+            return render_template('login.html')
         
         user = User.query.filter_by(email=email).first()
         
@@ -123,12 +147,17 @@ def dashboard():
 @app.route('/join_event', methods=['POST'])
 @login_required
 def join_event():
-    event_code = request.form['event_code'].strip()
+    event_code = request.form.get('event_code', '').strip()
     keywords = request.form.get('keywords', '').strip()
     
     # Validate event code
     if not event_code:
         flash('Please enter an event code.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Validate event code format (alphanumeric, 3-20 characters)
+    if not event_code.replace('_', '').replace('-', '').isalnum() or len(event_code) < 3 or len(event_code) > 20:
+        flash('Event code must be 3-20 characters long and contain only letters, numbers, hyphens, and underscores.', 'error')
         return redirect(url_for('dashboard'))
     
     # Validate keywords
@@ -137,6 +166,15 @@ def join_event():
         if len(keyword_list) < 2:
             flash('Please enter at least 2 keywords. Type keywords and press Enter to create tags.', 'error')
             return redirect(url_for('dashboard'))
+        
+        # Validate individual keywords (max 50 chars each, no special chars)
+        for keyword in keyword_list:
+            if len(keyword) > 50:
+                flash('Each keyword must be 50 characters or less.', 'error')
+                return redirect(url_for('dashboard'))
+            if not keyword.replace(' ', '').replace('-', '').isalnum():
+                flash('Keywords can only contain letters, numbers, spaces, and hyphens.', 'error')
+                return redirect(url_for('dashboard'))
     else:
         flash('Please enter your areas of interest (at least 2 keywords).', 'error')
         return redirect(url_for('dashboard'))
@@ -201,9 +239,8 @@ def leave_event():
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)
-                    print(f"Deleted resume file: {file_path}")
                 except Exception as e:
-                    print(f"Failed to delete resume file {file_path}: {str(e)}")
+                    pass  # Log error but don't fail the operation
             
             # Delete resume record from database
             db.session.delete(resume)
@@ -217,7 +254,6 @@ def leave_event():
     except Exception as e:
         db.session.rollback()
         flash(f'Error leaving event: {str(e)}', 'error')
-        print(f"Error in leave_event: {str(e)}")
     
     return redirect(url_for('dashboard'))
 
@@ -254,12 +290,18 @@ def upload_resume(event_id):
             flash('Only PDF, DOC, and DOCX files are allowed!', 'error')
             return redirect(url_for('upload_resume', event_id=event_id))
         
-        # Check file size (16MB max)
-        if len(file.read()) > app.config['MAX_CONTENT_LENGTH']:
-            flash('File too large! Maximum size is 16MB.', 'error')
+        # Check file size (16MB max) - efficient method
+        try:
+            file.seek(0, 2)  # Seek to end of file
+            file_size = file.tell()  # Get file size
+            file.seek(0)  # Reset to beginning
+            
+            if file_size > app.config['MAX_CONTENT_LENGTH']:
+                flash('File too large! Maximum size is 16MB.', 'error')
+                return redirect(url_for('upload_resume', event_id=event_id))
+        except Exception as e:
+            flash('Error reading file. Please try again.', 'error')
             return redirect(url_for('upload_resume', event_id=event_id))
-        
-        file.seek(0)  # Reset file pointer
         
         # Create secure filename
         filename = secure_filename(file.filename)
@@ -268,13 +310,18 @@ def upload_resume(event_id):
         
         # Create event-specific upload directory
         upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], str(event_id))
-        print(f"Creating upload directory: {upload_dir}")
-        os.makedirs(upload_dir, exist_ok=True)
+        try:
+            os.makedirs(upload_dir, exist_ok=True)
+        except Exception as e:
+            flash('Error creating upload directory. Please try again.', 'error')
+            return redirect(url_for('upload_resume', event_id=event_id))
         
         file_path = os.path.join(upload_dir, unique_filename)
-        print(f"Saving file to: {file_path}")
-        file.save(file_path)
-        print(f"File saved successfully!")
+        try:
+            file.save(file_path)
+        except Exception as e:
+            flash('Error saving file. Please try again.', 'error')
+            return redirect(url_for('upload_resume', event_id=event_id))
         
         # Check if user already has a resume for this event
         existing_resume = Resume.query.filter_by(
@@ -287,9 +334,8 @@ def upload_resume(event_id):
             existing_resume.filename = unique_filename
             existing_resume.original_name = file.filename
             existing_resume.mime_type = file.content_type
-            existing_resume.file_size = len(file.read())
+            existing_resume.file_size = file_size  # Use the already calculated size
             existing_resume.uploaded_at = datetime.utcnow()
-            file.seek(0)
         else:
             # Create new resume record
             resume = Resume(
@@ -298,7 +344,7 @@ def upload_resume(event_id):
                 filename=unique_filename,
                 original_name=file.filename,
                 mime_type=file.content_type,
-                file_size=len(file.read())
+                file_size=file_size  # Use the already calculated size
             )
             db.session.add(resume)
         
@@ -352,8 +398,10 @@ def delete_resume(resume_id):
         # Delete the resume file
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(resume.event_id), resume.filename)
         if os.path.exists(file_path):
-            os.remove(file_path)
-            print(f"Deleted resume file: {file_path}")
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                pass  # Log error but don't fail the operation
         
         # Delete resume record from database
         db.session.delete(resume)
@@ -363,7 +411,6 @@ def delete_resume(resume_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Failed to delete resume {resume_id}: {str(e)}")
         flash('Failed to delete document. Please try again.', 'error')
     
     return redirect(url_for('dashboard'))
@@ -372,10 +419,17 @@ def delete_resume(resume_id):
 @login_required
 def update_keywords():
     event_id = request.form.get('event_id')
-    keywords = request.form.get('keywords')
+    keywords = request.form.get('keywords', '').strip()
     
+    # Validate inputs
     if not event_id:
         flash('Event ID is required.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    try:
+        event_id = int(event_id)
+    except ValueError:
+        flash('Invalid event ID.', 'error')
         return redirect(url_for('dashboard'))
     
     # Find the membership
@@ -386,7 +440,7 @@ def update_keywords():
         return redirect(url_for('dashboard'))
     
     # Validate keywords
-    if not keywords or len(keywords.strip()) == 0:
+    if not keywords:
         flash('Please enter at least 2 keywords.', 'error')
         return redirect(url_for('dashboard'))
     
@@ -396,6 +450,15 @@ def update_keywords():
     if len(keyword_list) < 2:
         flash('Please enter at least 2 keywords.', 'error')
         return redirect(url_for('dashboard'))
+    
+    # Validate individual keywords
+    for keyword in keyword_list:
+        if len(keyword) > 50:
+            flash('Each keyword must be 50 characters or less.', 'error')
+            return redirect(url_for('dashboard'))
+        if not keyword.replace(' ', '').replace('-', '').isalnum():
+            flash('Keywords can only contain letters, numbers, spaces, and hyphens.', 'error')
+            return redirect(url_for('dashboard'))
     
     # Update keywords
     membership.keywords = keywords.strip()
@@ -500,32 +563,8 @@ def event_matching(event_id):
         # Find best matches using intelligent algorithm
         best_matches = matching_engine.find_best_matches(current_user_data, all_users_data, top_k=20)
         
-        # Debug: Print matching results
-        print(f"DEBUG: Found {len(best_matches)} intelligent matches")
-        for match_data, score in best_matches:
-            print(f"  - {match_data['name']}: {score:.3f} (keywords: {match_data['keywords']})")
-        
-        # Debug: Print similarity statistics for all users
-        print(f"\nDEBUG: Similarity Statistics:")
-        print(f"  Current user keywords: {current_user_data['keywords']}")
-        print(f"  Current user has document: {bool(current_user_data['document_text'])}")
-        
-        for user_data in all_users_data:
-            print(f"  - {user_data['name']}:")
-            print(f"    Keywords: {user_data['keywords']}")
-            print(f"    Has document: {bool(user_data.get('document_text', '').strip())}")
-            
-            # Calculate total score (this will also print the strategy used)
-            total_score = matching_engine.calculate_match_score(current_user_data, user_data)
-            
-            print(f"    Above threshold (0.26): {'YES' if total_score > 0.26 else 'NO'}")
-            print()
-        
         # Extract just the user data (without scores) for the template
         potential_matches = [match_data for match_data, score in best_matches]
-        
-        # Only show intelligent matches - no fallback to irrelevant users
-        print(f"DEBUG: Showing {len(potential_matches)} intelligent matches only")
         
         # Determine the reason for no matches
         no_matches_reason = None
@@ -539,7 +578,6 @@ def event_matching(event_id):
                              no_matches_reason=no_matches_reason)
         
     except ImportError as e:
-        print(f"Matching engine not available: {e}")
         # Fallback to simple matching if engine fails
         potential_matches = []
         for mem in other_memberships:
@@ -928,23 +966,17 @@ def admin_delete_user(user_id):
         failed_files = []
         
         for resume in resumes:
-            # Construct the file path using the correct upload folder
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(resume.event_id), resume.filename)
-            
             # Debug: Print the file path being checked
-            print(f"Attempting to delete file: {file_path}")
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(resume.event_id), resume.filename)
             
             # Check if file exists and delete it
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)
                     deleted_files.append(resume.filename)
-                    print(f"Successfully deleted: {file_path}")
                 except Exception as e:
                     failed_files.append(f"{resume.filename}: {str(e)}")
-                    print(f"Failed to delete {file_path}: {str(e)}")
             else:
-                print(f"File not found: {file_path}")
                 failed_files.append(f"{resume.filename}: File not found")
         
         # Delete resume records from database
@@ -966,7 +998,6 @@ def admin_delete_user(user_id):
     except Exception as e:
         db.session.rollback()
         flash(f'Error deleting user {user_name}: {str(e)}', 'error')
-        print(f"Error in admin_delete_user: {str(e)}")
     
     return redirect(url_for('admin_users'))
 
@@ -1017,14 +1048,12 @@ def cleanup_orphaned_files():
         for file_path in orphaned_files:
             try:
                 os.remove(file_path)
-                print(f"Deleted orphaned file: {file_path}")
             except Exception as e:
-                print(f"Failed to delete orphaned file {file_path}: {str(e)}")
+                pass  # Log error but don't fail the operation
         
         return len(orphaned_files)
         
     except Exception as e:
-        print(f"Error in cleanup_orphaned_files: {str(e)}")
         return 0
 
 def create_sample_events():
@@ -1078,6 +1107,7 @@ def init_db():
 
 if __name__ == '__main__':
     # For development: initialize database if it doesn't exist
-    if not os.path.exists('instance/nfc_networking.db'):
+    db_path = os.path.join(PROJECT_ROOT, 'instance', 'nfc_networking.db')
+    if not os.path.exists(db_path):
         init_db()
     app.run(debug=True)
