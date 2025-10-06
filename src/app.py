@@ -611,6 +611,18 @@ def event_matching(event_id):
         # Extract just the user data (without scores) for the template
         potential_matches = [match_data for match_data, score in best_matches]
         
+        # Debug: Print matching scores to terminal
+        print(f"\n=== MATCHING SCORES DEBUG ===")
+        print(f"Current User: {current_user.name} (ID: {current_user.id})")
+        print(f"Event: {event.name}")
+        print(f"Total potential matches: {len(best_matches)}")
+        print("-" * 50)
+        
+        for i, (match_data, score) in enumerate(best_matches, 1):
+            print(f"{i:2d}. {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)")
+        
+        print("=" * 50)
+        
         # Determine the reason for no matches
         no_matches_reason = None
         if len(potential_matches) == 0:
@@ -624,8 +636,15 @@ def event_matching(event_id):
         
     except ImportError as e:
         # Fallback to simple matching if engine fails
+        print(f"\n=== FALLBACK MATCHING (Import Error) ===")
+        print(f"Error: {e}")
+        print(f"Available memberships: {len(available_memberships)}")
+        for mem in available_memberships:
+            print(f"  - {mem.user.name} (ID: {mem.user_id})")
+        print("=" * 50)
+        
         potential_matches = []
-        for mem in other_memberships:
+        for mem in available_memberships:  # Use available_memberships instead of other_memberships
             user = mem.user
             user_resume = Resume.query.filter_by(user_id=user.id, event_id=event_id).first()
             
