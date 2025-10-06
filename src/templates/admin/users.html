@@ -276,7 +276,7 @@
                         <div style="border-right: 1px solid rgba(255,255,255,0.3); padding-right: 20px; text-align: center;">User</div>
                         <div style="border-right: 1px solid rgba(255,255,255,0.3); padding-right: 20px; text-align: center;">Email</div>
                         <div style="border-right: 1px solid rgba(255,255,255,0.3); padding-right: 20px; text-align: center;">Events</div>
-                        <div style="border-right: 1px solid rgba(255,255,255,0.3); padding-right: 20px; text-align: center;">Resumes</div>
+                        <div style="border-right: 1px solid rgba(255,255,255,0.3); padding-right: 20px; text-align: center;">Documents</div>
                         <div style="border-right: 1px solid rgba(255,255,255,0.3); padding-right: 20px; text-align: center;">Role</div>
                         <div style="text-align: center;">Actions</div>
                     </div>
@@ -287,12 +287,22 @@
                         <div class="user-name">{{ user.name }}</div>
                         <div class="user-email">{{ user.email }}</div>
                         <div class="user-stats">
-                            <div class="stat-number">{{ user.memberships|length }}</div>
-                            <div class="stat-label">Events</div>
+                            {% if user.is_admin %}
+                                <div class="stat-number">-</div>
+                                <div class="stat-label">Events</div>
+                            {% else %}
+                                <div class="stat-number">{{ user.memberships|length }}</div>
+                                <div class="stat-label">Events</div>
+                            {% endif %}
                         </div>
                         <div class="user-stats">
-                            <div class="stat-number">{{ user.resumes|length }}</div>
-                            <div class="stat-label">Resumes</div>
+                            {% if user.is_admin %}
+                                <div class="stat-number">-</div>
+                                <div class="stat-label">Documents</div>
+                            {% else %}
+                                <div class="stat-number">{{ user.resumes|length }}</div>
+                                <div class="stat-label">Documents</div>
+                            {% endif %}
                         </div>
                         <div style="text-align: center;">
                             {% if user.is_admin %}

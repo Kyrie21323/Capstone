@@ -147,6 +147,11 @@ def dashboard():
 @app.route('/join_event', methods=['POST'])
 @login_required
 def join_event():
+    # Prevent super admin from joining events
+    if current_user.is_admin:
+        flash('Super admin accounts cannot join events!', 'error')
+        return redirect(url_for('dashboard'))
+    
     event_code = request.form.get('event_code', '').strip()
     keywords = request.form.get('keywords', '').strip()
     
@@ -249,7 +254,7 @@ def leave_event():
         db.session.delete(membership)
         db.session.commit()
         
-        flash(f'Successfully left "{event_name}"! Your resume has been removed.', 'success')
+        flash(f'Successfully left "{event_name}"! Your document has been removed.', 'success')
         
     except Exception as e:
         db.session.rollback()
@@ -260,6 +265,11 @@ def leave_event():
 @app.route('/upload_resume/<int:event_id>', methods=['GET', 'POST'])
 @login_required
 def upload_resume(event_id):
+    # Prevent super admin from uploading documents
+    if current_user.is_admin:
+        flash('Super admin accounts cannot upload documents!', 'error')
+        return redirect(url_for('dashboard'))
+    
     # Check if user is a member of this event
     membership = Membership.query.filter_by(
         user_id=current_user.id, 
@@ -308,8 +318,8 @@ def upload_resume(event_id):
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         unique_filename = f"{current_user.id}_{event_id}_{timestamp}_{filename}"
         
-        # Create event-specific upload directory
-        upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], str(event_id))
+        # Create user-specific upload directory
+        upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], str(current_user.id))
         try:
             os.makedirs(upload_dir, exist_ok=True)
         except Exception as e:
@@ -370,7 +380,7 @@ def view_resume(resume_id):
         return redirect(url_for('dashboard'))
     
     # Construct the file path
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(resume.event_id), resume.filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(resume.user_id), resume.filename)
     
     # Check if file exists
     if not os.path.exists(file_path):
@@ -418,6 +428,11 @@ def delete_resume(resume_id):
 @app.route('/update_keywords', methods=['POST'])
 @login_required
 def update_keywords():
+    # Prevent super admin from updating keywords
+    if current_user.is_admin:
+        flash('Super admin accounts cannot update keywords!', 'error')
+        return redirect(url_for('dashboard'))
+    
     event_id = request.form.get('event_id')
     keywords = request.form.get('keywords', '').strip()
     
@@ -467,9 +482,39 @@ def update_keywords():
     flash('Keywords updated successfully!', 'success')
     return redirect(url_for('dashboard'))
 
+@app.route('/event/<int:event_id>/matching/loading')
+@login_required
+def matching_loading(event_id):
+    """Show loading page while calculating matches"""
+    # Prevent super admin from accessing matching
+    if current_user.is_admin:
+        flash('Super admin accounts cannot access matching!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get the event
+    event = Event.query.get(event_id)
+    
+    if not event:
+        flash('Event not found!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Check if user is a member of this event
+    membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+    
+    if not membership:
+        flash('You are not a member of this event!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('matching_loading.html', event=event, event_id=event_id)
+
 @app.route('/event/<int:event_id>/matching')
 @login_required
 def event_matching(event_id):
+    # Prevent super admin from accessing matching
+    if current_user.is_admin:
+        flash('Super admin accounts cannot access matching!', 'error')
+        return redirect(url_for('dashboard'))
+    
     # Get the event
     event = Event.query.get(event_id)
     
@@ -527,7 +572,7 @@ def event_matching(event_id):
         
         if current_user_resume:
             # Extract text from current user's document
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(event_id), current_user_resume.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(current_user.id), current_user_resume.filename)
             current_user_doc_text = matching_engine.extract_text_from_document(file_path)
         
         current_user_data = {
@@ -545,7 +590,7 @@ def event_matching(event_id):
             
             if user_resume:
                 # Extract text from user's document
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(event_id), user_resume.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(user.id), user_resume.filename)
                 user_doc_text = matching_engine.extract_text_from_document(file_path)
             
             user_data = {
@@ -605,6 +650,10 @@ def event_matching(event_id):
 @login_required
 def like_user(event_id, target_user_id):
     """Handle when a user likes another user"""
+    # Prevent super admin from liking users
+    if current_user.is_admin:
+        return {'success': False, 'message': 'Super admin accounts cannot like users'}, 403
+    
     try:
         # Verify the user is a member of this event
         membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
@@ -670,6 +719,10 @@ def like_user(event_id, target_user_id):
 @login_required
 def pass_user(event_id, target_user_id):
     """Handle when a user passes on another user"""
+    # Prevent super admin from passing on users
+    if current_user.is_admin:
+        return {'success': False, 'message': 'Super admin accounts cannot pass on users'}, 403
+    
     try:
         # Verify the user is a member of this event
         membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
@@ -706,6 +759,11 @@ def pass_user(event_id, target_user_id):
 @login_required
 def event_matches(event_id):
     """Show all matches for a user in an event"""
+    # Prevent super admin from accessing matches
+    if current_user.is_admin:
+        flash('Super admin accounts cannot access matches!', 'error')
+        return redirect(url_for('dashboard'))
+    
     event = Event.query.get(event_id)
     if not event:
         flash('Event not found!', 'error')

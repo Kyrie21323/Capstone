@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculating Matches - NFC Networking Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .loading-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .loading-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #4ecdc4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+            border-radius: 10px;
+            width: 0%;
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .loading-steps {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .step.active .step-icon {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .step-text {
+            font-size: 0.95rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+    
+    <div class="loading-container pulse">
+        <div class="loading-icon">
+            <div class="spinner"></div>
+        </div>
+        
+        <h1 class="loading-title">Calculating Matches</h1>
+        <p class="loading-subtitle">
+            Our AI is analyzing interests and documents to find your perfect networking connections...
+        </p>
+        
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+        
+        <div class="loading-steps">
+            <div class="step" id="step1">
+                <div class="step-icon">1</div>
+                <div class="step-text">Analyzing your interests and keywords</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-icon">2</div>
+                <div class="step-text">Processing uploaded documents</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-icon">3</div>
+                <div class="step-text">Calculating similarity scores</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-icon">4</div>
+                <div class="step-text">Finding best matches for you</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animate steps
+        const steps = document.querySelectorAll('.step');
+        let currentStep = 0;
+
+        function activateStep(stepIndex) {
+            if (stepIndex < steps.length) {
+                steps[stepIndex].classList.add('active');
+                currentStep = stepIndex;
+            }
+        }
+
+        // Animate steps with delays
+        setTimeout(() => activateStep(0), 500);
+        setTimeout(() => activateStep(1), 1500);
+        setTimeout(() => activateStep(2), 2500);
+        setTimeout(() => activateStep(3), 3500);
+
+        // Redirect to matching page after calculation
+        setTimeout(() => {
+            window.location.href = "{{ url_for('event_matching', event_id=event_id) }}";
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -53,19 +53,21 @@ def export_with_files():
             except sqlalchemy.OperationalError:
                 export_data[table] = []
         
-        # Save database export
+        # Save database export to exports directory
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        export_file = project_root / f"database_export_{timestamp}.json"
+        exports_dir = project_root / "exports"
+        exports_dir.mkdir(exist_ok=True)  # Create exports directory if it doesn't exist
+        export_file = exports_dir / f"database_export_{timestamp}.json"
         
         with open(export_file, 'w') as f:
             json.dump(export_data, f, indent=2, default=str)
         
         print(f"✅ Database exported to: {export_file}")
         
-        # Export uploaded files
+        # Export uploaded files to exports directory
         uploads_dir = project_root / "uploads"
         if uploads_dir.exists():
-            files_export_dir = project_root / f"files_export_{timestamp}"
+            files_export_dir = exports_dir / f"files_export_{timestamp}"
             shutil.copytree(uploads_dir, files_export_dir)
             print(f"✅ Files exported to: {files_export_dir}")
         else:

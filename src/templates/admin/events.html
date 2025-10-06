@@ -226,6 +226,9 @@
         .btn-small {
             padding: 8px 16px;
             font-size: 0.9rem;
+            height: 36px;
+            line-height: 20px;
+            box-sizing: border-box;
         }
         
         .flash-messages {
@@ -330,7 +333,7 @@
                             </div>
                             <div class="stat-item">
                                 <div class="stat-number">{{ event.resumes|length }}</div>
-                                <div class="stat-label">Resumes</div>
+                                <div class="stat-label">Documents</div>
                             </div>
                         </div>
                         
@@ -358,7 +361,7 @@
             showConfirmationModal(
                 'Delete Event',
                 `Are you sure you want to delete "${eventName}"?`,
-                'This will also delete all associated memberships and resumes. This action cannot be undone!',
+                'This will also delete all associated memberships and documents. This action cannot be undone!',
                 'Delete Event',
                 'Cancel',
                 function() {

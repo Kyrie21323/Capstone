@@ -609,7 +609,7 @@
                                     <button type="button" class="delete-resume-btn" data-resume-id="{{ user_resume.id }}" data-resume-name="{{ user_resume.original_name }}">Delete Document</button>
                                 </div>
                                 <div class="matching-buttons">
-                                    <a href="{{ url_for('event_matching', event_id=membership.event.id) }}" class="matching-btn">Start Smart Matching</a>
+                                    <a href="{{ url_for('matching_loading', event_id=membership.event.id) }}" class="matching-btn">Start Smart Matching</a>
                                     <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">View Matches</a>
                                 </div>
                             </div>
@@ -621,7 +621,7 @@
                             <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
                                 <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload Document</a>
                                 <div class="matching-buttons">
-                                    <a href="{{ url_for('event_matching', event_id=membership.event.id) }}" class="matching-btn">Start Smart Matching</a>
+                                    <a href="{{ url_for('matching_loading', event_id=membership.event.id) }}" class="matching-btn">Start Smart Matching</a>
                                     <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">View Matches</a>
                                 </div>
                             </div>
