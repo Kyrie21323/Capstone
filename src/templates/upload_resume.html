@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Upload Resume - NFC Networking Assistant{% endblock %}
+{% block title %}Upload Document - NFC Networking Assistant{% endblock %}
 
 {% block styles %}
         body {
@@ -20,21 +20,42 @@
         }
         
         .header {
-            text-align: center;
-            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+        
+        .header-left {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .subtitle-section {
+            margin-top: 10px;
+            margin-bottom: 20px;
         }
         
         .logo {
             font-size: 1.8rem;
             font-weight: 700;
             color: #2c3e50;
-            margin-bottom: 8px;
+            margin: 0;
         }
         
         .subtitle {
             color: #7f8c8d;
             font-size: 0.95rem;
             font-weight: 300;
+            margin: 0;
         }
         
         .event-info {
@@ -121,7 +142,7 @@
         }
         
         .back-btn {
-            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
             color: white;
             padding: 12px 24px;
             border: none;
@@ -131,12 +152,13 @@
             font-weight: 600;
             transition: all 0.3s ease;
             display: inline-block;
-            margin-bottom: 30px;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.2);
         }
         
         .back-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
         }
         
         .flash-messages {
@@ -166,11 +188,17 @@
 
 {% block content %}
     <div class="container">
-        <a href="{{ url_for('dashboard') }}" class="back-btn">← Back to Dashboard</a>
-        
         <div class="header">
-            <h1 class="logo">Upload Resume</h1>
-            <p class="subtitle">Upload your resume for the event</p>
+            <div class="header-left">
+                <h1 class="logo">Upload Document</h1>
+            </div>
+            <div class="header-right">
+                <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+            </div>
+        </div>
+        
+        <div class="subtitle-section">
+            <p class="subtitle">Upload your resume, portfolio, or other document for the event</p>
         </div>
         
         <div class="event-info">
@@ -190,15 +218,16 @@
         
         <form method="POST" enctype="multipart/form-data" id="uploadResumeForm">
             <div class="form-group">
-                <label for="resume">Select Resume File</label>
+                <label for="resume">Select Document File</label>
                 <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx">
                 <div class="file-info">
                     <strong>Accepted formats:</strong> PDF, DOC, DOCX<br>
-                    <strong>Maximum size:</strong> 16MB
+                    <strong>Maximum size:</strong> 16MB<br>
+                    <strong>Examples:</strong> Resume, Portfolio, CV, Cover Letter, Project Documentation
                 </div>
             </div>
             
-            <button type="submit" class="btn">Upload Resume</button>
+            <button type="submit" class="btn">Upload Document</button>
         </form>
     </div>
     
@@ -210,7 +239,7 @@
             // Validate file selection
             if (!fileInput.files || fileInput.files.length === 0) {
                 e.preventDefault();
-                notificationSystem.show('Please select a resume file to upload.', 'error', 'File Required');
+                notificationSystem.show('Please select a document file to upload.', 'error', 'File Required');
                 fileInput.focus();
                 return false;
             }

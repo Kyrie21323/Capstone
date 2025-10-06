@@ -72,3 +72,57 @@ class Resume(db.Model):
     
     def __repr__(self):
         return f'<Resume {self.original_name} for User {self.user_id} in Event {self.event_id}>'
+
+class Match(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user1_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user2_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    matched_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    
+    # Relationships
+    user1 = db.relationship('User', foreign_keys=[user1_id], backref='matches_as_user1')
+    user2 = db.relationship('User', foreign_keys=[user2_id], backref='matches_as_user2')
+    event = db.relationship('Event', backref='matches')
+    
+    # Ensure unique pairs and prevent self-matching
+    __table_args__ = (
+        db.UniqueConstraint('user1_id', 'user2_id', 'event_id', name='unique_match_pair'),
+        db.CheckConstraint('user1_id != user2_id', name='no_self_match'),
+    )
+    
+    def __repr__(self):
+        return f'<Match User {self.user1_id} <-> User {self.user2_id} in Event {self.event_id}>'
+    
+    def get_other_user(self, current_user_id):
+        """Get the other user in this match"""
+        if self.user1_id == current_user_id:
+            return self.user2
+        elif self.user2_id == current_user_id:
+            return self.user1
+        return None
+
+class UserInteraction(db.Model):
+    """Track individual likes/passes before they become matches"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    target_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    action = db.Column(db.String(10), nullable=False)  # 'like' or 'pass'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    user = db.relationship('User', foreign_keys=[user_id], backref='interactions_made')
+    target_user = db.relationship('User', foreign_keys=[target_user_id], backref='interactions_received')
+    event = db.relationship('Event', backref='user_interactions')
+    
+    # Ensure unique user-target-event combinations
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'target_user_id', 'event_id', name='unique_user_interaction'),
+        db.CheckConstraint('user_id != target_user_id', name='no_self_interaction'),
+        db.CheckConstraint("action IN ('like', 'pass')", name='valid_action'),
+    )
+    
+    def __repr__(self):
+        return f'<UserInteraction User {self.user_id} {self.action}s User {self.target_user_id} in Event {self.event_id}>'

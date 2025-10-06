@@ -1,0 +1,642 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Matching - {{ event.name }}{% endblock %}
+
+{% block styles %}
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .matching-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .event-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .card-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 350px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+        
+        .profile-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+            position: relative;
+        }
+        
+        .profile-image::before {
+            content: '👤';
+            font-size: 4rem;
+        }
+        
+        .profile-info {
+            padding: 25px;
+        }
+        
+        .profile-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .profile-title {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .profile-interests {
+            margin-bottom: 20px;
+        }
+        
+        .interests-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .interest-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .interest-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .profile-bio {
+            color: #5a6c7d;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .pass-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+        
+        .like-btn {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+        }
+        
+        .pass-btn:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #e53935 100%);
+        }
+        
+        .like-btn:hover {
+            background: linear-gradient(135deg, #26a69a 0%, #00695c 100%);
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+        
+        .no-more-cards {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+        }
+        
+        .no-more-cards h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .no-more-cards p {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .match-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .match-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+        }
+        
+        .match-message {
+            font-size: 1.1rem;
+            color: #5a6c7d;
+            line-height: 1.5;
+        }
+        
+        .match-celebration h2 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        .match-celebration p {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .match-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .match-actions .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .match-actions .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .match-actions .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .match-actions .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+        
+        .match-actions .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .match-btn {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .match-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+        
+        @keyframes cardSwipeLeft {
+            0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateX(-100vw) rotate(-30deg); opacity: 0; }
+        }
+        
+        @keyframes cardSwipeRight {
+            0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateX(100vw) rotate(30deg); opacity: 0; }
+        }
+        
+        .card-swipe-left {
+            animation: cardSwipeLeft 0.5s ease-in-out forwards;
+        }
+        
+        .card-swipe-right {
+            animation: cardSwipeRight 0.5s ease-in-out forwards;
+        }
+{% endblock %}
+
+{% block content %}
+    <div class="matching-container">
+        <button class="back-btn" onclick="window.location.href='{{ url_for('dashboard') }}'">
+            Back to Dashboard
+        </button>
+        
+        <div class="header">
+            <h1 class="event-title">{{ event.name }}</h1>
+            <p class="event-subtitle">Smart Matching</p>
+        </div>
+        
+        <div class="card-container" id="cardContainer">
+            {% if potential_matches %}
+                <!-- First profile card - will be shown initially -->
+                <div class="profile-card" id="currentCard">
+                    <div class="profile-image"></div>
+                    <div class="profile-info">
+                        <h2 class="profile-name" id="profileName">{{ potential_matches[0].name if potential_matches else 'No matches available' }}</h2>
+                        
+                        <div class="profile-interests">
+                            <div class="interests-label">Interests:</div>
+                            <div class="interest-tags" id="interestTags">
+                                {% if potential_matches and potential_matches[0].keywords %}
+                                    {% for keyword in potential_matches[0].keywords %}
+                                        <span class="interest-tag">{{ keyword }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="interest-tag">No interests listed</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="profile-bio" id="profileBio">
+                            Connect with this event attendee to discover shared interests and potential collaboration opportunities.
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- No matches available -->
+                <div class="no-more-cards">
+                    {% if no_matches_reason == 'no_attendees' %}
+                        <h3>No matches available</h3>
+                        <p>There are no other members in this event yet. Check back later as more people join!</p>
+                    {% elif no_matches_reason == 'no_similar_interests' %}
+                        <h3>No similar matches found</h3>
+                        <p>Currently, there are not available attendees that match your interests. Try updating your keywords or check back as more people join!</p>
+                    {% else %}
+                        <h3>No matches available</h3>
+                        <p>There are no other members in this event yet. Check back later as more people join!</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn pass-btn" id="passBtn" onclick="passCard()">
+                ✕
+            </button>
+            <button class="action-btn like-btn" id="likeBtn" onclick="likeCard()">
+                ♥
+            </button>
+        </div>
+    </div>
+    
+    <!-- Match Animation Modal -->
+    <div class="match-animation" id="matchAnimation">
+        <div class="match-content">
+            <div class="match-message">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentCardIndex = 0;
+        let cards = {{ potential_matches | tojson }};
+        
+        function updateCard(cardData) {
+            const card = document.getElementById('currentCard');
+            const nameElement = card.querySelector('.profile-name');
+            const titleElement = card.querySelector('.profile-title');
+            const interestsContainer = card.querySelector('.interest-tags');
+            const bioElement = card.querySelector('.profile-bio');
+            
+            nameElement.textContent = cardData.name;
+            
+            // Update bio - generic message for all users
+            bioElement.textContent = "Connect with this event attendee to discover shared interests and potential collaboration opportunities.";
+            
+            // Update interests
+            interestsContainer.innerHTML = '';
+            if (cardData.keywords && cardData.keywords.length > 0) {
+                cardData.keywords.forEach(keyword => {
+                    const tag = document.createElement('span');
+                    tag.className = 'interest-tag';
+                    tag.textContent = keyword;
+                    interestsContainer.appendChild(tag);
+                });
+            } else {
+                const tag = document.createElement('span');
+                tag.className = 'interest-tag';
+                tag.textContent = 'No interests listed';
+                interestsContainer.appendChild(tag);
+            }
+        }
+        
+        function showNextCard() {
+            currentCardIndex++;
+            
+            if (currentCardIndex >= cards.length) {
+                showNoMoreCards();
+                return;
+            }
+            
+            updateCard(cards[currentCardIndex]);
+            
+            // Reset card position
+            const card = document.getElementById('currentCard');
+            card.style.transform = 'translateX(0) rotate(0deg)';
+            card.style.opacity = '1';
+            card.classList.remove('card-swipe-left', 'card-swipe-right');
+        }
+        
+        function showNoMoreCards() {
+            const cardContainer = document.getElementById('cardContainer');
+            const noMatchesReason = '{{ no_matches_reason }}';
+            
+            let message = '';
+            if (noMatchesReason === 'no_attendees') {
+                message = `
+                    <h3>No matches available</h3>
+                    <p>There are no other members in this event yet. Check back later as more people join!</p>
+                `;
+            } else if (noMatchesReason === 'no_similar_interests') {
+                message = `
+                    <h3>No similar matches found</h3>
+                    <p>Currently, there are not available attendees that match your interests. Try updating your keywords or check back as more people join!</p>
+                `;
+            } else {
+                message = `
+                    <h3>That's all for now!</h3>
+                    <p>You've seen all available matches for this event. Check back later for new connections!</p>
+                `;
+            }
+            
+            cardContainer.innerHTML = `<div class="no-more-cards">${message}</div>`;
+            
+            // Hide action buttons
+            document.querySelector('.action-buttons').style.display = 'none';
+        }
+        
+        function passCard() {
+            const card = document.getElementById('currentCard');
+            card.classList.add('card-swipe-left');
+            
+            const currentUser = cards[currentCardIndex];
+            const eventId = {{ event.id }};
+            
+            // Send pass to server
+            fetch(`/event/${eventId}/pass/${currentUser.user_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setTimeout(() => {
+                        showNextCard();
+                    }, 500);
+                } else {
+                    console.error('Error passing user:', data.message);
+                    setTimeout(() => {
+                        showNextCard();
+                    }, 500);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                setTimeout(() => {
+                    showNextCard();
+                }, 500);
+            });
+        }
+        
+        function likeCard() {
+            const card = document.getElementById('currentCard');
+            card.classList.add('card-swipe-right');
+            
+            const currentUser = cards[currentCardIndex];
+            const eventId = {{ event.id }};
+            
+            // Send like to server
+            fetch(`/event/${eventId}/like/${currentUser.user_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.is_match) {
+                        setTimeout(() => {
+                            showMatchAnimation(currentUser);
+                        }, 500);
+                    } else {
+                        setTimeout(() => {
+                            showNextCard();
+                        }, 500);
+                    }
+                } else {
+                    console.error('Error liking user:', data.message);
+                    setTimeout(() => {
+                        showNextCard();
+                    }, 500);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                setTimeout(() => {
+                    showNextCard();
+                }, 500);
+            });
+        }
+        
+        function showMatchAnimation(matchedUser) {
+            const matchAnimation = document.getElementById('matchAnimation');
+            const matchMessage = matchAnimation.querySelector('.match-message');
+            
+            matchMessage.innerHTML = `
+                <div class="match-celebration">
+                    <h2>🎉 It's a Match!</h2>
+                    <p>You and <strong>${matchedUser.name}</strong> have both shown interest in each other!</p>
+                    <p>This could be the start of a great professional connection.</p>
+                    <div class="match-actions">
+                        <button onclick="continueMatching()" class="btn btn-secondary">Continue Matching</button>
+                        <button onclick="viewMatches()" class="btn btn-primary">View All Matches</button>
+                    </div>
+                </div>
+            `;
+            
+            matchAnimation.style.display = 'flex';
+        }
+        
+        function continueMatching() {
+            document.getElementById('matchAnimation').style.display = 'none';
+            showNextCard();
+        }
+        
+        function viewMatches() {
+            window.location.href = '/event/{{ event.id }}/matches';
+        }
+        
+        // Initialize with first card if available
+        if (cards && cards.length > 0) {
+            updateCard(cards[0]);
+        } else {
+            // Hide action buttons if no matches
+            document.querySelector('.action-buttons').style.display = 'none';
+        }
+        
+        // Add touch/swipe support
+        let startX = 0;
+        let startY = 0;
+        let isDragging = false;
+        
+        const card = document.getElementById('currentCard');
+        
+        card.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isDragging = true;
+        });
+        
+        card.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            
+            const currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            const diffX = currentX - startX;
+            const diffY = currentY - startY;
+            
+            // Only handle horizontal swipes
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                e.preventDefault();
+                const rotation = diffX * 0.1;
+                card.style.transform = `translateX(${diffX}px) rotate(${rotation}deg)`;
+                card.style.opacity = Math.max(0.3, 1 - Math.abs(diffX) / 200);
+            }
+        });
+        
+        card.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const diffX = e.changedTouches[0].clientX - startX;
+            
+            if (Math.abs(diffX) > 100) {
+                if (diffX > 0) {
+                    likeCard();
+                } else {
+                    passCard();
+                }
+            } else {
+                // Reset card position
+                card.style.transform = 'translateX(0) rotate(0deg)';
+                card.style.opacity = '1';
+            }
+        });
+    </script>
+{% endblock %}

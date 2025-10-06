@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from models import db, User, Event, Membership, Resume
+from models import db, User, Event, Membership, Resume, Match, UserInteraction
 import os
 from datetime import datetime
 
@@ -303,7 +303,7 @@ def upload_resume(event_id):
             db.session.add(resume)
         
         db.session.commit()
-        flash(f'Resume uploaded successfully for "{event.name}"!', 'success')
+        flash(f'Document uploaded successfully for "{event.name}"!', 'success')
         return redirect(url_for('dashboard'))
     
     return render_template('upload_resume.html', event=event)
@@ -315,12 +315,12 @@ def view_resume(resume_id):
     resume = Resume.query.get(resume_id)
     
     if not resume:
-        flash('Resume not found!', 'error')
+        flash('Document not found!', 'error')
         return redirect(url_for('dashboard'))
     
     # Check if the resume belongs to the current user
     if resume.user_id != current_user.id:
-        flash('You are not authorized to view this resume!', 'error')
+        flash('You are not authorized to view this document!', 'error')
         return redirect(url_for('dashboard'))
     
     # Construct the file path
@@ -328,7 +328,7 @@ def view_resume(resume_id):
     
     # Check if file exists
     if not os.path.exists(file_path):
-        flash('Resume file not found!', 'error')
+        flash('Document file not found!', 'error')
         return redirect(url_for('dashboard'))
     
     return render_template('view_resume.html', resume=resume, file_path=file_path)
@@ -340,12 +340,12 @@ def delete_resume(resume_id):
     resume = Resume.query.get(resume_id)
     
     if not resume:
-        flash('Resume not found!', 'error')
+        flash('Document not found!', 'error')
         return redirect(url_for('dashboard'))
     
     # Check if the resume belongs to the current user
     if resume.user_id != current_user.id:
-        flash('You are not authorized to delete this resume!', 'error')
+        flash('You are not authorized to delete this document!', 'error')
         return redirect(url_for('dashboard'))
     
     try:
@@ -359,14 +359,348 @@ def delete_resume(resume_id):
         db.session.delete(resume)
         db.session.commit()
         
-        flash('Resume deleted successfully!', 'success')
+        flash('Document deleted successfully!', 'success')
         
     except Exception as e:
         db.session.rollback()
         print(f"Failed to delete resume {resume_id}: {str(e)}")
-        flash('Failed to delete resume. Please try again.', 'error')
+        flash('Failed to delete document. Please try again.', 'error')
     
     return redirect(url_for('dashboard'))
+
+@app.route('/update_keywords', methods=['POST'])
+@login_required
+def update_keywords():
+    event_id = request.form.get('event_id')
+    keywords = request.form.get('keywords')
+    
+    if not event_id:
+        flash('Event ID is required.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Find the membership
+    membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+    
+    if not membership:
+        flash('You are not a member of this event.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Validate keywords
+    if not keywords or len(keywords.strip()) == 0:
+        flash('Please enter at least 2 keywords.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Parse keywords (comma-separated)
+    keyword_list = [kw.strip() for kw in keywords.split(',') if kw.strip()]
+    
+    if len(keyword_list) < 2:
+        flash('Please enter at least 2 keywords.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Update keywords
+    membership.keywords = keywords.strip()
+    db.session.commit()
+    
+    flash('Keywords updated successfully!', 'success')
+    return redirect(url_for('dashboard'))
+
+@app.route('/event/<int:event_id>/matching')
+@login_required
+def event_matching(event_id):
+    # Get the event
+    event = Event.query.get(event_id)
+    
+    if not event:
+        flash('Event not found!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Check if user is a member of this event
+    membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+    
+    if not membership:
+        flash('You are not a member of this event!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get all other users who are members of this event (excluding current user)
+    other_memberships = Membership.query.filter(
+        Membership.event_id == event_id,
+        Membership.user_id != current_user.id
+    ).all()
+    
+    if not other_memberships:
+        # No other members to match with
+        return render_template('event_matching.html', 
+                             event=event, 
+                             membership=membership,
+                             potential_matches=[],
+                             no_matches_reason='no_attendees')
+    
+    # Filter out users that current user has already interacted with
+    interacted_user_ids = set()
+    interactions = UserInteraction.query.filter_by(
+        user_id=current_user.id,
+        event_id=event_id
+    ).all()
+    for interaction in interactions:
+        interacted_user_ids.add(interaction.target_user_id)
+    
+    # Remove already interacted users from potential matches
+    available_memberships = [mem for mem in other_memberships if mem.user_id not in interacted_user_ids]
+    
+    if not available_memberships:
+        return render_template('event_matching.html', 
+                             event=event, 
+                             membership=membership,
+                             potential_matches=[],
+                             no_matches_reason='no_similar_interests')
+    
+    # Import matching engine
+    try:
+        from matching_engine import matching_engine
+        
+        # Prepare current user data for matching
+        current_user_resume = Resume.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+        current_user_doc_text = ""
+        
+        if current_user_resume:
+            # Extract text from current user's document
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(event_id), current_user_resume.filename)
+            current_user_doc_text = matching_engine.extract_text_from_document(file_path)
+        
+        current_user_data = {
+            'user_id': current_user.id,
+            'keywords': membership.get_keywords_list(),
+            'document_text': current_user_doc_text
+        }
+        
+        # Prepare all other users data for matching
+        all_users_data = []
+        for mem in available_memberships:
+            user = mem.user
+            user_resume = Resume.query.filter_by(user_id=user.id, event_id=event_id).first()
+            user_doc_text = ""
+            
+            if user_resume:
+                # Extract text from user's document
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], str(event_id), user_resume.filename)
+                user_doc_text = matching_engine.extract_text_from_document(file_path)
+            
+            user_data = {
+                'user_id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'keywords': mem.get_keywords_list(),
+                'document_text': user_doc_text,
+                'has_resume': user_resume is not None,
+                'resume_name': user_resume.original_name if user_resume else None,
+                'joined_at': mem.joined_at.strftime('%B %Y') if mem.joined_at else 'Recently'
+            }
+            all_users_data.append(user_data)
+        
+        # Find best matches using intelligent algorithm
+        best_matches = matching_engine.find_best_matches(current_user_data, all_users_data, top_k=20)
+        
+        # Debug: Print matching results
+        print(f"DEBUG: Found {len(best_matches)} intelligent matches")
+        for match_data, score in best_matches:
+            print(f"  - {match_data['name']}: {score:.3f} (keywords: {match_data['keywords']})")
+        
+        # Debug: Print similarity statistics for all users
+        print(f"\nDEBUG: Similarity Statistics:")
+        print(f"  Current user keywords: {current_user_data['keywords']}")
+        print(f"  Current user has document: {bool(current_user_data['document_text'])}")
+        
+        for user_data in all_users_data:
+            print(f"  - {user_data['name']}:")
+            print(f"    Keywords: {user_data['keywords']}")
+            print(f"    Has document: {bool(user_data.get('document_text', '').strip())}")
+            
+            # Calculate total score (this will also print the strategy used)
+            total_score = matching_engine.calculate_match_score(current_user_data, user_data)
+            
+            print(f"    Above threshold (0.26): {'YES' if total_score > 0.26 else 'NO'}")
+            print()
+        
+        # Extract just the user data (without scores) for the template
+        potential_matches = [match_data for match_data, score in best_matches]
+        
+        # Only show intelligent matches - no fallback to irrelevant users
+        print(f"DEBUG: Showing {len(potential_matches)} intelligent matches only")
+        
+        # Determine the reason for no matches
+        no_matches_reason = None
+        if len(potential_matches) == 0:
+            no_matches_reason = 'no_similar_interests'
+        
+        return render_template('event_matching.html', 
+                             event=event, 
+                             membership=membership,
+                             potential_matches=potential_matches,
+                             no_matches_reason=no_matches_reason)
+        
+    except ImportError as e:
+        print(f"Matching engine not available: {e}")
+        # Fallback to simple matching if engine fails
+        potential_matches = []
+        for mem in other_memberships:
+            user = mem.user
+            user_resume = Resume.query.filter_by(user_id=user.id, event_id=event_id).first()
+            
+            match_data = {
+                'user_id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'keywords': mem.get_keywords_list(),
+                'has_resume': user_resume is not None,
+                'resume_name': user_resume.original_name if user_resume else None,
+                'joined_at': mem.joined_at.strftime('%B %Y') if mem.joined_at else 'Recently'
+            }
+            potential_matches.append(match_data)
+    
+        return render_template('event_matching.html', 
+                             event=event, 
+                             membership=membership,
+                             potential_matches=potential_matches,
+                             no_matches_reason=no_matches_reason)
+
+@app.route('/event/<int:event_id>/like/<int:target_user_id>', methods=['POST'])
+@login_required
+def like_user(event_id, target_user_id):
+    """Handle when a user likes another user"""
+    try:
+        # Verify the user is a member of this event
+        membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+        if not membership:
+            return {'success': False, 'message': 'You are not a member of this event'}, 403
+        
+        # Check if target user is also a member
+        target_membership = Membership.query.filter_by(user_id=target_user_id, event_id=event_id).first()
+        if not target_membership:
+            return {'success': False, 'message': 'Target user is not a member of this event'}, 404
+        
+        # Check if interaction already exists
+        existing_interaction = UserInteraction.query.filter_by(
+            user_id=current_user.id,
+            target_user_id=target_user_id,
+            event_id=event_id
+        ).first()
+        
+        if existing_interaction:
+            return {'success': False, 'message': 'You have already interacted with this user'}, 400
+        
+        # Create new interaction
+        interaction = UserInteraction(
+            user_id=current_user.id,
+            target_user_id=target_user_id,
+            event_id=event_id,
+            action='like'
+        )
+        db.session.add(interaction)
+        
+        # Check if this creates a mutual match
+        mutual_like = UserInteraction.query.filter_by(
+            user_id=target_user_id,
+            target_user_id=current_user.id,
+            event_id=event_id,
+            action='like'
+        ).first()
+        
+        is_match = False
+        if mutual_like:
+            # Create a match
+            match = Match(
+                user1_id=min(current_user.id, target_user_id),
+                user2_id=max(current_user.id, target_user_id),
+                event_id=event_id
+            )
+            db.session.add(match)
+            is_match = True
+        
+        db.session.commit()
+        
+        return {
+            'success': True, 
+            'is_match': is_match,
+            'message': 'Match!' if is_match else 'Like recorded'
+        }
+        
+    except Exception as e:
+        db.session.rollback()
+        return {'success': False, 'message': str(e)}, 500
+
+@app.route('/event/<int:event_id>/pass/<int:target_user_id>', methods=['POST'])
+@login_required
+def pass_user(event_id, target_user_id):
+    """Handle when a user passes on another user"""
+    try:
+        # Verify the user is a member of this event
+        membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+        if not membership:
+            return {'success': False, 'message': 'You are not a member of this event'}, 403
+        
+        # Check if interaction already exists
+        existing_interaction = UserInteraction.query.filter_by(
+            user_id=current_user.id,
+            target_user_id=target_user_id,
+            event_id=event_id
+        ).first()
+        
+        if existing_interaction:
+            return {'success': False, 'message': 'You have already interacted with this user'}, 400
+        
+        # Create new interaction
+        interaction = UserInteraction(
+            user_id=current_user.id,
+            target_user_id=target_user_id,
+            event_id=event_id,
+            action='pass'
+        )
+        db.session.add(interaction)
+        db.session.commit()
+        
+        return {'success': True, 'message': 'Pass recorded'}
+        
+    except Exception as e:
+        db.session.rollback()
+        return {'success': False, 'message': str(e)}, 500
+
+@app.route('/event/<int:event_id>/matches')
+@login_required
+def event_matches(event_id):
+    """Show all matches for a user in an event"""
+    event = Event.query.get(event_id)
+    if not event:
+        flash('Event not found!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+    if not membership:
+        flash('You are not a member of this event!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get all matches for this user in this event
+    matches = Match.query.filter(
+        db.or_(
+            db.and_(Match.user1_id == current_user.id, Match.event_id == event_id),
+            db.and_(Match.user2_id == current_user.id, Match.event_id == event_id)
+        ),
+        Match.is_active == True
+    ).all()
+    
+    # Prepare match data for template
+    match_data = []
+    for match in matches:
+        other_user = match.get_other_user(current_user.id)
+        if other_user:
+            match_data.append({
+                'match': match,
+                'other_user': other_user,
+                'matched_at': match.matched_at
+            })
+    
+    return render_template('event_matches.html', 
+                         event=event, 
+                         matches=match_data)
 
 @app.route('/uploads/<path:filename>')
 @login_required
