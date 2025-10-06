@@ -32,10 +32,13 @@ env/
 instance/
 .webassets-cache
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Database (commented out for development sync)
+# *.db
+# *.sqlite
+# *.sqlite3
+
+# Allow specific database for development sync
+# src/instance/nfc_networking.db
 
 # Uploads (user files)
 src/uploads/

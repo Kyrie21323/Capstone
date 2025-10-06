@@ -1105,9 +1105,37 @@ def init_db():
         create_sample_events()
         print("Database initialized with sample data!")
 
+def check_database_status():
+    """Check if database is properly initialized"""
+    try:
+        with app.app_context():
+            # Check if all required tables exist
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
+            tables = inspector.get_table_names()
+            
+            required_tables = ['user', 'event', 'membership', 'resume', 'match', 'user_interaction']
+            missing_tables = [table for table in required_tables if table not in tables]
+            
+            if missing_tables:
+                print(f"⚠️  Missing tables: {missing_tables}")
+                return False
+            
+            # Check if we have any data
+            user_count = User.query.count()
+            if user_count == 0:
+                print("⚠️  Database exists but has no data")
+                return False
+                
+            return True
+    except Exception as e:
+        print(f"⚠️  Database check failed: {e}")
+        return False
+
 if __name__ == '__main__':
-    # For development: initialize database if it doesn't exist
-    db_path = os.path.join(PROJECT_ROOT, 'instance', 'nfc_networking.db')
-    if not os.path.exists(db_path):
+    # Check database status
+    if not check_database_status():
+        print("🔄 Initializing database...")
         init_db()
+    
     app.run(debug=True)
