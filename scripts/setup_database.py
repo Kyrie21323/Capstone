@@ -13,7 +13,7 @@ def setup_database():
     """Initialize or reset the database"""
     
     # Get project root
-    project_root = Path(__file__).parent
+    project_root = Path(__file__).parent.parent
     src_dir = project_root / "src"
     migrations_dir = project_root / "migrations"
     instance_dir = src_dir / "instance"

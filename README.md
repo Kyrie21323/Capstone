@@ -1,6 +1,6 @@
-# NFC Networking Assistant
+# NFC Networking Platform
 
-A Flask-based web application for NFC-powered networking at events.
+A Flask-based networking platform for events with intelligent matching capabilities.
 
 ## About This Project
 
@@ -22,11 +22,14 @@ This platform provides:
 - **Follow-up Assistance**: Automated reminders and suggested next steps
 
 ### Current Features (MVP)
-- User authentication and profile management
-- Event-based networking with unique access codes
-- Resume upload and management
-- Admin panel for event and user management
-- UI with custom notification system
+- **Role-based Authentication**: Event Attendee vs Event Manager login
+- **Event Management**: Create, join, and manage events with unique codes
+- **Intelligent Matching**: NLP-based user matching using keywords and documents
+- **Document Upload**: Resume/portfolio upload and management
+- **Tinder-style Matching**: Interactive matching interface with like/pass functionality
+- **Post-match Features**: View matches, messaging, and contact exchange
+- **Admin Panel**: Complete event and user management system
+- **Cross-device Sync**: Database and file synchronization between devices
 
 ### Future Roadmap
 - **NFC Integration**: Tap-to-connect functionality for seamless contact exchange
@@ -39,9 +42,11 @@ This platform provides:
 - **Backend**: Flask (Python web framework)
 - **Database**: SQLite with Flask-SQLAlchemy ORM
 - **Authentication**: Flask-Login with secure password hashing
-- **Frontend**: HTML5, CSS3, JavaScript
+- **Frontend**: HTML5, CSS3, JavaScript with custom notification system
+- **NLP Matching**: Sentence Transformers for intelligent user matching
 - **File Management**: Secure file uploads with validation
 - **Database Migrations**: Flask-Migrate for schema management
+- **Cross-device Sync**: JSON-based data export/import system
 
 ### Target Audience
 - **Event Organizers**: Conference planners, career fair coordinators, networking event hosts
@@ -54,20 +59,11 @@ This platform provides:
 
 ### Option 1: Automated Setup (Recommended)
 ```bash
-python setup.py
+python scripts/setup_database.py
 ```
 
 ### Option 2: Manual Setup
 ```bash
-# Create virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-# Windows:
-.venv\Scripts\activate
-# Linux/Mac:
-source .venv/bin/activate
-
 # Install dependencies
 pip install -r requirements.txt
 
@@ -91,6 +87,29 @@ python main.py
 - **TECH2025** - Tech Conference Dubai  
 - **STARTUP2025** - Startup Networking Event
 
+## Database Management
+
+### Setup Database
+```bash
+python scripts/setup_database.py
+```
+
+### Sync Between Devices
+```bash
+# Export (on source device)
+python scripts/sync_with_files.py
+
+# Import (on target device)  
+python scripts/sync_with_files.py
+```
+
+### Fix Database Issues
+```bash
+python scripts/fix_database.py
+```
+
 ## Documentation
 
-- **[TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md)** - Complete technical reference, architecture, implementation details, and project structure
+- **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Clean project organization and structure
+- **[docs/TECHNICAL_DOCUMENTATION.md](docs/TECHNICAL_DOCUMENTATION.md)** - Complete technical reference
+- **[docs/DATABASE_SETUP.md](docs/DATABASE_SETUP.md)** - Database setup and management guide

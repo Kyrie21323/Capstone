@@ -1,6 +1,6 @@
-# NFC Networking Assistant - Technical Documentation
+# NFC Networking Platform - Technical Documentation
 
-This document provides comprehensive technical details about the NFC Networking Assistant implementation, architecture, and features.
+This document provides comprehensive technical details about the NFC Networking Platform implementation, architecture, and features.
 
 ## Table of Contents
 
@@ -18,33 +18,42 @@ This document provides comprehensive technical details about the NFC Networking 
 - **Database**: SQLite with SQLAlchemy ORM
 - **Authentication**: Flask-Login with Werkzeug password hashing
 - **Frontend**: HTML5, CSS3, JavaScript with Jinja2 templating
+- **NLP Matching**: Sentence Transformers for intelligent user matching
 - **File Management**: Secure uploads with validation
 - **Database Migrations**: Flask-Migrate with Alembic
+- **Cross-device Sync**: JSON-based data export/import system
 
 ### Project Structure
 
 ```
 Capstone/
-├── main.py                 # Application entry point
-├── init_db.py             # Database initialization script
-├── requirements.txt        # Python dependencies
-├── README.md              # Project documentation
-├── TECHNICAL_DOCUMENTATION.md # This file
-├── src/                   # Source code directory
-│   ├── app.py            # Flask application and routes
-│   ├── models.py         # Database models
-│   ├── templates/        # Jinja2 HTML templates
-│   │   ├── admin/        # Admin-specific templates
-│   │   └── *.html        # User-facing templates
-│   ├── static/           # Static assets (CSS, JS, images)
-│   └── instance/         # Instance-specific files
-│       └── nfc_networking.db # SQLite database
-├── uploads/              # User uploaded files
+├── src/                    # Main application code
+│   ├── app.py             # Flask application and routes
+│   ├── models.py          # Database models
+│   ├── matching_engine.py # NLP matching system
+│   └── templates/         # Jinja2 HTML templates
+│       ├── admin/         # Admin-specific templates
+│       └── *.html         # User-facing templates
+├── scripts/               # Utility scripts
+│   ├── sync_with_files.py # Database + file sync
+│   ├── fix_database.py    # Database repair
+│   ├── setup_database.py  # Database setup
+│   └── ...
+├── docs/                  # Documentation
+│   ├── DATABASE_SETUP.md
+│   └── TECHNICAL_DOCUMENTATION.md
+├── exports/               # Database exports
+├── migrations/            # Database migrations (Flask-Migrate)
+│   ├── versions/         # Migration files
+│   └── alembic.ini       # Alembic configuration
+├── uploads/               # User uploaded files
 │   ├── 1/                # Event-specific uploads
 │   └── 2/
-└── migrations/           # Database migrations (Flask-Migrate)
-    ├── versions/         # Migration files
-    └── alembic.ini       # Alembic configuration
+├── instance/              # Instance-specific files
+│   └── nfc_networking.db # SQLite database
+├── main.py               # Application entry point
+├── requirements.txt       # Python dependencies
+└── README.md             # Project documentation
 ```
 
 ### Key Files
@@ -61,21 +70,34 @@ Capstone/
   - Authentication logic
   - File upload handling
   - Admin panel functionality
+  - Intelligent matching system integration
+  - Post-match functionality (likes, passes, matches)
 
 #### `src/models.py`
 - **Purpose**: Database models
 - **Models**:
   - `User`: User accounts and authentication
   - `Event`: Networking events
-  - `Membership`: User-event relationships
+  - `Membership`: User-event relationships with keywords
   - `Resume`: File uploads and metadata
+  - `Match`: Mutual matches between users
+  - `UserInteraction`: Like/pass interactions
 
 #### `src/templates/`
 - **Purpose**: HTML templates using Jinja2
 - **Structure**:
-  - `base.html`: Base template with common layout
+  - `base.html`: Base template with common layout and custom notification system
   - `admin/`: Admin-specific pages
   - User-facing pages: `index.html`, `login.html`, `dashboard.html`, etc.
+  - Matching pages: `event_matching.html`, `event_matches.html`
+
+#### `src/matching_engine.py`
+- **Purpose**: Intelligent matching system using NLP
+- **Features**:
+  - Document text extraction (PDF, DOCX)
+  - Semantic similarity using Sentence Transformers
+  - Weighted scoring based on keywords and documents
+  - Configurable similarity thresholds
 
 ## Database Models
 
@@ -164,6 +186,66 @@ class Resume(db.Model):
 - Complete file metadata tracking
 - Secure filename storage
 - File size and MIME type validation
+
+### Match Model
+
+```python
+class Match(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user1_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user2_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    matched_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    
+    # Relationships
+    user1 = db.relationship('User', foreign_keys=[user1_id], backref='matches_as_user1')
+    user2 = db.relationship('User', foreign_keys=[user2_id], backref='matches_as_user2')
+    event = db.relationship('Event', backref='matches')
+    
+    # Ensure unique pairs and prevent self-matching
+    __table_args__ = (
+        db.UniqueConstraint('user1_id', 'user2_id', 'event_id', name='unique_match_pair'),
+        db.CheckConstraint('user1_id != user2_id', name='no_self_match'),
+    )
+```
+
+**Key Features:**
+- Mutual match tracking between users
+- Event-specific matching
+- Prevents self-matching
+- Active/inactive match status
+- Bidirectional user relationships
+
+### UserInteraction Model
+
+```python
+class UserInteraction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    target_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    action = db.Column(db.String(10), nullable=False)  # 'like' or 'pass'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    user = db.relationship('User', foreign_keys=[user_id], backref='interactions_made')
+    target_user = db.relationship('User', foreign_keys=[target_user_id], backref='interactions_received')
+    event = db.relationship('Event', backref='user_interactions')
+    
+    # Ensure unique user-target-event combinations
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'target_user_id', 'event_id', name='unique_user_interaction'),
+        db.CheckConstraint('user_id != target_user_id', name='no_self_interaction'),
+        db.CheckConstraint("action IN ('like', 'pass')", name='valid_action'),
+    )
+```
+
+**Key Features:**
+- Tracks individual likes/passes before they become matches
+- Prevents duplicate interactions
+- Prevents self-interaction
+- Event-specific interaction tracking
 
 ## Security Implementation
 
@@ -395,10 +477,17 @@ def admin_delete_user(user_id):
 
 ### User Routes (Login Required)
 - `GET /dashboard` - User dashboard
-- `POST /join_event` - Join event with code
+- `POST /join_event` - Join event with code and keywords
+- `POST /leave_event` - Leave an event
+- `POST /update_keywords` - Edit keywords after joining
 - `GET /upload_resume/<event_id>` - Resume upload form
 - `POST /upload_resume/<event_id>` - Process resume upload
 - `GET /view_resume/<resume_id>` - View uploaded resume
+- `POST /delete_resume/<resume_id>` - Delete uploaded resume
+- `GET /event/<event_id>/matching` - Tinder-style matching interface
+- `POST /event/<event_id>/like/<user_id>` - Like a user
+- `POST /event/<event_id>/pass/<user_id>` - Pass on a user
+- `GET /event/<event_id>/matches` - View confirmed matches
 - `GET /uploads/<path:filename>` - Serve uploaded files
 - `GET /logout` - User logout
 

@@ -40,8 +40,8 @@ instance/
 # Allow specific database for development sync
 # src/instance/nfc_networking.db
 
-# Uploads (user files)
-src/uploads/
+# Uploads (user files) - commented out for development sync
+# src/uploads/
 
 # IDE
 .vscode/

@@ -5,7 +5,7 @@
 Run the setup script to initialize the database:
 
 ```bash
-python setup_database.py
+python scripts/setup_database.py
 ```
 
 ## Manual Setup
@@ -15,11 +15,8 @@ If you prefer to set up manually or encounter issues:
 ### 1. Clean Reset
 ```bash
 # Remove existing database and migrations
-Remove-Item -Path "src\instance\nfc_networking.db" -Force
+Remove-Item -Path "instance\nfc_networking.db" -Force
 Remove-Item -Path "migrations\versions\*" -Force
-
-# Navigate to src directory
-Set-Location src
 
 # Initialize Flask-Migrate
 flask db init
@@ -33,7 +30,7 @@ flask db upgrade
 
 ### 2. Run the Application
 ```bash
-python src/app.py
+python main.py
 ```
 
 The app will automatically create sample data on first run.
@@ -53,7 +50,7 @@ The application uses the following tables:
 ### Migration Conflicts
 If you encounter migration conflicts:
 1. Run the clean reset steps above
-2. Use the setup script: `python setup_database.py`
+2. Use the setup script: `python scripts/setup_database.py`
 
 ### Database Locked
 If you get "database is locked" errors:
