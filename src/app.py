@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from models import db, User, Event, Membership, Resume, Match, UserInteraction
+from utils.graph_utils import build_event_graph
 import os
 from datetime import datetime
 
@@ -816,6 +817,31 @@ def event_matches(event_id):
     return render_template('event_matches.html', 
                          event=event, 
                          matches=match_data)
+
+@app.route('/api/event/<int:event_id>/graph', methods=['GET'])
+@login_required
+def api_event_graph(event_id):
+    """Return graph data for a given event as JSON"""
+    # Prevent super admin from accessing graph
+    if current_user.is_admin:
+        return jsonify({'error': 'Super admin accounts cannot access graph data'}), 403
+    
+    # Check if event exists
+    event = Event.query.get(event_id)
+    if not event:
+        return jsonify({'error': 'Event not found'}), 404
+    
+    # Check if user is a member of this event
+    membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+    if not membership:
+        return jsonify({'error': 'You are not a member of this event'}), 403
+    
+    # Build and return graph data
+    try:
+        graph_data = build_event_graph(event_id)
+        return jsonify(graph_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/uploads/<path:filename>')
 @login_required
