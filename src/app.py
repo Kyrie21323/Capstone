@@ -818,6 +818,29 @@ def event_matches(event_id):
                          event=event, 
                          matches=match_data)
 
+@app.route('/event/<int:event_id>/graph', methods=['GET'])
+@login_required
+def event_graph_page(event_id):
+    """Display the network graph visualization for a given event"""
+    # Prevent super admin from accessing graph
+    if current_user.is_admin:
+        flash('Super admin accounts cannot access graph visualization!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Check if event exists
+    event = Event.query.get(event_id)
+    if not event:
+        flash('Event not found!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Check if user is a member of this event
+    membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+    if not membership:
+        flash('You are not a member of this event!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('event_graph.html', event_id=event_id, event=event)
+
 @app.route('/api/event/<int:event_id>/graph', methods=['GET'])
 @login_required
 def api_event_graph(event_id):

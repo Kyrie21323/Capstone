@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block title %}Event Network Graph - {{ event.name }}{% endblock %}
+
+{% block styles %}
+    body {
+        padding: 20px;
+    }
+    
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f1f3f4;
+    }
+    
+    .header-left h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    
+    .event-subtitle {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+        margin: 0;
+    }
+    
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .graph-container {
+        margin-top: 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+    
+    #cy {
+        width: 100%;
+        height: 600px;
+        min-height: 400px;
+    }
+    
+    .loading-message {
+        text-align: center;
+        padding: 40px;
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+    
+    .error-message {
+        text-align: center;
+        padding: 40px;
+        color: #dc3545;
+        font-size: 1.1rem;
+        background: #f8d7da;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    
+    .graph-info {
+        margin-top: 15px;
+        padding: 15px;
+        background: #e7f3ff;
+        border-radius: 8px;
+        color: #004085;
+        font-size: 0.9rem;
+    }
+    
+    .graph-info strong {
+        color: #002752;
+    }
+    
+    .graph-legend {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border-left: 3px solid #667eea;
+        border-radius: 6px;
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .graph-legend strong {
+        color: #495057;
+        font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+        
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .header-left h1 {
+            font-size: 2rem;
+        }
+        
+        #cy {
+            height: 400px;
+        }
+    }
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <h1>Event Network Graph</h1>
+            <p class="event-subtitle">{{ event.name }}</p>
+        </div>
+        <div class="header-right">
+            <a href="{{ url_for('event_matches', event_id=event.id) }}" class="btn btn-secondary">
+                View Matches
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="graph-legend">
+        <strong>Legend:</strong> Each circle represents an attendee. Each line represents a confirmed mutual match between two attendees at this event.
+    </div>
+
+    <div class="graph-container">
+        <div id="cy"></div>
+        <div id="loadingMessage" class="loading-message" style="display: none;">
+            Loading graph data...
+        </div>
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+    
+    <div id="graphInfo" class="graph-info" style="display: none;">
+        <strong>Graph Statistics:</strong> <span id="nodeCount">0</span> nodes, <span id="edgeCount">0</span> connections
+    </div>
+</div>
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventId = {{ event_id }};
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const graphInfo = document.getElementById('graphInfo');
+        const nodeCountSpan = document.getElementById('nodeCount');
+        const edgeCountSpan = document.getElementById('edgeCount');
+        
+        // Show loading message
+        loadingMessage.style.display = 'block';
+        
+        // Fetch graph data from API
+        fetch(`/api/event/${eventId}/graph`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Failed to load graph data');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loading message
+                loadingMessage.style.display = 'none';
+                
+                // Check if we have data
+                if (!data.nodes || data.nodes.length === 0) {
+                    errorMessage.textContent = 'No network data available for this event. Start matching to build connections!';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                // Transform data to Cytoscape format
+                const nodes = data.nodes.map(node => ({
+                    data: {
+                        id: node.id.toString(),
+                        label: node.label
+                    }
+                }));
+                
+                const edges = data.edges.map(edge => ({
+                    data: {
+                        source: edge.source.toString(),
+                        target: edge.target.toString()
+                    }
+                }));
+                
+                // Update statistics
+                nodeCountSpan.textContent = nodes.length;
+                edgeCountSpan.textContent = edges.length;
+                graphInfo.style.display = 'block';
+                
+                // Initialize Cytoscape
+                const cy = cytoscape({
+                    container: document.getElementById('cy'),
+                    elements: {
+                        nodes: nodes,
+                        edges: edges
+                    },
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'label': 'data(label)',
+                                'text-valign': 'center',
+                                'text-halign': 'center',
+                                'color': '#fff',
+                                'background-color': '#667eea',
+                                'font-size': '12px',
+                                'font-weight': '600',
+                                'width': '60px',
+                                'height': '60px',
+                                'shape': 'ellipse',
+                                'border-width': '2px',
+                                'border-color': '#764ba2',
+                                'text-outline-width': '2px',
+                                'text-outline-color': '#667eea'
+                            }
+                        },
+                        {
+                            selector: 'edge',
+                            style: {
+                                'line-color': '#ccc',
+                                'width': '2px',
+                                'opacity': '0.6',
+                                'curve-style': 'bezier'
+                            }
+                        },
+                        {
+                            selector: 'node:selected',
+                            style: {
+                                'background-color': '#764ba2',
+                                'border-color': '#667eea',
+                                'border-width': '3px'
+                            }
+                        }
+                    ],
+                    layout: {
+                        name: 'cose',
+                        idealEdgeLength: 100,
+                        nodeOverlap: 20,
+                        refresh: 20,
+                        fit: true,
+                        padding: 30,
+                        randomize: false,
+                        componentSpacing: 40,
+                        nodeRepulsion: 4500000,
+                        edgeElasticity: 100,
+                        nestingFactor: 5,
+                        gravity: 0.25,
+                        numIter: 1000,
+                        initialTemp: 200,
+                        coolingFactor: 0.95,
+                        minTemp: 1.0
+                    },
+                    userPanningEnabled: true,
+                    userZoomingEnabled: true,
+                    boxSelectionEnabled: true
+                });
+                
+                // Add some interactivity
+                cy.on('tap', 'node', function(evt) {
+                    const node = evt.target;
+                    console.log('Node clicked:', node.data('label'));
+                });
+                
+                // Fit the graph to the viewport after layout
+                cy.ready(function() {
+                    cy.fit();
+                });
+            })
+            .catch(error => {
+                console.error('Error loading graph:', error);
+                loadingMessage.style.display = 'none';
+                errorMessage.textContent = error.message || 'Failed to load graph data. Please try again later.';
+                errorMessage.style.display = 'block';
+            });
+    });
+{% endblock %}
+
