@@ -56,7 +56,12 @@ This platform provides:
 
 
 ## Quick Start
-
+```bash
+# Create and activate virtual environment
+python -m venv .venv
+# Windows: .venv\Scripts\Activate
+# macOS/Linux: source .venv/bin/activate
+```
 ### Option 1: Automated Setup (Recommended)
 ```bash
 python scripts/setup_database.py
