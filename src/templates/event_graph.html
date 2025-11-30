@@ -37,6 +37,20 @@
         margin: 0;
     }
     
+    .admin-badge {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #4c51bf;
+        background: #e9ebff;
+        border-radius: 999px;
+        border: 1px solid #c3c7ff;
+    }
+    
     .header-right {
         display: flex;
         align-items: center;
@@ -168,13 +182,11 @@
         <div class="header-left">
             <h1>Event Network Graph</h1>
             <p class="event-subtitle">{{ event.name }}</p>
+            <span class="admin-badge">Organizer View</span>
         </div>
         <div class="header-right">
-            <a href="{{ url_for('event_matches', event_id=event.id) }}" class="btn btn-secondary">
-                View Matches
-            </a>
-            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
-                Back to Dashboard
+            <a href="{{ url_for('admin_events') }}" class="btn btn-primary">
+                Back to Events
             </a>
         </div>
     </div>
@@ -276,7 +288,8 @@
                                 'border-width': '2px',
                                 'border-color': '#764ba2',
                                 'text-outline-width': '2px',
-                                'text-outline-color': '#667eea'
+                                'text-outline-color': '#667eea',
+                                'grabbable': false
                             }
                         },
                         {
@@ -326,9 +339,65 @@
                     console.log('Node clicked:', node.data('label'));
                 });
                 
-                // Fit the graph to the viewport after layout
+                // Fit the graph to the viewport after layout and set up floating animation
                 cy.ready(function() {
                     cy.fit();
+                    
+                    // Store base positions for all nodes after layout completes
+                    const nodes = cy.nodes();
+                    nodes.forEach(function(node, index) {
+                        const pos = node.position();
+                        node.data('basePos', { x: pos.x, y: pos.y });
+                        node.data('nodeIndex', index);
+                    });
+                    
+                    // Completely disable node dragging
+                    cy.nodes().forEach(function(n) {
+                        n.ungrabify(); // disable mouse-drag interaction
+                    });
+                    
+                    // Floating animation: gently move nodes around their base positions
+                    let animationTime = 0;
+                    const floatInterval = setInterval(function() {
+                        animationTime += 0.2;
+                        const nodes = cy.nodes();
+                        
+                        nodes.forEach(function(node) {
+                            
+                            // Get base position
+                            const basePos = node.data('basePos');
+                            if (!basePos) {
+                                return;
+                            }
+                            
+                            // Get node index for unique animation pattern
+                            const nodeIndex = node.data('nodeIndex') || 0;
+                            
+                            // Calculate floating offset using sine/cosine for smooth circular motion
+                            // Each node has a different phase based on its index
+                            const phaseX = animationTime + nodeIndex * 0.5;
+                            const phaseY = animationTime + nodeIndex * 0.5 + Math.PI / 3;
+                            
+                            // Increased offset (±25 pixels) for more visible movement
+                            const offsetX = Math.sin(phaseX) * 25;
+                            const offsetY = Math.cos(phaseY) * 25;
+                            
+                            // Calculate new position relative to base
+                            const newX = basePos.x + offsetX;
+                            const newY = basePos.y + offsetY;
+                            
+                            // Animate to new position smoothly
+                            node.animate({
+                                position: { x: newX, y: newY }
+                            }, {
+                                duration: 1500,
+                                easing: 'ease-in-out'
+                            });
+                        });
+                    }, 1800); // Update every 1.8 seconds
+                    
+                    // Store interval ID so it can be cleared if needed
+                    cy.data('floatInterval', floatInterval);
                 });
             })
             .catch(error => {

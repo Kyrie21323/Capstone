@@ -822,21 +822,15 @@ def event_matches(event_id):
 @login_required
 def event_graph_page(event_id):
     """Display the network graph visualization for a given event"""
-    # Prevent super admin from accessing graph
-    if current_user.is_admin:
-        flash('Super admin accounts cannot access graph visualization!', 'error')
-        return redirect(url_for('dashboard'))
-    
     # Check if event exists
     event = Event.query.get(event_id)
     if not event:
         flash('Event not found!', 'error')
         return redirect(url_for('dashboard'))
     
-    # Check if user is a member of this event
-    membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
-    if not membership:
-        flash('You are not a member of this event!', 'error')
+    # Only allow super admins (event organizers) to view the graph
+    if not current_user.is_admin:
+        flash('You must be an event organizer to view the event network graph.', 'error')
         return redirect(url_for('dashboard'))
     
     return render_template('event_graph.html', event_id=event_id, event=event)
@@ -845,19 +839,14 @@ def event_graph_page(event_id):
 @login_required
 def api_event_graph(event_id):
     """Return graph data for a given event as JSON"""
-    # Prevent super admin from accessing graph
-    if current_user.is_admin:
-        return jsonify({'error': 'Super admin accounts cannot access graph data'}), 403
-    
     # Check if event exists
     event = Event.query.get(event_id)
     if not event:
         return jsonify({'error': 'Event not found'}), 404
     
-    # Check if user is a member of this event
-    membership = Membership.query.filter_by(user_id=current_user.id, event_id=event_id).first()
-    if not membership:
-        return jsonify({'error': 'You are not a member of this event'}), 403
+    # Only allow super admins (event organizers) to access graph data
+    if not current_user.is_admin:
+        return jsonify({'error': 'You must be an event organizer to access graph data'}), 403
     
     # Build and return graph data
     try:

@@ -10,9 +10,11 @@
             <p class="event-subtitle">{{ event.name }}</p>
         </div>
         <div class="header-right">
+            {% if current_user.is_administrator() %}
             <a href="{{ url_for('event_graph_page', event_id=event.id) }}" class="btn btn-secondary">
                 View Event Network
             </a>
+            {% endif %}
             <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
                 Back to Dashboard
             </a>

@@ -338,6 +338,7 @@
                         </div>
                         
                         <div class="event-actions">
+                            <a href="{{ url_for('event_graph_page', event_id=event.id) }}" class="btn btn-primary btn-small">View Network Graph</a>
                             <a href="{{ url_for('admin_edit_event', event_id=event.id) }}" class="btn btn-success btn-small">Edit Event</a>
                             <form method="POST" action="{{ url_for('admin_delete_event', event_id=event.id) }}" style="display: inline;" onsubmit="return showDeleteEventConfirmation(event, '{{ event.name }}')">
                                 <button type="submit" class="btn btn-danger btn-small">Delete Event</button>
