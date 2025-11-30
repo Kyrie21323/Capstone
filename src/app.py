@@ -877,6 +877,7 @@ def api_dev_graph(size):
     elif size == 'large':
         data = generate_large_graph()
     else:
+        return jsonify({'error': 'Invalid dataset size. Use: small, medium, or large'}), 400
     
     return jsonify(data)
 
