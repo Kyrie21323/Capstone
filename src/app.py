@@ -5,6 +5,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from models import db, User, Event, Membership, Resume, Match, UserInteraction
 from utils.graph_utils import build_event_graph
+from utils.sample_graph_data import (
+    generate_small_graph,
+    generate_medium_graph,
+    generate_large_graph
+)
 import os
 from datetime import datetime
 
@@ -854,6 +859,42 @@ def api_event_graph(event_id):
         return jsonify(graph_data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/dev/graph/<size>', methods=['GET'])
+@login_required
+def api_dev_graph(size):
+    """
+    Returns synthetic graph data for stress testing the Event Graph Visualizer.
+    Accessible only by admins.
+    """
+    if not current_user.is_admin:
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    if size == 'small':
+        data = generate_small_graph()
+    elif size == 'medium':
+        data = generate_medium_graph()
+    elif size == 'large':
+        data = generate_large_graph()
+    else:
+    
+    return jsonify(data)
+
+@app.route('/admin/graph/dev/<size>', methods=['GET'])
+@login_required
+def dev_graph_page(size):
+    """
+    Admin-only page for visualizing synthetic graph datasets.
+    """
+    if not current_user.is_admin:
+        flash('Admin access required to view the dev graph visualizer.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    if size not in ['small', 'medium', 'large']:
+        flash('Invalid dataset size. Use: small, medium, or large.', 'error')
+        return redirect(url_for('admin_events'))
+    
+    return render_template('dev_graph.html', size=size)
 
 @app.route('/uploads/<path:filename>')
 @login_required

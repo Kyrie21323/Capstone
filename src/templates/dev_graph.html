@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+
+{% block title %}Dev Graph Visualizer - {{ size|title }} Dataset{% endblock %}
+
+{% block styles %}
+    body {
+        padding: 20px;
+    }
+    
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f1f3f4;
+    }
+    
+    .header-left h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dataset-subtitle {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+        margin: 0;
+    }
+    
+    .admin-badge {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #4c51bf;
+        background: #e9ebff;
+        border-radius: 999px;
+        border: 1px solid #c3c7ff;
+    }
+    
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .dataset-controls {
+        margin-top: 20px;
+        margin-bottom: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 3px solid #667eea;
+    }
+    
+    .dataset-controls h3 {
+        font-size: 1rem;
+        color: #495057;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    
+    .dataset-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-dataset {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid #667eea;
+        background: white;
+        color: #667eea;
+    }
+    
+    .btn-dataset:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-dataset.active {
+        background: #667eea;
+        color: white;
+    }
+    
+    .graph-container {
+        margin-top: 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+    
+    #cy {
+        width: 100%;
+        height: 600px;
+        min-height: 400px;
+    }
+    
+    .loading-message {
+        text-align: center;
+        padding: 40px;
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+    
+    .error-message {
+        text-align: center;
+        padding: 40px;
+        color: #dc3545;
+        font-size: 1.1rem;
+        background: #f8d7da;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    
+    .graph-info {
+        margin-top: 15px;
+        padding: 15px;
+        background: #e7f3ff;
+        border-radius: 8px;
+        color: #004085;
+        font-size: 0.9rem;
+    }
+    
+    .graph-info strong {
+        color: #002752;
+    }
+    
+    .graph-legend {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border-left: 3px solid #667eea;
+        border-radius: 6px;
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .graph-legend strong {
+        color: #495057;
+        font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+        
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .header-left h1 {
+            font-size: 2rem;
+        }
+        
+        #cy {
+            height: 400px;
+        }
+        
+        .dataset-buttons {
+            flex-direction: column;
+        }
+    }
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <h1>Dev Graph Visualizer</h1>
+            <p class="dataset-subtitle">Dataset: {{ size|title }}</p>
+            <span class="admin-badge">Dev / Test View</span>
+        </div>
+        <div class="header-right">
+            <a href="{{ url_for('admin_events') }}" class="btn btn-primary">
+                Back to Events
+            </a>
+        </div>
+    </div>
+
+    <div class="dataset-controls">
+        <h3>Select Dataset Size:</h3>
+        <div class="dataset-buttons">
+            <a href="{{ url_for('dev_graph_page', size='small') }}" class="btn-dataset {% if size == 'small' %}active{% endif %}">
+                Small Dataset
+            </a>
+            <a href="{{ url_for('dev_graph_page', size='medium') }}" class="btn-dataset {% if size == 'medium' %}active{% endif %}">
+                Medium Dataset
+            </a>
+            <a href="{{ url_for('dev_graph_page', size='large') }}" class="btn-dataset {% if size == 'large' %}active{% endif %}">
+                Large Dataset
+            </a>
+        </div>
+    </div>
+
+    <div class="graph-legend">
+        <strong>Legend:</strong> Each circle represents a synthetic user. Each line represents a synthetic connection.
+    </div>
+
+    <div class="graph-container">
+        <div id="cy"></div>
+        <div id="loadingMessage" class="loading-message" style="display: none;">
+            Loading graph data...
+        </div>
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+    
+    <div id="graphInfo" class="graph-info" style="display: none;">
+        <strong>Graph Statistics:</strong> <span id="nodeCount">0</span> nodes, <span id="edgeCount">0</span> connections
+    </div>
+</div>
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    document.addEventListener('DOMContentLoaded', function() {
+        const datasetSize = "{{ size }}";
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const graphInfo = document.getElementById('graphInfo');
+        const nodeCountSpan = document.getElementById('nodeCount');
+        const edgeCountSpan = document.getElementById('edgeCount');
+        
+        // Show loading message
+        loadingMessage.style.display = 'block';
+        
+        // Fetch graph data from API
+        fetch(`/api/dev/graph/${datasetSize}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Failed to load graph data');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loading message
+                loadingMessage.style.display = 'none';
+                
+                // Check if we have data
+                if (!data.nodes || data.nodes.length === 0) {
+                    errorMessage.textContent = 'No graph data available.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                // Transform data to Cytoscape format
+                const nodes = data.nodes.map(node => ({
+                    data: {
+                        id: node.id.toString(),
+                        label: node.label
+                    }
+                }));
+                
+                const edges = data.edges.map(edge => ({
+                    data: {
+                        source: edge.source.toString(),
+                        target: edge.target.toString()
+                    }
+                }));
+                
+                // Update statistics
+                nodeCountSpan.textContent = nodes.length;
+                edgeCountSpan.textContent = edges.length;
+                graphInfo.style.display = 'block';
+                
+                // Initialize Cytoscape
+                const cy = cytoscape({
+                    container: document.getElementById('cy'),
+                    elements: {
+                        nodes: nodes,
+                        edges: edges
+                    },
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'label': 'data(label)',
+                                'text-valign': 'center',
+                                'text-halign': 'center',
+                                'color': '#fff',
+                                'background-color': '#667eea',
+                                'font-size': '12px',
+                                'font-weight': '600',
+                                'width': '60px',
+                                'height': '60px',
+                                'shape': 'ellipse',
+                                'border-width': '2px',
+                                'border-color': '#764ba2',
+                                'text-outline-width': '2px',
+                                'text-outline-color': '#667eea',
+                                'grabbable': false
+                            }
+                        },
+                        {
+                            selector: 'edge',
+                            style: {
+                                'line-color': '#ccc',
+                                'width': '2px',
+                                'opacity': '0.6',
+                                'curve-style': 'bezier'
+                            }
+                        },
+                        {
+                            selector: 'node:selected',
+                            style: {
+                                'background-color': '#764ba2',
+                                'border-color': '#667eea',
+                                'border-width': '3px'
+                            }
+                        }
+                    ],
+                    layout: {
+                        name: 'cose',
+                        idealEdgeLength: 100,
+                        nodeOverlap: 20,
+                        refresh: 20,
+                        fit: true,
+                        padding: 30,
+                        randomize: false,
+                        componentSpacing: 40,
+                        nodeRepulsion: 4500000,
+                        edgeElasticity: 100,
+                        nestingFactor: 5,
+                        gravity: 0.25,
+                        numIter: 1000,
+                        initialTemp: 200,
+                        coolingFactor: 0.95,
+                        minTemp: 1.0
+                    },
+                    userPanningEnabled: true,
+                    userZoomingEnabled: true,
+                    boxSelectionEnabled: true
+                });
+                
+                // Add some interactivity
+                cy.on('tap', 'node', function(evt) {
+                    const node = evt.target;
+                    console.log('Node clicked:', node.data('label'));
+                });
+                
+                // Fit the graph to the viewport after layout and set up floating animation
+                cy.ready(function() {
+                    cy.fit();
+                    
+                    // Store base positions for all nodes after layout completes
+                    const nodes = cy.nodes();
+                    nodes.forEach(function(node, index) {
+                        const pos = node.position();
+                        node.data('basePos', { x: pos.x, y: pos.y });
+                        node.data('nodeIndex', index);
+                    });
+                    
+                    // Completely disable node dragging
+                    cy.nodes().forEach(function(n) {
+                        n.ungrabify(); // disable mouse-drag interaction
+                    });
+                    
+                    // Floating animation: gently move nodes around their base positions
+                    let animationTime = 0;
+                    const floatInterval = setInterval(function() {
+                        animationTime += 0.2;
+                        const nodes = cy.nodes();
+                        
+                        nodes.forEach(function(node) {
+                            
+                            // Get base position
+                            const basePos = node.data('basePos');
+                            if (!basePos) {
+                                return;
+                            }
+                            
+                            // Get node index for unique animation pattern
+                            const nodeIndex = node.data('nodeIndex') || 0;
+                            
+                            // Calculate floating offset using sine/cosine for smooth circular motion
+                            // Each node has a different phase based on its index
+                            const phaseX = animationTime + nodeIndex * 0.5;
+                            const phaseY = animationTime + nodeIndex * 0.5 + Math.PI / 3;
+                            
+                            // Increased offset (±25 pixels) for more visible movement
+                            const offsetX = Math.sin(phaseX) * 25;
+                            const offsetY = Math.cos(phaseY) * 25;
+                            
+                            // Calculate new position relative to base
+                            const newX = basePos.x + offsetX;
+                            const newY = basePos.y + offsetY;
+                            
+                            // Animate to new position smoothly
+                            node.animate({
+                                position: { x: newX, y: newY }
+                            }, {
+                                duration: 1500,
+                                easing: 'ease-in-out'
+                            });
+                        });
+                    }, 1800); // Update every 1.8 seconds
+                    
+                    // Store interval ID so it can be cleared if needed
+                    cy.data('floatInterval', floatInterval);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading graph:', error);
+                loadingMessage.style.display = 'none';
+                errorMessage.textContent = error.message || 'Failed to load graph data. Please try again later.';
+                errorMessage.style.display = 'block';
+            });
+    });
+{% endblock %}
+
