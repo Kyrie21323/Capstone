@@ -24,18 +24,19 @@ This platform provides:
 ### Current Features (MVP)
 - **Role-based Authentication**: Event Attendee vs Event Manager login
 - **Event Management**: Create, join, and manage events with unique codes
-- **Intelligent Matching**: NLP-based user matching using keywords and documents
+- **AI-Powered Matching**: Machine learning algorithms (Sentence Transformers) using semantic similarity to suggest relevant connections based on keywords and document content
+- **Smart Recommendations**: Personalized suggestions for who to meet next, filtering out already-interacted users and ranking by compatibility scores
 - **Document Upload**: Resume/portfolio upload and management
 - **Tinder-style Matching**: Interactive matching interface with like/pass functionality
 - **Post-match Features**: View matches, messaging, and contact exchange
+- **Network Visualization**: Interactive graph visualizer showing event attendee connections and mutual matches
+  - **Event Network Graph**: Admin-only visualization of attendee networks with force-directed layout
+  - **Dev Graph Visualizer**: Synthetic dataset testing tool for stress testing graph visualizations
 - **Admin Panel**: Complete event and user management system
 - **Cross-device Sync**: Database and file synchronization between devices
 
 ### Future Roadmap
 - **NFC Integration**: Tap-to-connect functionality for seamless contact exchange
-- **AI-Powered Matching**: Machine learning algorithms to suggest relevant connections
-- **Network Visualization**: Interactive graphs showing professional relationships
-- **Smart Recommendations**: Personalized suggestions for who to meet next
 - **Post-Event Analytics**: Insights on networking effectiveness and follow-up opportunities
 
 ### Technology Stack
@@ -43,6 +44,7 @@ This platform provides:
 - **Database**: SQLite with Flask-SQLAlchemy ORM
 - **Authentication**: Flask-Login with secure password hashing
 - **Frontend**: HTML5, CSS3, JavaScript with custom notification system
+- **Graph Visualization**: Cytoscape.js for interactive network graphs
 - **NLP Matching**: Sentence Transformers for intelligent user matching
 - **File Management**: Secure file uploads with validation
 - **Database Migrations**: Flask-Migrate for schema management
@@ -80,6 +82,14 @@ python main.py
 
 - **Main Site**: http://127.0.0.1:5000
 - **Admin Panel**: http://127.0.0.1:5000/admin
+
+### Graph Visualizer (Admin Only)
+
+- **Event Network Graph**: `/event/<event_id>/graph` - Visualize attendee connections for a specific event
+- **Dev Graph Visualizer**: 
+  - `/admin/graph/dev/small` - Small synthetic dataset
+  - `/admin/graph/dev/medium` - Medium synthetic dataset
+  - `/admin/graph/dev/large` - Large synthetic dataset
 
 ## Default Login Credentials
 
