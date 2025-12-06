@@ -2,6 +2,39 @@
 
 Detailed guide to all features available in the NFC Networking Platform.
 
+---
+
+## Feature Overview
+
+The NFC Networking Platform provides a comprehensive suite of features for professional networking at events:
+
+### Core Capabilities
+- ✅ **Role-based Authentication**: Secure login system with Event Attendee and Event Manager roles
+- ✅ **Smart Event Management**: Create, join, and manage events with unique access codes
+- ✅ **AI-Powered Matching**: Machine learning algorithms (Sentence Transformers) using semantic similarity to suggest relevant connections based on keywords and document content
+- ✅ **Smart Recommendations**: Personalized suggestions for who to meet next, filtering out already-interacted users and ranking by compatibility scores
+- ✅ **Document Upload**: Resume/portfolio upload and management (PDF, DOCX)
+- ✅ **Tinder-style Matching**: Interactive matching interface with like/pass functionality
+- ✅ **Post-match Features**: View confirmed matches and exchange contact information
+- ✅ **Meeting Scheduling**: Session and time slot management with automated allocation
+- ✅ **Location Management**: Define and allocate meeting locations for matched participants
+
+### Advanced Features
+- ✅ **Network Visualization**: Interactive graph visualizer showing event attendee connections and mutual matches
+  - Event Network Graph: Admin-only visualization of attendee networks with force-directed layout
+  - Dev Graph Visualizer: Synthetic dataset testing tool for stress testing graph visualizations
+- ✅ **Admin Panel**: Complete event and user management system with analytics
+- ✅ **Cross-device Sync**: Database and file synchronization between devices via export/import
+
+### Future Capabilities
+- 🔜 **NFC Integration**: Tap-to-connect functionality for seamless contact exchange
+- 🔜 **Mobile Apps**: iOS and Android native applications
+- 🔜 **Real-time Messaging**: Direct messages between matched users
+- 🔜 **Calendar Integration**: Export meeting schedules to Google/iCal
+- 🔜 **Post-Event Analytics**: Insights on networking effectiveness and follow-up opportunities
+
+---
+
 ## User Authentication System
 
 ### Registration & Login
