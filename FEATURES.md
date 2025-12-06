@@ -1,12 +1,12 @@
 # Features
 
-Detailed guide to all features available in the NFC Networking Platform.
+Detailed guide to all features available in Prophere.
 
 ---
 
 ## Feature Overview
 
-The NFC Networking Platform provides a comprehensive suite of features for professional networking at events:
+Prophere provides a comprehensive suite of features for professional networking at events:
 
 ### Core Capabilities
 - ✅ **Role-based Authentication**: Secure login system with Event Attendee and Event Manager roles

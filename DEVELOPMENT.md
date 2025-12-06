@@ -1,6 +1,6 @@
 # Developer Guide
 
-Technical documentation for developers working on the NFC Networking Platform.
+Technical documentation for developers working on Prophere.
 
 ## Project Structure
 

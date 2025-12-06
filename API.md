@@ -1,6 +1,6 @@
 # API Reference
 
-Complete reference for all API routes in the NFC Networking Platform.
+Complete reference for all API routes in Prophere.
 
 ## Public Routes
 
@@ -18,7 +18,7 @@ GET /hello
 ```
 **Description**: Test endpoint  
 **Authentication**: None  
-**Returns**: "Hellofrom NFC Networking!"
+**Returns**: "Hello from Prophere!"
 
 ---
 

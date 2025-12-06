@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard - NFC Networking Assistant{% endblock %}
+{% block title %}Admin Dashboard - Prophere{% endblock %}
 
 {% block styles %}
+<style>
         body {
             padding: 20px;
         }
@@ -50,13 +51,13 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
         }
         
         .btn-secondary {
@@ -80,7 +81,7 @@
             background: #f8f9fa;
             padding: 30px;
             border-radius: 15px;
-            border-left: 5px solid #667eea;
+            border-left: 5px solid #57068c;
             transition: all 0.3s ease;
         }
         
@@ -194,9 +195,10 @@
         }
         
         .nav-link:hover, .nav-link.active {
-            background: #667eea;
+            background: #57068c;
             color: white;
         }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -247,7 +249,7 @@
             <h2 style="text-align: center;">Platform Analytics</h2>
             <div class="analytics-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                 <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">{{ total_events }}</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #57068c;">{{ total_events }}</div>
                     <div style="color: #7f8c8d; font-size: 0.9rem;">Active Events</div>
                 </div>
                 <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NFC Networking Assistant - Main Entry Point
+Prophere - Main Entry Point
 """
 
 import sys

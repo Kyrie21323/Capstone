@@ -3,6 +3,7 @@
 {% block title %}Dev Graph Visualizer - {{ size|title }} Dataset{% endblock %}
 
 {% block styles %}
+<style>
     body {
         padding: 20px;
     }
@@ -70,14 +71,14 @@
     }
     
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
         color: white;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 4px 15px rgba(87, 6, 140, 0.2);
     }
     
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 6px 20px rgba(87, 6, 140, 0.3);
         text-decoration: none;
         color: white;
     }
@@ -100,7 +101,7 @@
         padding: 15px;
         background: #f8f9fa;
         border-radius: 8px;
-        border-left: 3px solid #667eea;
+        border-left: 3px solid #57068c;
     }
     
     .dataset-controls h3 {
@@ -123,19 +124,19 @@
         border-radius: 6px;
         text-decoration: none;
         transition: all 0.3s ease;
-        border: 2px solid #667eea;
+        border: 2px solid #57068c;
         background: white;
-        color: #667eea;
+        color: #57068c;
     }
     
     .btn-dataset:hover {
-        background: #667eea;
+        background: #57068c;
         color: white;
         transform: translateY(-1px);
     }
     
     .btn-dataset.active {
-        background: #667eea;
+        background: #57068c;
         color: white;
     }
     
@@ -188,7 +189,7 @@
         margin-bottom: 15px;
         padding: 12px 16px;
         background: #f8f9fa;
-        border-left: 3px solid #667eea;
+        border-left: 3px solid #57068c;
         border-radius: 6px;
         color: #6c757d;
         font-size: 0.9rem;
@@ -223,6 +224,7 @@
             flex-direction: column;
         }
     }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -343,16 +345,16 @@
                                 'text-valign': 'center',
                                 'text-halign': 'center',
                                 'color': '#fff',
-                                'background-color': '#667eea',
+                                'background-color': '#57068c',
                                 'font-size': '12px',
                                 'font-weight': '600',
                                 'width': '60px',
                                 'height': '60px',
                                 'shape': 'ellipse',
                                 'border-width': '2px',
-                                'border-color': '#764ba2',
+                                'border-color': '#ab82c5',
                                 'text-outline-width': '2px',
-                                'text-outline-color': '#667eea',
+                                'text-outline-color': '#57068c',
                                 'grabbable': false
                             }
                         },
@@ -368,8 +370,8 @@
                         {
                             selector: 'node:selected',
                             style: {
-                                'background-color': '#764ba2',
-                                'border-color': '#667eea',
+                                'background-color': '#ab82c5',
+                                'border-color': '#57068c',
                                 'border-width': '3px'
                             }
                         }

@@ -3,6 +3,7 @@
 {% block title %}Manage Sessions - {{ event.name }}{% endblock %}
 
 {% block styles %}
+<style>
 body {
 padding: 20px;
 }
@@ -80,8 +81,8 @@ transition: all 0.3s ease;
 
 .form-group input:focus {
 outline: none;
-border-color: #667eea;
-box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+border-color: #57068c;
+box-shadow: 0 0 0 3px rgba(87, 6, 140, 0.1);
 }
 
 .submit-btn {
@@ -178,6 +179,7 @@ background-color: #d1ecf1;
 color: #0c5460;
 border-color: #bee5eb;
 }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -231,7 +233,7 @@ border-color: #bee5eb;
                 run the allocation algorithm.</p>
             <form method="POST" action="{{ url_for('allocate_meetings', event_id=event.id) }}">
                 <button type="submit" class="submit-btn"
-                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">Run Allocation
+                    style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">Run Allocation
                     Algorithm</button>
             </form>
         </div>

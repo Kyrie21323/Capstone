@@ -1,834 +1,320 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - NFC Networking Assistant{% endblock %}
+{% block title %}Dashboard - Prophere{% endblock %}
 
 {% block styles %}
-        body {
-            padding: 20px;
-        }
-        
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e9ecef;
-        }
-        
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin: 0;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .welcome-text {
-            font-size: 1.1rem;
-            color: #7f8c8d;
-            font-weight: 300;
-        }
-        
-        .logout-btn {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
-        }
-        
-        
-        .section {
-            margin-bottom: 50px;
-        }
-        
-        .section h2 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .event-card {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border-left: 5px solid #667eea;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .event-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        
-        .event-name {
-            font-weight: 700;
-            font-size: 1.3rem;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-        
-        .event-code {
-            color: #7f8c8d;
-            font-family: 'Courier New', monospace;
-            background: #e9ecef;
-            padding: 4px 8px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            display: inline-block;
-        }
-        
-        .event-description {
-            color: #6c757d;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin: 10px 0;
-            font-style: italic;
-        }
-        
-        .event-keywords {
-            margin: 12px 0;
-            padding: 10px 0;
-        }
-        
-        .event-keywords strong {
-            color: #2c3e50;
-            font-size: 0.9rem;
-            margin-right: 8px;
-        }
-        
-        .keyword-tag {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin: 2px 4px 2px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .keyword-tag:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-        }
-        
-        .keyword-display-tag {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin: 2px 4px 2px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .keyword-display-tag:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-        }
-        
-        .keyword-display-tag::after {
-            display: none !important;
-        }
-        
-        .keyword-display-tag .remove-tag {
-            display: none !important;
-        }
-        
-        .edit-keywords-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .edit-keywords-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
-        }
-        
-        /* Keywords Input Container */
-        .keywords-input-container {
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 10px;
-            background: white;
-            min-height: 50px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .keywords-input-container:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .keywords-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-items: center;
-            min-height: 20px;
-        }
-        
-        .keywords-input-container input {
-            border: none;
-            outline: none;
-            width: 100%;
-            padding: 8px 0;
-            font-size: 1rem;
-            background: transparent;
-        }
-        
-        .keywords-input-container input::placeholder {
-            color: #adb5bd;
-        }
-        
-        .input-tag {
-            display: inline-flex;
-            align-items: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin: 2px;
-            animation: tagAppear 0.3s ease;
-        }
-        
-        .input-tag .remove-tag {
-            margin-left: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            opacity: 0.8;
-            transition: opacity 0.2s ease;
-        }
-        
-        .input-tag .remove-tag:hover {
-            opacity: 1;
-        }
-        
-        @keyframes tagAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        
-        .resume-status {
-            margin-top: 15px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-        
-        .resume-uploaded {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .resume-missing {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        
-        .upload-link {
-            display: inline-block;
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            min-width: 120px;
-            text-align: center;
-            height: 40px;
-            line-height: 20px;
-            box-sizing: border-box;
-        }
-        
-        .upload-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(23, 162, 184, 0.3);
-            text-decoration: none;
-            color: white;
-        }
-        
-        .delete-resume-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            min-width: 120px;
-            text-align: center;
-            height: 40px;
-            line-height: 20px;
-            box-sizing: border-box;
-        }
-        
-        .delete-resume-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(220, 53, 69, 0.3);
-        }
-        
-        .event-actions {
-            display: none;
-        }
-        
-        .matching-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            min-width: 120px;
-            text-align: center;
-            height: 40px;
-            line-height: 20px;
-            box-sizing: border-box;
-        }
-        
-        .matches-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
-            min-width: 100px;
-            text-align: center;
-            height: 40px;
-            line-height: 20px;
-            box-sizing: border-box;
-            margin-left: 8px;
-        }
-        
-        .matching-buttons {
-            display: flex;
-            align-items: center;
-        }
-        
-        .view-document-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        }
-        
-        .button-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .join-event-section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            border: 2px solid #e9ecef;
-        }
-        
-        .join-event-section h2 {
-            margin-bottom: 20px;
-        }
-        
-        .join-event-section p {
-            color: #7f8c8d;
-            margin-bottom: 20px;
-            font-size: 1rem;
-        }
-        
-        .join-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
-            align-items: end;
-        }
-        
-        .form-group {
-            flex: 1;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.9rem;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .join-event-btn {
-            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        
-        .join-event-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
-        }
-        
-        .no-events {
-            text-align: center;
-            color: #7f8c8d;
-            font-style: italic;
-            padding: 60px 40px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            border: 2px dashed #e9ecef;
-        }
-        
-        .no-events p {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-        }
-        
-        .flash-messages {
-            margin-bottom: 30px;
-        }
-        
-        .flash {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        
-        .flash.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .flash.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .flash.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-        
-        .leave-event-btn {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: absolute;
-            top: 15px;
-            right: 15px;
-        }
-        
-        .leave-event-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(220, 53, 69, 0.3);
-        }
-        
-        .leave-event-btn:active {
-            transform: translateY(0);
-        }
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="header">
-            <h1>Dashboard</h1>
-            <div class="user-info">
-                <span class="welcome-text">Welcome, {{ current_user.name }}</span>
-                {% if current_user.is_administrator() %}
-                {% endif %}
-                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
-            </div>
-        </div>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
+<div class="container">
+    <div class="header">
+        <h1>Dashboard</h1>
+        <div class="user-info">
+            <span class="welcome-text">Welcome, {{ current_user.name }}</span>
+            {% if current_user.is_administrator() %}
             {% endif %}
-        {% endwith %}
-        
-        <div class="section">
-            <h2>Your Events</h2>
-            {% if memberships %}
-                {% for membership in memberships %}
-                    <div class="event-card">
-                        <button class="leave-event-btn" data-event-name="{{ membership.event.name }}" data-event-id="{{ membership.event.id }}">
-                            Leave Event
-                        </button>
-                        
-                        <div class="event-name">{{ membership.event.name }}</div>
-                        <div class="event-code">Code: {{ membership.event.code }}</div>
-                        {% if membership.event.description %}
-                            <div class="event-description">{{ membership.event.description }}</div>
-                        {% endif %}
-                        
-                        <div class="event-actions">
-                            <div class="matching-buttons">
-                                <a href="{{ url_for('event_matching', event_id=membership.event.id) }}" class="matching-btn">
-                                    Start Smart Matching
-                                </a>
-                                <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">
-                                    View Matches
-                                </a>
-                            </div>
-                        </div>
-                        
-                        {% if membership.keywords %}
-                            <div class="event-keywords">
-                                <strong>Your Interests:</strong>
-                                {% for keyword in membership.get_keywords_list() %}
-                                    <span class="keyword-display-tag">{{ keyword }}</span>
-                                {% endfor %}
-                                <button type="button" class="edit-keywords-btn" data-event-id="{{ membership.event.id }}" data-current-keywords="{{ membership.keywords or '' }}">Edit Keywords</button>
-                            </div>
-                        {% else %}
-                            <div class="event-keywords">
-                                <strong>Your Interests:</strong>
-                                <span style="color: #7f8c8d; font-style: italic;">No keywords added yet</span>
-                                <button type="button" class="edit-keywords-btn" data-event-id="{{ membership.event.id }}" data-current-keywords="">Add Keywords</button>
-                            </div>
-                        {% endif %}
-                        
-                        {% set user_resume = resumes | selectattr('event_id', 'equalto', membership.event.id) | first %}
-                        {% if user_resume %}
-                            <div class="resume-status resume-uploaded">
-                                Document uploaded: {{ user_resume.original_name }}
-                            </div>
-                            <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
-                                <div class="button-group">
-                                    <a href="{{ url_for('view_resume', resume_id=user_resume.id) }}" class="upload-link view-document-btn">View Document</a>
-                                    <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Re-upload Document</a>
-                                    <button type="button" class="delete-resume-btn" data-resume-id="{{ user_resume.id }}" data-resume-name="{{ user_resume.original_name }}">Delete Document</button>
-                                </div>
-                                <div class="matching-buttons">
-                                    <a href="{{ url_for('matching_loading', event_id=membership.event.id) }}" class="matching-btn">Start Smart Matching</a>
-                                    <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">View Matches</a>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="resume-status resume-missing">
-                                <strong>💡 Document Upload Recommended</strong><br>
-                                It is recommended to upload your resume/portfolio to let the system get better matching for you and your interests. This helps connect you with more relevant opportunities.
-                            </div>
-                            <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
-                                <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload Document</a>
-                                <div class="matching-buttons">
-                                    <a href="{{ url_for('matching_loading', event_id=membership.event.id) }}" class="matching-btn">Start Smart Matching</a>
-                                    <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">View Matches</a>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="no-events">
-                    <p>You haven't joined any events yet.</p>
-                    <p>Use an event code to join an event!</p>
-                </div>
-            {% endif %}
-        </div>
-        
-        <div class="section">
-            <div class="join-event-section">
-                <h2>Join New Event</h2>
-                <p>Enter an event code and your areas of interest to join a new event:</p>
-                <form method="POST" action="{{ url_for('join_event') }}" class="join-form" id="joinEventForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="event_code">Event Code</label>
-                            <input type="text" id="event_code" name="event_code" placeholder="Enter event code (e.g., NYUAD2025)">
-                        </div>
-                        <button type="submit" class="join-event-btn">Join Event</button>
-                    </div>
-                    <div class="form-group">
-                        <label for="keywords">Areas of Interest (at least 2 keywords)</label>
-                        <div class="keywords-input-container">
-                            <div class="keywords-tags" id="keywordsTags"></div>
-                            <input type="text" id="keywords" name="keywords" placeholder="Type keywords and press Enter..." autocomplete="off">
-                        </div>
-                        <small style="color: #7f8c8d; font-size: 0.8rem; margin-top: 5px; display: block;">
-                            Type keywords and press Enter to create tags. Minimum 2 keywords required.
-                        </small>
-                    </div>
-                </form>
-            </div>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
         </div>
     </div>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add event listeners to all leave event buttons
-            document.querySelectorAll('.leave-event-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const eventName = this.getAttribute('data-event-name');
-                    const eventId = this.getAttribute('data-event-id');
-                    confirmLeaveEvent(eventName, eventId);
-                });
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="section">
+        <h2>Your Events</h2>
+        {% if memberships %}
+        {% for membership in memberships %}
+        <div class="event-card">
+            <button class="leave-event-btn" data-event-name="{{ membership.event.name }}"
+                data-event-id="{{ membership.event.id }}">
+                Leave Event
+            </button>
+
+            <div class="event-name">{{ membership.event.name }}</div>
+            <div class="event-code">Code: {{ membership.event.code }}</div>
+            {% if membership.event.description %}
+            <div class="event-description">{{ membership.event.description }}</div>
+            {% endif %}
+
+            <div class="event-actions">
+                <div class="matching-buttons">
+                    <a href="{{ url_for('event_matching', event_id=membership.event.id) }}" class="matching-btn">
+                        Start Smart Matching
+                    </a>
+                    <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">
+                        View Matches
+                    </a>
+                </div>
+            </div>
+
+            {% if membership.keywords %}
+            <div class="event-keywords">
+                <strong>Your Interests:</strong>
+                {% for keyword in membership.get_keywords_list() %}
+                <span class="keyword-display-tag">{{ keyword }}</span>
+                {% endfor %}
+                <button type="button" class="edit-keywords-btn" data-event-id="{{ membership.event.id }}"
+                    data-current-keywords="{{ membership.keywords or '' }}">Edit Keywords</button>
+            </div>
+            {% else %}
+            <div class="event-keywords">
+                <strong>Your Interests:</strong>
+                <span style="color: #7f8c8d; font-style: italic;">No keywords added yet</span>
+                <button type="button" class="edit-keywords-btn" data-event-id="{{ membership.event.id }}"
+                    data-current-keywords="">Add Keywords</button>
+            </div>
+            {% endif %}
+
+            {% set user_resume = resumes | selectattr('event_id', 'equalto', membership.event.id) | first %}
+            {% if user_resume %}
+            <div class="resume-status resume-uploaded">
+                Document uploaded: {{ user_resume.original_name }}
+            </div>
+            <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+                <div class="button-group">
+                    <a href="{{ url_for('view_resume', resume_id=user_resume.id) }}"
+                        class="upload-link view-document-btn">View Document</a>
+                    <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Re-upload
+                        Document</a>
+                    <button type="button" class="delete-resume-btn" data-resume-id="{{ user_resume.id }}"
+                        data-resume-name="{{ user_resume.original_name }}">Delete Document</button>
+                </div>
+                <div class="matching-buttons">
+                    <a href="{{ url_for('matching_loading', event_id=membership.event.id) }}" class="matching-btn">Start
+                        Smart Matching</a>
+                    <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">View
+                        Matches</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="resume-status resume-missing">
+                <strong>💡 Document Upload Recommended</strong><br>
+                It is recommended to upload your resume/portfolio to let the system get better matching for you and your
+                interests. This helps connect you with more relevant opportunities.
+            </div>
+            <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+                <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload
+                    Document</a>
+                <div class="matching-buttons">
+                    <a href="{{ url_for('matching_loading', event_id=membership.event.id) }}" class="matching-btn">Start
+                        Smart Matching</a>
+                    <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">View
+                        Matches</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-events">
+            <p>You haven't joined any events yet.</p>
+            <p>Use an event code to join an event!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <div class="join-event-section">
+            <h2>Join New Event</h2>
+            <p>Enter an event code and your areas of interest to join a new event:</p>
+            <form method="POST" action="{{ url_for('join_event') }}" class="join-form" id="joinEventForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="event_code">Event Code</label>
+                        <input type="text" id="event_code" name="event_code"
+                            placeholder="Enter event code (e.g., NYUAD2025)">
+                    </div>
+                    <button type="submit" class="join-event-btn">Join Event</button>
+                </div>
+                <div class="form-group">
+                    <label for="keywords">Areas of Interest (at least 2 keywords)</label>
+                    <div class="keywords-input-container">
+                        <div class="keywords-tags" id="keywordsTags"></div>
+                        <input type="text" id="keywords" name="keywords" placeholder="Type keywords and press Enter..."
+                            autocomplete="off">
+                    </div>
+                    <small style="color: #7f8c8d; font-size: 0.8rem; margin-top: 5px; display: block;">
+                        Type keywords and press Enter to create tags. Minimum 2 keywords required.
+                    </small>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add event listeners to all leave event buttons
+        document.querySelectorAll('.leave-event-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const eventName = this.getAttribute('data-event-name');
+                const eventId = this.getAttribute('data-event-id');
+                confirmLeaveEvent(eventName, eventId);
             });
-            
-            // Add event listeners to all delete resume buttons
-            document.querySelectorAll('.delete-resume-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const resumeId = this.getAttribute('data-resume-id');
-                    const resumeName = this.getAttribute('data-resume-name');
-                    confirmDeleteResume(resumeId, resumeName);
-                });
+        });
+
+        // Add event listeners to all delete resume buttons
+        document.querySelectorAll('.delete-resume-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const resumeId = this.getAttribute('data-resume-id');
+                const resumeName = this.getAttribute('data-resume-name');
+                confirmDeleteResume(resumeId, resumeName);
             });
-            
-            // Add event listeners to all edit keywords buttons
-            document.querySelectorAll('.edit-keywords-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const eventId = this.getAttribute('data-event-id');
-                    const currentKeywords = this.getAttribute('data-current-keywords');
-                    showEditKeywordsModal(eventId, currentKeywords);
-                });
+        });
+
+        // Add event listeners to all edit keywords buttons
+        document.querySelectorAll('.edit-keywords-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const eventId = this.getAttribute('data-event-id');
+                const currentKeywords = this.getAttribute('data-current-keywords');
+                showEditKeywordsModal(eventId, currentKeywords);
             });
-            
-            // Add form validation for keywords
-            const joinForm = document.getElementById('joinEventForm');
-            if (joinForm) {
-                joinForm.addEventListener('submit', function(e) {
-                    const eventCodeInput = document.getElementById('event_code');
-                    const keywordsInput = document.getElementById('keywords');
-                    const keywordsTags = document.getElementById('keywordsTags');
-                    const tags = keywordsTags.querySelectorAll('.input-tag');
-                    
-                    // Validate event code
-                    if (!eventCodeInput.value.trim()) {
-                        e.preventDefault();
-                        notificationSystem.show('Please enter an event code.', 'error', 'Event Code Required');
-                        eventCodeInput.focus();
-                        return false;
+        });
+
+        // Add form validation for keywords
+        const joinForm = document.getElementById('joinEventForm');
+        if (joinForm) {
+            joinForm.addEventListener('submit', function (e) {
+                const eventCodeInput = document.getElementById('event_code');
+                const keywordsInput = document.getElementById('keywords');
+                const keywordsTags = document.getElementById('keywordsTags');
+                const tags = keywordsTags.querySelectorAll('.input-tag');
+
+                // Validate event code
+                if (!eventCodeInput.value.trim()) {
+                    e.preventDefault();
+                    notificationSystem.show('Please enter an event code.', 'error', 'Event Code Required');
+                    eventCodeInput.focus();
+                    return false;
+                }
+
+                // Validate keywords
+                if (tags.length < 2) {
+                    e.preventDefault();
+                    if (tags.length === 0) {
+                        notificationSystem.show('Please enter at least 2 keywords. Type keywords and press Enter to create tags.', 'error', 'Keywords Required');
+                    } else {
+                        notificationSystem.show('Please enter at least 2 keywords. You currently have ' + tags.length + ' keyword(s).', 'error', 'More Keywords Needed');
                     }
-                    
-                    // Validate keywords
-                    if (tags.length < 2) {
-                        e.preventDefault();
-                        if (tags.length === 0) {
-                            notificationSystem.show('Please enter at least 2 keywords. Type keywords and press Enter to create tags.', 'error', 'Keywords Required');
-                        } else {
-                            notificationSystem.show('Please enter at least 2 keywords. You currently have ' + tags.length + ' keyword(s).', 'error', 'More Keywords Needed');
-                        }
-                        keywordsInput.focus();
-                        return false;
-                    }
-                    
-                    // Convert tags to comma-separated string for form submission
-                    const keywordValues = Array.from(tags).map(tag => {
-                        // Get the text content and remove any "×" characters
-                        let text = tag.textContent || tag.innerText || '';
-                        text = text.replace(/×/g, '').trim();
-                        return text;
-                    }).filter(text => text.length > 0);
-                    keywordsInput.value = keywordValues.join(',');
-                });
-            }
-            
-            // Handle tag-based keywords input
-            const keywordsInput = document.getElementById('keywords');
-            const keywordsTags = document.getElementById('keywordsTags');
-            
-            if (keywordsInput && keywordsTags) {
-                keywordsInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const value = this.value.trim();
-                        if (value && !isDuplicateTag(value)) {
-                            addTag(value);
-                            this.value = '';
-                        }
-                    }
-                });
-                
-                keywordsInput.addEventListener('blur', function() {
+                    keywordsInput.focus();
+                    return false;
+                }
+
+                // Convert tags to comma-separated string for form submission
+                const keywordValues = Array.from(tags).map(tag => {
+                    // Get the text content and remove any "×" characters
+                    let text = tag.textContent || tag.innerText || '';
+                    text = text.replace(/×/g, '').trim();
+                    return text;
+                }).filter(text => text.length > 0);
+                keywordsInput.value = keywordValues.join(',');
+            });
+        }
+
+        // Handle tag-based keywords input
+        const keywordsInput = document.getElementById('keywords');
+        const keywordsTags = document.getElementById('keywordsTags');
+
+        if (keywordsInput && keywordsTags) {
+            keywordsInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
                     const value = this.value.trim();
                     if (value && !isDuplicateTag(value)) {
                         addTag(value);
                         this.value = '';
                     }
-                });
-            }
-            
-            function addTag(text) {
-                const tag = document.createElement('div');
-                tag.className = 'input-tag';
-                tag.innerHTML = text + '<span class="remove-tag" onclick="removeTag(this)">×</span>';
-                keywordsTags.appendChild(tag);
-            }
-            
-            function removeTag(element) {
-                element.parentElement.remove();
-            }
-            
-            function isDuplicateTag(text) {
-                const existingTags = keywordsTags.querySelectorAll('.input-tag');
-                return Array.from(existingTags).some(tag => {
-                    let existingText = tag.textContent || tag.innerText || '';
-                    existingText = existingText.replace(/×/g, '').trim();
-                    return existingText.toLowerCase() === text.toLowerCase();
-                });
-            }
-            
-            // Make functions globally available
-            window.removeTag = removeTag;
-        });
-        
-        function confirmLeaveEvent(eventName, eventId) {
-            showConfirmationModal(
-                'Leave Event',
-                `Are you sure you want to leave "${eventName}"?`,
-                'This will remove you from the event and delete your uploaded resume (if any). This action cannot be undone.',
-                'Leave Event',
-                'Cancel',
-                function() {
-                    // Create a form to submit the leave request
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '{{ url_for("leave_event") }}';
-                    
-                    const eventIdInput = document.createElement('input');
-                    eventIdInput.type = 'hidden';
-                    eventIdInput.name = 'event_id';
-                    eventIdInput.value = eventId;
-                    
-                    form.appendChild(eventIdInput);
-                    document.body.appendChild(form);
-                    form.submit();
                 }
-            );
-        }
-        
-        function confirmDeleteResume(resumeId, resumeName) {
-            showConfirmationModal(
-                'Delete Document',
-                `Are you sure you want to delete "${resumeName}"?`,
-                'This will permanently remove your document from the system. You can always upload a new one later.',
-                'Delete Document',
-                'Cancel',
-                function() {
-                    // Create a form to submit the delete request
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/delete_resume/${resumeId}`;
-                    
-                    document.body.appendChild(form);
-                    form.submit();
+            });
+
+            keywordsInput.addEventListener('blur', function () {
+                const value = this.value.trim();
+                if (value && !isDuplicateTag(value)) {
+                    addTag(value);
+                    this.value = '';
                 }
-            );
+            });
         }
-        
-        function showEditKeywordsModal(eventId, currentKeywords) {
-            // Create modal overlay
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
+
+        function addTag(text) {
+            const tag = document.createElement('div');
+            tag.className = 'input-tag';
+            tag.innerHTML = text + '<span class="remove-tag" onclick="removeTag(this)">×</span>';
+            keywordsTags.appendChild(tag);
+        }
+
+        function removeTag(element) {
+            element.parentElement.remove();
+        }
+
+        function isDuplicateTag(text) {
+            const existingTags = keywordsTags.querySelectorAll('.input-tag');
+            return Array.from(existingTags).some(tag => {
+                let existingText = tag.textContent || tag.innerText || '';
+                existingText = existingText.replace(/×/g, '').trim();
+                return existingText.toLowerCase() === text.toLowerCase();
+            });
+        }
+
+        // Make functions globally available
+        window.removeTag = removeTag;
+    });
+
+    function confirmLeaveEvent(eventName, eventId) {
+        showConfirmationModal(
+            'Leave Event',
+            `Are you sure you want to leave "${eventName}"?`,
+            'This will remove you from the event and delete your uploaded resume (if any). This action cannot be undone.',
+            'Leave Event',
+            'Cancel',
+            function () {
+                // Create a form to submit the leave request
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ url_for("leave_event") }}';
+
+                const eventIdInput = document.createElement('input');
+                eventIdInput.type = 'hidden';
+                eventIdInput.name = 'event_id';
+                eventIdInput.value = eventId;
+
+                form.appendChild(eventIdInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        );
+    }
+
+    function confirmDeleteResume(resumeId, resumeName) {
+        showConfirmationModal(
+            'Delete Document',
+            `Are you sure you want to delete "${resumeName}"?`,
+            'This will permanently remove your document from the system. You can always upload a new one later.',
+            'Delete Document',
+            'Cancel',
+            function () {
+                // Create a form to submit the delete request
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/delete_resume/${resumeId}`;
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        );
+    }
+
+    function showEditKeywordsModal(eventId, currentKeywords) {
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -840,10 +326,10 @@
                 align-items: center;
                 justify-content: center;
             `;
-            
-            // Create modal content
-            const modal = document.createElement('div');
-            modal.style.cssText = `
+
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.style.cssText = `
                 background: white;
                 border-radius: 15px;
                 padding: 30px;
@@ -852,23 +338,23 @@
                 box-shadow: 0 20px 40px rgba(0,0,0,0.3);
                 position: relative;
             `;
-            
-            // Create form
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ url_for("update_keywords") }}';
-            
-            // Add hidden event_id input
-            const eventIdInput = document.createElement('input');
-            eventIdInput.type = 'hidden';
-            eventIdInput.name = 'event_id';
-            eventIdInput.value = eventId;
-            form.appendChild(eventIdInput);
-            
-            // Create keywords input container
-            const keywordsContainer = document.createElement('div');
-            keywordsContainer.className = 'keywords-input-container';
-            keywordsContainer.style.cssText = `
+
+        // Create form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("update_keywords") }}';
+
+        // Add hidden event_id input
+        const eventIdInput = document.createElement('input');
+        eventIdInput.type = 'hidden';
+        eventIdInput.name = 'event_id';
+        eventIdInput.value = eventId;
+        form.appendChild(eventIdInput);
+
+        // Create keywords input container
+        const keywordsContainer = document.createElement('div');
+        keywordsContainer.className = 'keywords-input-container';
+        keywordsContainer.style.cssText = `
                 border: 2px solid #e9ecef;
                 border-radius: 10px;
                 padding: 10px;
@@ -879,25 +365,25 @@
                 gap: 8px;
                 transition: all 0.3s ease;
             `;
-            
-            // Create keywords tags container
-            const tagsContainer = document.createElement('div');
-            tagsContainer.id = 'editKeywordsTags';
-            tagsContainer.style.cssText = `
+
+        // Create keywords tags container
+        const tagsContainer = document.createElement('div');
+        tagsContainer.id = 'editKeywordsTags';
+        tagsContainer.style.cssText = `
                 display: flex;
                 flex-wrap: wrap;
                 gap: 6px;
                 align-items: center;
                 min-height: 20px;
             `;
-            
-            // Create keywords input
-            const keywordsInput = document.createElement('input');
-            keywordsInput.type = 'text';
-            keywordsInput.id = 'editKeywords';
-            keywordsInput.name = 'keywords';
-            keywordsInput.placeholder = 'Type keywords and press Enter...';
-            keywordsInput.style.cssText = `
+
+        // Create keywords input
+        const keywordsInput = document.createElement('input');
+        keywordsInput.type = 'text';
+        keywordsInput.id = 'editKeywords';
+        keywordsInput.name = 'keywords';
+        keywordsInput.placeholder = 'Type keywords and press Enter...';
+        keywordsInput.style.cssText = `
                 border: none;
                 outline: none;
                 width: 100%;
@@ -905,24 +391,24 @@
                 font-size: 1rem;
                 background: transparent;
             `;
-            
-            // Add existing keywords as tags if any
-            if (currentKeywords) {
-                const keywords = currentKeywords.split(',').map(kw => kw.trim()).filter(kw => kw);
-                keywords.forEach(keyword => {
-                    // Clean the keyword text by removing any "×" characters
-                    const cleanKeyword = keyword.replace(/×/g, '').trim();
-                    if (cleanKeyword) {
-                        addExistingEditTag(cleanKeyword, tagsContainer);
-                    }
-                });
-            }
-            
-            keywordsContainer.appendChild(tagsContainer);
-            keywordsContainer.appendChild(keywordsInput);
-            
-            // Create modal content
-            modal.innerHTML = `
+
+        // Add existing keywords as tags if any
+        if (currentKeywords) {
+            const keywords = currentKeywords.split(',').map(kw => kw.trim()).filter(kw => kw);
+            keywords.forEach(keyword => {
+                // Clean the keyword text by removing any "×" characters
+                const cleanKeyword = keyword.replace(/×/g, '').trim();
+                if (cleanKeyword) {
+                    addExistingEditTag(cleanKeyword, tagsContainer);
+                }
+            });
+        }
+
+        keywordsContainer.appendChild(tagsContainer);
+        keywordsContainer.appendChild(keywordsInput);
+
+        // Create modal content
+        modal.innerHTML = `
                 <h3 style="margin: 0 0 20px 0; color: #2c3e50; font-size: 1.3rem;">Edit Your Interests</h3>
                 <p style="color: #7f8c8d; margin-bottom: 20px; font-size: 0.9rem;">
                     Update your areas of interest to help the system provide better matching.
@@ -933,89 +419,89 @@
                     </small>
                 </div>
             `;
-            
-            // Add keywords container to modal
-            modal.appendChild(keywordsContainer);
-            
-            // Create and add action buttons below the keywords container
-            const buttonsDiv = document.createElement('div');
-            buttonsDiv.style.cssText = 'display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;';
-            buttonsDiv.innerHTML = `
+
+        // Add keywords container to modal
+        modal.appendChild(keywordsContainer);
+
+        // Create and add action buttons below the keywords container
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.style.cssText = 'display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;';
+        buttonsDiv.innerHTML = `
                 <button type="button" class="cancel-btn" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
                 <button type="submit" class="save-btn" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Save Keywords</button>
             `;
-            form.appendChild(keywordsContainer);
-            form.appendChild(buttonsDiv);
-            modal.appendChild(form);
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
-            
-            // Add event listeners
-            const cancelBtn = modal.querySelector('.cancel-btn');
-            const saveBtn = modal.querySelector('.save-btn');
-            
-            cancelBtn.addEventListener('click', () => {
-                document.body.removeChild(overlay);
-            });
-            
-            // Keywords input functionality
-            keywordsInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const keyword = this.value.trim();
-                    if (keyword && !isDuplicateEditTag(keyword, tagsContainer)) {
-                        addEditTag(keyword, tagsContainer);
-                        this.value = '';
-                    }
-                }
-            });
-            
-            keywordsInput.addEventListener('blur', function() {
+        form.appendChild(keywordsContainer);
+        form.appendChild(buttonsDiv);
+        modal.appendChild(form);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Add event listeners
+        const cancelBtn = modal.querySelector('.cancel-btn');
+        const saveBtn = modal.querySelector('.save-btn');
+
+        cancelBtn.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+        });
+
+        // Keywords input functionality
+        keywordsInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
                 const keyword = this.value.trim();
                 if (keyword && !isDuplicateEditTag(keyword, tagsContainer)) {
                     addEditTag(keyword, tagsContainer);
                     this.value = '';
                 }
-            });
-            
-            // Form submission
-            form.addEventListener('submit', function(e) {
-                const tags = tagsContainer.querySelectorAll('.input-tag');
-                const keywords = Array.from(tags).map(tag => {
-                    let text = tag.textContent || tag.innerText || '';
-                    text = text.replace(/×/g, '').trim();
-                    return text;
-                }).filter(text => text.length > 0).join(', ');
-                
-                if (tags.length === 0) {
-                    e.preventDefault();
-                    notificationSystem.show('Please enter at least 2 keywords.', 'error', 'Keywords Required');
-                    keywordsInput.focus();
-                    return false;
-                }
-                
-                if (tags.length < 2) {
-                    e.preventDefault();
-                    notificationSystem.show('Please enter at least 2 keywords.', 'error', 'Minimum Keywords Required');
-                    keywordsInput.focus();
-                    return false;
-                }
-                
-                // Update the keywords input value
-                keywordsInput.value = keywords;
-            });
-            
-            // Focus on input
-            setTimeout(() => keywordsInput.focus(), 100);
-        }
-        
-        function addExistingEditTag(keyword, container) {
-            const tag = document.createElement('span');
-            tag.className = 'input-tag';
-            tag.style.cssText = `
+            }
+        });
+
+        keywordsInput.addEventListener('blur', function () {
+            const keyword = this.value.trim();
+            if (keyword && !isDuplicateEditTag(keyword, tagsContainer)) {
+                addEditTag(keyword, tagsContainer);
+                this.value = '';
+            }
+        });
+
+        // Form submission
+        form.addEventListener('submit', function (e) {
+            const tags = tagsContainer.querySelectorAll('.input-tag');
+            const keywords = Array.from(tags).map(tag => {
+                let text = tag.textContent || tag.innerText || '';
+                text = text.replace(/×/g, '').trim();
+                return text;
+            }).filter(text => text.length > 0).join(', ');
+
+            if (tags.length === 0) {
+                e.preventDefault();
+                notificationSystem.show('Please enter at least 2 keywords.', 'error', 'Keywords Required');
+                keywordsInput.focus();
+                return false;
+            }
+
+            if (tags.length < 2) {
+                e.preventDefault();
+                notificationSystem.show('Please enter at least 2 keywords.', 'error', 'Minimum Keywords Required');
+                keywordsInput.focus();
+                return false;
+            }
+
+            // Update the keywords input value
+            keywordsInput.value = keywords;
+        });
+
+        // Focus on input
+        setTimeout(() => keywordsInput.focus(), 100);
+    }
+
+    function addExistingEditTag(keyword, container) {
+        const tag = document.createElement('span');
+        tag.className = 'input-tag';
+        tag.style.cssText = `
                 display: inline-flex;
                 align-items: center;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
                 color: white;
                 padding: 4px 8px;
                 border-radius: 6px;
@@ -1024,26 +510,26 @@
                 margin: 2px 4px 2px 0;
                 transition: all 0.3s ease;
             `;
-            
-            tag.innerHTML = `
+
+        tag.innerHTML = `
                 ${keyword}
                 <span class="remove-tag" style="margin-left: 6px; cursor: pointer; font-weight: bold;">×</span>
             `;
-            
-            tag.querySelector('.remove-tag').addEventListener('click', () => {
-                container.removeChild(tag);
-            });
-            
-            container.appendChild(tag);
-        }
-        
-        function addEditTag(keyword, container) {
-            const tag = document.createElement('span');
-            tag.className = 'input-tag';
-            tag.style.cssText = `
+
+        tag.querySelector('.remove-tag').addEventListener('click', () => {
+            container.removeChild(tag);
+        });
+
+        container.appendChild(tag);
+    }
+
+    function addEditTag(keyword, container) {
+        const tag = document.createElement('span');
+        tag.className = 'input-tag';
+        tag.style.cssText = `
                 display: inline-flex;
                 align-items: center;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
                 color: white;
                 padding: 4px 8px;
                 border-radius: 6px;
@@ -1052,28 +538,28 @@
                 margin: 2px 4px 2px 0;
                 transition: all 0.3s ease;
             `;
-            
-            tag.innerHTML = `
+
+        tag.innerHTML = `
                 ${keyword}
                 <span class="remove-tag" style="margin-left: 6px; cursor: pointer; font-weight: bold;">×</span>
             `;
-            
-            tag.querySelector('.remove-tag').addEventListener('click', () => {
-                container.removeChild(tag);
-            });
-            
-            container.appendChild(tag);
-        }
-        
-        function isDuplicateEditTag(keyword, container) {
-            const tags = container.querySelectorAll('.input-tag');
-            return Array.from(tags).some(tag => tag.textContent.trim().toLowerCase() === keyword.toLowerCase());
-        }
-        
-        function showConfirmationModal(title, message, details, confirmText, cancelText, onConfirm) {
-            // Create modal overlay
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
+
+        tag.querySelector('.remove-tag').addEventListener('click', () => {
+            container.removeChild(tag);
+        });
+
+        container.appendChild(tag);
+    }
+
+    function isDuplicateEditTag(keyword, container) {
+        const tags = container.querySelectorAll('.input-tag');
+        return Array.from(tags).some(tag => tag.textContent.trim().toLowerCase() === keyword.toLowerCase());
+    }
+
+    function showConfirmationModal(title, message, details, confirmText, cancelText, onConfirm) {
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -1087,10 +573,10 @@
                 opacity: 0;
                 transition: opacity 0.3s ease;
             `;
-            
-            // Create modal
-            const modal = document.createElement('div');
-            modal.style.cssText = `
+
+        // Create modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
                 background: white;
                 border-radius: 12px;
                 box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
@@ -1100,8 +586,8 @@
                 transform: scale(0.9);
                 transition: transform 0.3s ease;
             `;
-            
-            modal.innerHTML = `
+
+        modal.innerHTML = `
                 <div style="margin-bottom: 16px;">
                     <h3 style="color: #2c3e50; font-size: 18px; font-weight: 600; margin-bottom: 8px;">${title}</h3>
                     <p style="color: #6c757d; font-size: 14px; line-height: 1.4;">${message}</p>
@@ -1130,49 +616,49 @@
                     ">${confirmText}</button>
                 </div>
             `;
-            
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
-            
-            // Animate in
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Animate in
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            modal.style.transform = 'scale(1)';
+        }, 10);
+
+        // Add event listeners
+        const cancelBtn = modal.querySelector('#cancelBtn');
+        const confirmBtn = modal.querySelector('#confirmBtn');
+
+        const closeModal = () => {
+            overlay.style.opacity = '0';
+            modal.style.transform = 'scale(0.9)';
             setTimeout(() => {
-                overlay.style.opacity = '1';
-                modal.style.transform = 'scale(1)';
-            }, 10);
-            
-            // Add event listeners
-            const cancelBtn = modal.querySelector('#cancelBtn');
-            const confirmBtn = modal.querySelector('#confirmBtn');
-            
-            const closeModal = () => {
-                overlay.style.opacity = '0';
-                modal.style.transform = 'scale(0.9)';
-                setTimeout(() => {
-                    document.body.removeChild(overlay);
-                }, 300);
-            };
-            
-            cancelBtn.addEventListener('click', closeModal);
-            confirmBtn.addEventListener('click', () => {
+                document.body.removeChild(overlay);
+            }, 300);
+        };
+
+        cancelBtn.addEventListener('click', closeModal);
+        confirmBtn.addEventListener('click', () => {
+            closeModal();
+            onConfirm();
+        });
+
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
                 closeModal();
-                onConfirm();
-            });
-            
-            // Close on overlay click
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    closeModal();
-                }
-            });
-            
-            // Close on escape key
-            const handleEscape = (e) => {
-                if (e.key === 'Escape') {
-                    closeModal();
-                    document.removeEventListener('keydown', handleEscape);
-                }
-            };
-            document.addEventListener('keydown', handleEscape);
-        }
-    </script>
+            }
+        });
+
+        // Close on escape key
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+    }
+</script>
 {% endblock %}

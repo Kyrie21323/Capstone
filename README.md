@@ -1,4 +1,4 @@
-# NFC Networking Platform
+# Prophere
 
 A Flask-based networking platform for events with intelligent matching, meeting scheduling, and location management capabilities.
 
@@ -10,7 +10,7 @@ A Flask-based networking platform for events with intelligent matching, meeting 
 
 ## Overview
 
-The NFC Networking Platform revolutionizes professional networking at events by providing:
+Prophere revolutionizes professional networking at events by providing:
 - **Smart Event Management** - Create events with unique access codes
 - **Intelligent Matching** - NLP-based matching using keywords and documents  
 - **Automated Scheduling** - Meeting time and location allocation

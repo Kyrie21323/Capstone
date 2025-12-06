@@ -128,7 +128,7 @@ def create_default_admin():
 def main():
     """Main function with argument parsing."""
     parser = argparse.ArgumentParser(
-        description='Manage users in the NFC Networking Platform',
+        description='Manage users in Prophere',
         epilog='Examples:\n'
                '  %(prog)s --admin                    Create default admin\n'
                '  %(prog)s --manager user@example.com Create manager\n'

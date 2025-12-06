@@ -1,4 +1,3 @@
 """
-Utility modules for the NFC Networking Platform.
+Utility modules for the Prophere.
 """
-

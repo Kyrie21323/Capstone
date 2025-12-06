@@ -3,6 +3,7 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block styles %}
+<style>
 body {
 padding: 20px;
 }
@@ -50,13 +51,13 @@ display: inline-block;
 }
 
 .btn-primary {
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
 color: white;
 }
 
 .btn-primary:hover {
 transform: translateY(-2px);
-box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
 }
 
 .btn-secondary {
@@ -117,7 +118,7 @@ transition: all 0.3s ease;
 }
 
 .nav-link:hover, .nav-link.active {
-background: #667eea;
+background: #57068c;
 color: white;
 }
 
@@ -131,7 +132,7 @@ gap: 25px;
 background: #f8f9fa;
 padding: 25px;
 border-radius: 15px;
-border-left: 5px solid #667eea;
+border-left: 5px solid #57068c;
 transition: all 0.3s ease;
 }
 
@@ -269,6 +270,7 @@ border: 2px dashed #e9ecef;
 margin-bottom: 15px;
 color: #2c3e50;
 }
+</style>
 {% endblock %}
 
 {% block content %}

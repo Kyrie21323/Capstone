@@ -1,299 +1,304 @@
 {% extends "base.html" %}
 
-{% block title %}Sign In - NFC Networking Assistant{% endblock %}
+{% block title %}Sign In - Prophere{% endblock %}
 
 {% block styles %}
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background: white;
-            padding: 50px 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 450px;
-            width: 100%;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-        
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 0.95rem;
-            font-weight: 300;
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.9rem;
-        }
-        
-        input[type="email"], input[type="password"] {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-        
-        input[type="email"]:focus, input[type="password"]:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .btn {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .flash-messages {
-            margin-bottom: 25px;
-        }
-        
-        .flash {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .flash.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .flash.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .register-link {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-        }
-        
-        .register-link p {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-        
-        .register-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-        
-        .register-link a:hover {
-            color: #764ba2;
-        }
-        
-        /* Role Selection Styles */
-        .role-selection {
-            margin-bottom: 30px;
-        }
-        
-        .role-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .role-tab {
-            flex: 1;
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 20px 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .role-tab:hover {
-            border-color: #667eea;
-            background: #f0f2ff;
-            transform: translateY(-2px);
-        }
-        
-        .role-tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            color: white;
-        }
-        
-        .role-icon {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-        
-        .role-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 2px;
-        }
-        
-        .role-desc {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            font-weight: 400;
-        }
-        
-        .role-tab.active .role-desc {
-            opacity: 0.9;
-        }
+<style>
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .container {
+        background: white;
+        padding: 50px 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 540px;
+        width: 100%;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .logo {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--nyu-violet);
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+        font-weight: 300;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 0.9rem;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+        outline: none;
+        border-color: #57068c;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(87, 6, 140, 0.1);
+    }
+
+    .btn {
+        width: 100%;
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
+    }
+
+    .flash-messages {
+        margin-bottom: 25px;
+    }
+
+    .flash {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .flash.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .flash.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .register-link {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .register-link p {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .register-link a {
+        color: #57068c;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .register-link a:hover {
+        color: #ab82c5;
+    }
+
+    /* Role Selection Styles */
+    .role-selection {
+        margin-bottom: 30px;
+    }
+
+    .role-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .role-tab {
+        flex: 1;
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .role-tab:hover {
+        border-color: #57068c;
+        background: #f0f2ff;
+        transform: translateY(-2px);
+    }
+
+    .role-tab.active {
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
+        border-color: #57068c;
+        color: white;
+    }
+
+    .role-icon {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+
+    .role-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+    }
+
+    .role-desc {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        font-weight: 400;
+    }
+
+    .role-tab.active .role-desc {
+        opacity: 0.9;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="header">
-            <h1 class="logo">Sign In</h1>
-            <p class="subtitle">Welcome back to NFC Networking Assistant</p>
-        </div>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-        
-        <!-- Role Selection -->
-        <div class="role-selection">
-            <div class="role-tabs">
-                <button type="button" class="role-tab active" data-role="attendee">
-                    <i class="role-icon">👥</i>
-                    <span class="role-title">Event Attendee</span>
-                    <span class="role-desc">Join events and network</span>
-                </button>
-                <button type="button" class="role-tab" data-role="manager">
-                    <i class="role-icon">⚙️</i>
-                    <span class="role-title">Event Manager</span>
-                    <span class="role-desc">Manage events and users</span>
-                </button>
-            </div>
-        </div>
-        
-        <form method="POST" id="loginForm">
-            <input type="hidden" id="user_role" name="user_role" value="attendee">
-            
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email">
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password">
-            </div>
-            
-            <button type="submit" class="btn" id="loginBtn">Sign In as Attendee</button>
-        </form>
-        
-        <div class="register-link">
-            <p>Don't have an account?</p>
-            <a href="{{ url_for('register') }}">Create Account</a>
+<div class="container">
+    <div class="header">
+        <h1 class="logo">Sign In</h1>
+        <p class="subtitle">Welcome back to Prophere</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Role Selection -->
+    <div class="role-selection">
+        <div class="role-tabs">
+            <button type="button" class="role-tab active" data-role="attendee">
+                <i class="role-icon">👥</i>
+                <span class="role-title">Event Attendee</span>
+                <span class="role-desc">Join events and network</span>
+            </button>
+            <button type="button" class="role-tab" data-role="manager">
+                <i class="role-icon">⚙️</i>
+                <span class="role-title">Event Manager</span>
+                <span class="role-desc">Manage events and users</span>
+            </button>
         </div>
     </div>
-    
-    <script>
-        // Add form validation
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            
-            // Validate email
-            if (!emailInput.value.trim()) {
-                e.preventDefault();
-                notificationSystem.show('Please enter your email address.', 'error', 'Email Required');
-                emailInput.focus();
-                return false;
-            }
-            
-            // Validate password
-            if (!passwordInput.value.trim()) {
-                e.preventDefault();
-                notificationSystem.show('Please enter your password.', 'error', 'Password Required');
-                passwordInput.focus();
-                return false;
-            }
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            const roleTabs = document.querySelectorAll('.role-tab');
-            const userRoleInput = document.getElementById('user_role');
-            const loginBtn = document.getElementById('loginBtn');
-            
-            roleTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Remove active class from all tabs
-                    roleTabs.forEach(t => t.classList.remove('active'));
-                    
-                    // Add active class to clicked tab
-                    this.classList.add('active');
-                    
-                    // Update hidden input and button text
-                    const role = this.getAttribute('data-role');
-                    userRoleInput.value = role;
-                    
-                    if (role === 'attendee') {
-                        loginBtn.textContent = 'Sign In as Attendee';
-                    } else if (role === 'manager') {
-                        loginBtn.textContent = 'Sign In as Manager';
-                    }
-                });
+
+    <form method="POST" id="loginForm">
+        <input type="hidden" id="user_role" name="user_role" value="attendee">
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+        </div>
+
+        <button type="submit" class="btn" id="loginBtn">Sign In as Attendee</button>
+    </form>
+
+    <div class="register-link">
+        <p>Don't have an account?</p>
+        <a href="{{ url_for('register') }}">Create Account</a>
+    </div>
+</div>
+
+<script>
+    // Add form validation
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // Validate email
+        if (!emailInput.value.trim()) {
+            e.preventDefault();
+            notificationSystem.show('Please enter your email address.', 'error', 'Email Required');
+            emailInput.focus();
+            return false;
+        }
+
+        // Validate password
+        if (!passwordInput.value.trim()) {
+            e.preventDefault();
+            notificationSystem.show('Please enter your password.', 'error', 'Password Required');
+            passwordInput.focus();
+            return false;
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const roleTabs = document.querySelectorAll('.role-tab');
+        const userRoleInput = document.getElementById('user_role');
+        const loginBtn = document.getElementById('loginBtn');
+
+        roleTabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Remove active class from all tabs
+                roleTabs.forEach(t => t.classList.remove('active'));
+
+                // Add active class to clicked tab
+                this.classList.add('active');
+
+                // Update hidden input and button text
+                const role = this.getAttribute('data-role');
+                userRoleInput.value = role;
+
+                if (role === 'attendee') {
+                    loginBtn.textContent = 'Sign In as Attendee';
+                } else if (role === 'manager') {
+                    loginBtn.textContent = 'Sign In as Manager';
+                }
             });
         });
-    </script>
+    });
+</script>
 {% endblock %}

@@ -3,6 +3,7 @@
 {% block title %}Edit Event - Admin Panel{% endblock %}
 
 {% block styles %}
+<style>
         body {
             display: flex;
             align-items: center;
@@ -62,9 +63,9 @@
         
         input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #57068c;
             background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(87, 6, 140, 0.1);
         }
         
         textarea {
@@ -74,7 +75,7 @@
         
         .btn {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
             color: white;
             padding: 15px;
             border: none;
@@ -88,7 +89,7 @@
         
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
         }
         
         .back-btn {
@@ -151,7 +152,7 @@
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 25px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #57068c;
         }
         
         .stats-grid {
@@ -174,6 +175,7 @@
             color: #7f8c8d;
             font-size: 0.8rem;
         }
+</style>
 {% endblock %}
 
 {% block content %}

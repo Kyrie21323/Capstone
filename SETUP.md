@@ -1,6 +1,6 @@
 # Setup Guide
 
-Complete installation and configuration guide for the NFC Networking Platform.
+Complete installation and configuration guide for Prophere.
 
 ## Prerequisites
 

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Database Setup Script for NFC Networking App
-
-Run this script to initialize/reset the database on any device.
+Database Setup Script for Prophere
+Creates tables and initializes the database on any device.
 Can also fix missing tables without resetting data.
 
 Replaces: fix_database.py (use --fix flag instead)
