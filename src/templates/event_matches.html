@@ -23,46 +23,46 @@
 
     <div class="section">
         {% if matches %}
-            <div class="matches-grid">
-                {% for match_data in matches %}
-                <div class="match-card">
-                    <div class="match-card-header">
-                        <h3>{{ match_data.other_user.name }}</h3>
-                        <span class="match-date">Matched {{ match_data.matched_at.strftime('%B %d, %Y') }}</span>
+        <div class="matches-grid">
+            {% for match_data in matches %}
+            <div class="match-card">
+                <div class="match-card-header">
+                    <h3>{{ match_data.other_user.name }}</h3>
+                    <span class="match-date">Matched {{ match_data.matched_at.strftime('%B %d, %Y') }}</span>
+                </div>
+
+                <div class="match-card-content">
+                    <div class="user-info">
+                        <div class="info-item">
+                            <strong>Email:</strong> {{ match_data.other_user.email }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Member since:</strong> {{ match_data.other_user.created_at.strftime('%B %Y') }}
+                        </div>
                     </div>
-                    
-                    <div class="match-card-content">
-                        <div class="user-info">
-                            <div class="info-item">
-                                <strong>Email:</strong> {{ match_data.other_user.email }}
-                            </div>
-                            <div class="info-item">
-                                <strong>Member since:</strong> {{ match_data.other_user.created_at.strftime('%B %Y') }}
-                            </div>
-                        </div>
-                        
-                        <div class="match-actions">
-                            <button class="btn btn-primary" onclick="sendMessage('{{ match_data.other_user.email }}')">
-                                Send Message
-                            </button>
-                            <button class="btn btn-secondary" onclick="viewProfile('{{ match_data.other_user.id }}')">
-                                View Profile
-                            </button>
-                        </div>
+
+                    <div class="match-actions">
+                        <button class="btn btn-primary" onclick="sendMessage('{{ match_data.other_user.email }}')">
+                            Send Message
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewProfile('{{ match_data.other_user.id }}')">
+                            View Profile
+                        </button>
                     </div>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
+        </div>
         {% else %}
-            <div class="no-matches">
-                <div class="no-matches-content">
-                    <h3>No matches yet</h3>
-                    <p>Keep swiping to find your professional connections!</p>
-                    <a href="{{ url_for('event_matching', event_id=event.id) }}" class="btn btn-primary">
-                        Start Matching
-                    </a>
-                </div>
+        <div class="no-matches">
+            <div class="no-matches-content">
+                <h3>No matches yet</h3>
+                <p>Keep swiping to find your professional connections!</p>
+                <a href="{{ url_for('event_matching', event_id=event.id) }}" class="btn btn-primary">
+                    Start Matching
+                </a>
             </div>
+        </div>
         {% endif %}
     </div>
 </div>
@@ -71,16 +71,16 @@
     body {
         padding: 20px;
     }
-    
+
     .container {
         background: white;
         padding: 40px;
         border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         max-width: 1400px;
         margin: 0 auto;
     }
-    
+
     .header {
         display: flex;
         justify-content: space-between;
@@ -89,25 +89,25 @@
         padding-bottom: 20px;
         border-bottom: 2px solid #f1f3f4;
     }
-    
+
     .header-left h1 {
         font-size: 2.5rem;
         color: #2c3e50;
         margin-bottom: 0.5rem;
     }
-    
+
     .event-subtitle {
         font-size: 1.1rem;
         color: #7f8c8d;
         margin: 0;
     }
-    
+
     .header-right {
         display: flex;
         align-items: center;
         gap: 10px;
     }
-    
+
     .header-right .btn {
         padding: 12px 24px;
         font-size: 1rem;
@@ -117,22 +117,22 @@
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(78, 205, 196, 0.2);
     }
-    
+
     .header-right .btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
     }
-    
+
     .section {
         margin-top: 20px;
     }
-    
+
     .matches-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
         gap: 20px;
     }
-    
+
     .match-card {
         background: #f8f9fa;
         border-radius: 12px;
@@ -140,62 +140,62 @@
         transition: all 0.3s ease;
         border: 1px solid #e9ecef;
     }
-    
+
     .match-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
-    
+
     .match-card-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 20px;
         text-align: center;
     }
-    
+
     .match-card-header h3 {
         margin: 0 0 8px 0;
         font-size: 1.3rem;
         font-weight: 600;
     }
-    
+
     .match-date {
         font-size: 0.9rem;
         opacity: 0.9;
     }
-    
+
     .match-card-content {
         padding: 20px;
     }
-    
+
     .user-info {
         margin-bottom: 20px;
     }
-    
+
     .info-item {
         margin-bottom: 12px;
         padding: 8px 0;
         border-bottom: 1px solid #e9ecef;
     }
-    
+
     .info-item:last-child {
         border-bottom: none;
         margin-bottom: 0;
     }
-    
+
     .info-item strong {
         color: #2c3e50;
         display: inline-block;
         width: 100px;
         font-size: 0.9rem;
     }
-    
+
     .match-actions {
         display: flex;
         gap: 10px;
         justify-content: center;
     }
-    
+
     .match-actions .btn {
         flex: 1;
         padding: 10px 15px;
@@ -209,27 +209,27 @@
         display: inline-block;
         font-size: 0.9rem;
     }
-    
+
     .btn-primary {
         background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
         color: white;
     }
-    
+
     .btn-primary:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
     }
-    
+
     .btn-secondary {
         background: #6c757d;
         color: white;
     }
-    
+
     .btn-secondary:hover {
         background: #5a6268;
         transform: translateY(-1px);
     }
-    
+
     .no-matches {
         display: flex;
         justify-content: center;
@@ -237,26 +237,26 @@
         min-height: 400px;
         padding: 60px 20px;
     }
-    
+
     .no-matches-content {
         text-align: center;
         max-width: 500px;
     }
-    
+
     .no-matches-content h3 {
         color: #2c3e50;
         margin-bottom: 20px;
         font-size: 2rem;
         font-weight: 600;
     }
-    
+
     .no-matches-content p {
         color: #7f8c8d;
         margin-bottom: 30px;
         font-size: 1.1rem;
         line-height: 1.6;
     }
-    
+
     .no-matches-content .btn {
         padding: 15px 30px;
         font-size: 1rem;
@@ -267,31 +267,31 @@
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(78, 205, 196, 0.2);
     }
-    
+
     .no-matches-content .btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
     }
-    
+
     @media (max-width: 768px) {
         .container {
             padding: 20px;
         }
-        
+
         .header {
             flex-direction: column;
             align-items: flex-start;
             gap: 15px;
         }
-        
+
         .header-left h1 {
             font-size: 2rem;
         }
-        
+
         .matches-grid {
             grid-template-columns: 1fr;
         }
-        
+
         .match-actions {
             flex-direction: column;
         }
@@ -305,7 +305,7 @@
         const body = encodeURIComponent(`Hi! We matched on {{ event.name }} and I'd love to connect with you professionally.`);
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
     }
-    
+
     function viewProfile(userId) {
         // For now, just show an alert. In a real app, this would open a profile modal or page
         alert('Profile view feature coming soon!');

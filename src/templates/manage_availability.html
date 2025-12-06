@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Availability - {{ event.name }}{% endblock %}
+
+{% block styles %}
+body {
+padding: 20px;
+}
+
+.container {
+background: white;
+padding: 40px;
+border-radius: 20px;
+box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+max-width: 800px;
+margin: 0 auto;
+}
+
+.header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 40px;
+padding-bottom: 20px;
+border-bottom: 2px solid #e9ecef;
+}
+
+.header h1 {
+font-size: 2rem;
+font-weight: 700;
+color: #2c3e50;
+margin: 0;
+}
+
+.back-btn {
+background: #6c757d;
+color: white;
+padding: 10px 20px;
+border-radius: 8px;
+text-decoration: none;
+font-weight: 600;
+transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+background: #5a6268;
+transform: translateY(-2px);
+}
+
+.section {
+margin-bottom: 40px;
+}
+
+.availability-form {
+background: #f8f9fa;
+padding: 30px;
+border-radius: 15px;
+border: 1px solid #e9ecef;
+}
+
+.session-item {
+background: white;
+padding: 20px;
+border-radius: 10px;
+border: 1px solid #e9ecef;
+margin-bottom: 15px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+transition: all 0.3s ease;
+}
+
+.session-item:hover {
+box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+transform: translateY(-2px);
+}
+
+.session-info {
+flex: 1;
+}
+
+.session-info h3 {
+margin: 0 0 5px 0;
+color: #2c3e50;
+}
+
+.session-time {
+color: #6c757d;
+font-size: 0.9rem;
+}
+
+.session-location {
+color: #17a2b8;
+font-size: 0.9rem;
+margin-top: 5px;
+}
+
+.toggle-switch {
+position: relative;
+display: inline-block;
+width: 60px;
+height: 34px;
+}
+
+.toggle-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: .4s;
+border-radius: 34px;
+}
+
+.slider:before {
+position: absolute;
+content: "";
+height: 26px;
+width: 26px;
+left: 4px;
+bottom: 4px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+
+input:checked + .slider {
+background-color: #28a745;
+}
+
+input:focus + .slider {
+box-shadow: 0 0 1px #28a745;
+}
+
+input:checked + .slider:before {
+transform: translateX(26px);
+}
+
+.status-label {
+margin-right: 15px;
+font-weight: 600;
+color: #6c757d;
+}
+
+input:checked ~ .status-label {
+color: #28a745;
+}
+
+.submit-btn {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: white;
+padding: 15px 30px;
+border: none;
+border-radius: 10px;
+cursor: pointer;
+font-size: 1.1rem;
+font-weight: 600;
+width: 100%;
+margin-top: 20px;
+transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>Manage Availability</h1>
+        <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+    </div>
+
+    <div class="section">
+        <p style="color: #6c757d; margin-bottom: 20px;">
+            Please indicate which sessions you are available to attend. We will schedule your meetings during these
+            times.
+        </p>
+
+        <form method="POST" class="availability-form">
+            {% if sessions %}
+            {% for session in sessions %}
+            <div class="session-item">
+                <div class="session-info">
+                    <h3>{{ session.name }}</h3>
+                    <div class="session-time">
+                        {{ session.start_time.strftime('%Y-%m-%d %H:%M') }} - {{ session.end_time.strftime('%H:%M') }}
+                    </div>
+                    {% if session.location_description %}
+                    <div class="session-location">📍 {{ session.location_description }}</div>
+                    {% endif %}
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <span class="status-label" id="label-{{ session.id }}">
+                        {% if session.id in available_session_ids %}Available{% else %}Unavailable{% endif %}
+                    </span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="session_{{ session.id }}" {% if session.id in available_session_ids
+                            %}checked{% endif %} onchange="updateLabel(this, 'label-{{ session.id }}')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+            <button type="submit" class="submit-btn">Save Availability</button>
+            {% else %}
+            <p style="text-align: center; color: #6c757d; font-style: italic;">
+                No sessions have been scheduled for this event yet.
+            </p>
+            {% endif %}
+        </form>
+    </div>
+    <div class="section">
+        <h2>Your Scheduled Meetings</h2>
+        {% if meetings %}
+        <div class="session-list">
+            {% for meeting in meetings %}
+            <div class="session-item" style="border-left: 5px solid #28a745;">
+                <div class="session-info">
+                    <h3>Meeting with {{ meeting.match.get_other_user(current_user.id).name }}</h3>
+                    <div class="session-time">
+                        🕒 {{ meeting.start_time.strftime('%Y-%m-%d %H:%M') }} - {{ meeting.end_time.strftime('%H:%M')
+                        }}
+                    </div>
+                    <div class="session-location">
+                        📍 {{ meeting.location.name }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align: center; color: #6c757d; font-style: italic;">
+            No meetings scheduled yet. Please ensure you have marked your availability.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function updateLabel(checkbox, labelId) {
+        const label = document.getElementById(labelId);
+        if (checkbox.checked) {
+            label.textContent = 'Available';
+            label.style.color = '#28a745';
+        } else {
+            label.textContent = 'Unavailable';
+            label.style.color = '#6c757d';
+        }
+    }
+</script>
+{% endblock %}

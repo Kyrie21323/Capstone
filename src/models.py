@@ -126,3 +126,65 @@ class UserInteraction(db.Model):
     
     def __repr__(self):
         return f'<UserInteraction User {self.user_id} {self.action}s User {self.target_user_id} in Event {self.event_id}>'
+
+class EventSession(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)  # e.g., "Morning Session"
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+    location_description = db.Column(db.String(200), nullable=True)  # General location info
+    
+    # Relationships
+    event = db.relationship('Event', backref='sessions')
+    
+    def __repr__(self):
+        return f'<EventSession {self.name} for Event {self.event_id}>'
+
+class MeetingLocation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)  # e.g., "Hall 1 Table 11"
+    capacity = db.Column(db.Integer, default=2)  # Usually 2 for 1-on-1
+    
+    # Relationships
+    event = db.relationship('Event', backref='locations')
+    
+    def __repr__(self):
+        return f'<MeetingLocation {self.name} for Event {self.event_id}>'
+
+class ParticipantAvailability(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    session_id = db.Column(db.Integer, db.ForeignKey('event_session.id'), nullable=False)
+    is_available = db.Column(db.Boolean, default=True)
+    
+    # Relationships
+    user = db.relationship('User', backref='availabilities')
+    event = db.relationship('Event', backref='participant_availabilities')
+    session = db.relationship('EventSession', backref='availabilities')
+    
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'session_id', name='unique_user_session_availability'),
+    )
+    
+    def __repr__(self):
+        return f'<ParticipantAvailability User {self.user_id} Session {self.session_id}>'
+
+class Meeting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    match_id = db.Column(db.Integer, db.ForeignKey('match.id'), nullable=False)
+    session_id = db.Column(db.Integer, db.ForeignKey('event_session.id'), nullable=False)
+    location_id = db.Column(db.Integer, db.ForeignKey('meeting_location.id'), nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String(20), default='scheduled')  # scheduled, cancelled, completed
+    
+    # Relationships
+    match = db.relationship('Match', backref='meetings')
+    session = db.relationship('EventSession', backref='meetings')
+    location = db.relationship('MeetingLocation', backref='meetings')
+    
+    def __repr__(self):
+        return f'<Meeting Match {self.match_id} at {self.start_time}>'
