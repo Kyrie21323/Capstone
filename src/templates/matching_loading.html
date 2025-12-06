@@ -165,7 +165,7 @@
     </style>
 </head>
 <body>
-    <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+    <a href="{{ url_for('user.dashboard') }}" class="back-btn">Back to Dashboard</a>
     
     <div class="loading-container pulse">
         <div class="loading-icon">
@@ -221,7 +221,7 @@
 
         // Redirect to matching page after calculation
         setTimeout(() => {
-            window.location.href = "{{ url_for('event_matching', event_id=event_id) }}";
+            window.location.href = "{{ url_for('matching.event_matching', event_id=event_id) }}";
         }, 5000);
     </script>
 </body>

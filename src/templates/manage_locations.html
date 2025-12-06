@@ -183,7 +183,7 @@ border-color: #bee5eb;
 <div class="container">
     <div class="header">
         <h1>Manage Locations</h1>
-        <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Back to Dashboard</a>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="back-btn">Back to Dashboard</a>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}

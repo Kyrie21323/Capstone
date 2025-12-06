@@ -13,7 +13,7 @@
             <span class="welcome-text">Welcome, {{ current_user.name }}</span>
             {% if current_user.is_administrator() %}
             {% endif %}
-            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            <a href="{{ url_for('auth.logout') }}" class="logout-btn">Logout</a>
         </div>
     </div>
 
@@ -45,10 +45,11 @@
 
             <div class="event-actions">
                 <div class="matching-buttons">
-                    <a href="{{ url_for('event_matching', event_id=membership.event.id) }}" class="matching-btn">
+                    <a href="{{ url_for('matching.event_matching', event_id=membership.event.id) }}"
+                        class="matching-btn">
                         Start Smart Matching
                     </a>
-                    <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">
+                    <a href="{{ url_for('matching.event_matches', event_id=membership.event.id) }}" class="matches-btn">
                         View Matches
                     </a>
                 </div>
@@ -79,17 +80,20 @@
             </div>
             <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
                 <div class="button-group">
-                    <a href="{{ url_for('view_resume', resume_id=user_resume.id) }}"
+                    <a href="{{ url_for('user.view_resume', resume_id=user_resume.id) }}"
                         class="upload-link view-document-btn">View Document</a>
-                    <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Re-upload
+                    <a href="{{ url_for('user.upload_resume', event_id=membership.event.id) }}"
+                        class="upload-link">Re-upload
                         Document</a>
                     <button type="button" class="delete-resume-btn" data-resume-id="{{ user_resume.id }}"
                         data-resume-name="{{ user_resume.original_name }}">Delete Document</button>
                 </div>
                 <div class="matching-buttons">
-                    <a href="{{ url_for('matching_loading', event_id=membership.event.id) }}" class="matching-btn">Start
+                    <a href="{{ url_for('matching.matching_loading', event_id=membership.event.id) }}"
+                        class="matching-btn">Start
                         Smart Matching</a>
-                    <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">View
+                    <a href="{{ url_for('matching.event_matches', event_id=membership.event.id) }}"
+                        class="matches-btn">View
                         Matches</a>
                 </div>
             </div>
@@ -100,12 +104,14 @@
                 interests. This helps connect you with more relevant opportunities.
             </div>
             <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
-                <a href="{{ url_for('upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload
+                <a href="{{ url_for('user.upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload
                     Document</a>
                 <div class="matching-buttons">
-                    <a href="{{ url_for('matching_loading', event_id=membership.event.id) }}" class="matching-btn">Start
+                    <a href="{{ url_for('matching.matching_loading', event_id=membership.event.id) }}"
+                        class="matching-btn">Start
                         Smart Matching</a>
-                    <a href="{{ url_for('event_matches', event_id=membership.event.id) }}" class="matches-btn">View
+                    <a href="{{ url_for('matching.event_matches', event_id=membership.event.id) }}"
+                        class="matches-btn">View
                         Matches</a>
                 </div>
             </div>
@@ -124,7 +130,7 @@
         <div class="join-event-section">
             <h2>Join New Event</h2>
             <p>Enter an event code and your areas of interest to join a new event:</p>
-            <form method="POST" action="{{ url_for('join_event') }}" class="join-form" id="joinEventForm">
+            <form method="POST" action="{{ url_for('user.join_event') }}" class="join-form" id="joinEventForm">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="event_code">Event Code</label>
@@ -278,7 +284,7 @@
                 // Create a form to submit the leave request
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ url_for("leave_event") }}';
+                form.action = '{{ url_for("user.leave_event") }}';
 
                 const eventIdInput = document.createElement('input');
                 eventIdInput.type = 'hidden';
@@ -342,7 +348,7 @@
         // Create form
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '{{ url_for("update_keywords") }}';
+        form.action = '{{ url_for("user.update_keywords") }}';
 
         // Add hidden event_id input
         const eventIdInput = document.createElement('input');

@@ -278,7 +278,7 @@ color: #2c3e50;
     <div class="header">
         <h1>Admin Dashboard</h1>
         <div class="header-actions">
-            <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Logout</a>
         </div>
     </div>
 
@@ -294,12 +294,12 @@ color: #2c3e50;
 
     <div class="nav-links">
         <div class="nav-left">
-            <a href="{{ url_for('admin_dashboard') }}" class="nav-link">Dashboard</a>
-            <a href="{{ url_for('admin_events') }}" class="nav-link active">Manage Events</a>
-            <a href="{{ url_for('admin_users') }}" class="nav-link">Manage Users</a>
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link">Dashboard</a>
+            <a href="{{ url_for('admin.admin_events') }}" class="nav-link active">Manage Events</a>
+            <a href="{{ url_for('admin.admin_users') }}" class="nav-link">Manage Users</a>
         </div>
         <div class="nav-right">
-            <a href="{{ url_for('admin_create_event') }}" class="btn btn-primary">Create New Event</a>
+            <a href="{{ url_for('admin.admin_create_event') }}" class="btn btn-primary">Create New Event</a>
         </div>
     </div>
 
@@ -340,15 +340,15 @@ color: #2c3e50;
             </div>
 
             <div class="event-actions">
-                <a href="{{ url_for('manage_sessions', event_id=event.id) }}"
+                <a href="{{ url_for('scheduling.manage_sessions', event_id=event.id) }}"
                     class="btn btn-secondary btn-small">Sessions</a>
-                <a href="{{ url_for('manage_locations', event_id=event.id) }}"
+                <a href="{{ url_for('scheduling.manage_locations', event_id=event.id) }}"
                     class="btn btn-secondary btn-small">Locations</a>
-                <a href="{{ url_for('event_graph_page', event_id=event.id) }}" class="btn btn-primary btn-small">View
+                <a href="{{ url_for('matching.event_graph_page', event_id=event.id) }}" class="btn btn-primary btn-small">View
                     Network Graph</a>
-                <a href="{{ url_for('admin_edit_event', event_id=event.id) }}" class="btn btn-success btn-small">Edit
+                <a href="{{ url_for('admin.admin_edit_event', event_id=event.id) }}" class="btn btn-success btn-small">Edit
                     Event</a>
-                <form method="POST" action="{{ url_for('admin_delete_event', event_id=event.id) }}"
+                <form method="POST" action="{{ url_for('admin.admin_delete_event', event_id=event.id) }}"
                     style="display: inline;" onsubmit="return showDeleteEventConfirmation(event, '{{ event.name }}')">
                     <button type="submit" class="btn btn-danger btn-small">Delete Event</button>
                 </form>
@@ -360,7 +360,7 @@ color: #2c3e50;
     <div class="no-events">
         <h3>No Events Created Yet</h3>
         <p>Create your first event to get started with the platform.</p>
-        <a href="{{ url_for('admin_create_event') }}" class="btn btn-primary" style="margin-top: 20px;">Create First
+        <a href="{{ url_for('admin.admin_create_event') }}" class="btn btn-primary" style="margin-top: 20px;">Create First
             Event</a>
     </div>
     {% endif %}

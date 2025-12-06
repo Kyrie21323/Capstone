@@ -186,7 +186,7 @@ border-color: #bee5eb;
 <div class="container">
     <div class="header">
         <h1>Manage Sessions</h1>
-        <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Back to Dashboard</a>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="back-btn">Back to Dashboard</a>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -231,7 +231,7 @@ border-color: #bee5eb;
         <div class="form-card">
             <p>Once you have defined sessions and locations, and participants have indicated their availability, you can
                 run the allocation algorithm.</p>
-            <form method="POST" action="{{ url_for('allocate_meetings', event_id=event.id) }}">
+            <form method="POST" action="{{ url_for('scheduling.allocate_meetings', event_id=event.id) }}">
                 <button type="submit" class="submit-btn"
                     style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">Run Allocation
                     Algorithm</button>

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found - Prophere{% endblock %}
+
+{% block content %}
+<div class="container" style="text-align: center; padding: 80px 40px;">
+    <h1 style="font-size: 6rem; color: var(--nyu-violet); margin-bottom: 20px;">404</h1>
+    <h2 style="color: var(--text-primary); margin-bottom: 30px;">Page Not Found</h2>
+    <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 40px;">
+        Sorry, the page you're looking for doesn't exist.
+    </p>
+    <div style="display: flex; gap: 15px; justify-content: center;">
+        <a href="{{ url_for('auth.index') }}" class="btn btn-primary" style="padding: 12px 30px;">
+            Go to Home
+        </a>
+        {% if current_user.is_authenticated %}
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary" style="padding: 12px 30px;">
+            Go to Dashboard
+        </a>
+        {% else %}
+        <a href="{{ url_for('user.dashboard') }}" class="btn btn-secondary" style="padding: 12px 30px;">
+            Go to Dashboard
+        </a>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

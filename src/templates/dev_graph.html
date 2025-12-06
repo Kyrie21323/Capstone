@@ -236,7 +236,7 @@
             <span class="admin-badge">Dev / Test View</span>
         </div>
         <div class="header-right">
-            <a href="{{ url_for('admin_events') }}" class="btn btn-primary">
+            <a href="{{ url_for('admin.admin_events') }}" class="btn btn-primary">
                 Back to Events
             </a>
         </div>
@@ -245,13 +245,13 @@
     <div class="dataset-controls">
         <h3>Select Dataset Size:</h3>
         <div class="dataset-buttons">
-            <a href="{{ url_for('dev_graph_page', size='small') }}" class="btn-dataset {% if size == 'small' %}active{% endif %}">
+            <a href="{{ url_for('admin.dev_graph_page', size='small') }}" class="btn-dataset {% if size == 'small' %}active{% endif %}">
                 Small Dataset
             </a>
-            <a href="{{ url_for('dev_graph_page', size='medium') }}" class="btn-dataset {% if size == 'medium' %}active{% endif %}">
+            <a href="{{ url_for('admin.dev_graph_page', size='medium') }}" class="btn-dataset {% if size == 'medium' %}active{% endif %}">
                 Medium Dataset
             </a>
-            <a href="{{ url_for('dev_graph_page', size='large') }}" class="btn-dataset {% if size == 'large' %}active{% endif %}">
+            <a href="{{ url_for('admin.dev_graph_page', size='large') }}" class="btn-dataset {% if size == 'large' %}active{% endif %}">
                 Large Dataset
             </a>
         </div>

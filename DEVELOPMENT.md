@@ -7,17 +7,37 @@ Technical documentation for developers working on Prophere.
 ```
 Capstone/
 ├── src/                       # Main application code
-│   ├── app.py                # Flask application and routes (1469 lines)
+│   ├── app.py                # Application factory (160 lines)
+│   ├── config.py             # Environment configuration
 │   ├── models.py             # SQLAlchemy database models
 │   ├── matching_engine.py    # NLP matching system
 │   ├── allocation_engine.py  # Meeting allocation algorithm
-│   ├── templates/            # Jinja2 HTML templates
-│   │   ├── admin/           # Admin panel templates
-│   │   ├── base.html        # Base template with navigation
-│   │   └── *.html           # Feature-specific templates
-│   └── utils/               # Utility modules
-│       ├── graph_utils.py   # Network graph generation
-│       └── sample_graph_data.py
+│   ├── routes/               # Blueprint modules (NEW)
+│   │   ├── __init__.py      # Blueprint registration
+│   │   ├── auth.py          # Authentication routes
+│   │   ├── user.py          # User feature routes
+│   │   ├── admin.py         # Admin panel routes
+│   │   ├── matching.py      # Matching routes
+│   │   ├── scheduling.py    # Scheduling routes
+│   │   ├── api.py           # JSON API endpoints
+│   │   └── utils.py         # Shared route utilities
+│   ├── utils/               # Utility modules (ENHANCED)
+│   │   ├── validators.py    # Input validation
+│   │   ├── helpers.py       # Common functions
+│   │   ├── decorators.py    # Custom decorators
+│   │   ├── graph_utils.py   # Network graph generation
+│   │   └── sample_graph_data.py
+│   ├── templates/           # Jinja2 HTML templates
+│   │   ├── admin/          # Admin panel templates
+│   │   ├── base.html       # Base template with modular JS
+│   │   └── *.html          # Feature-specific templates
+│   └── static/             # Static assets
+│       ├── css/
+│       │   └── style.css   # Design system with tokens
+│       └── js/             # JavaScript modules (NEW)
+│           ├── notifications.js
+│           ├── modals.js
+│           └── keywords.js
 ├── scripts/                  # Management scripts
 │   ├── script_helpers.py    # Shared utilities
 │   ├── manage_users.py      # User management CLI
@@ -54,20 +74,103 @@ Configures Python path and starts Flask application.
 
 ### Core Application
 
-**`src/app.py`** (1469 lines)
-- Flask application instance
-- All route handlers (46 functions)
-- Authentication logic
-- File upload handling
-- Admin functionality
-- Matching system integration
+**`src/app.py`** (160 lines)
+- Application factory pattern using `create_app()`
+- Environment-based configuration loading
+- Blueprint registration
+- Extension initialization (SQLAlchemy, Flask-Login, Flask-Migrate)
+- Error handlers
 
 **Key Configurations**:
 ```python
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/nfc_networking.db'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
-app.config['UPLOAD_FOLDER'] = 'uploads/'
-app.config['SECRET_KEY'] = 'dev-key-change-in-production'
+# Load environment-specific config
+from config import get_config
+config_class = get_config()  # dev/test/prod
+app.config.from_object(config_class)
+```
+
+### Blueprint Architecture
+
+**`src/routes/__init__.py`**
+Defines and registers all blueprints:
+- `auth_bp` - Authentication (register, login, logout)
+- `user_bp` - User features (dashboard, events, resumes)
+- `admin_bp` - Admin panel (URL prefix: `/admin`)
+- `matching_bp` - Matching system (URL prefix: `/event`)
+- `scheduling_bp` - Scheduling (URL prefix: `/event`)
+- `api_bp` - JSON endpoints (URL prefix: `/api`)
+
+**Blueprint Files**:
+- `routes/auth.py` - 111 lines
+- `routes/user.py` - 380 lines
+- `routes/admin.py` - 305 lines
+- `routes/matching.py` - 355 lines
+- `routes/scheduling.py` - 165 lines
+- `routes/api.py` - 55 lines
+
+### Configuration Management
+
+**`src/config.py`**
+
+Environment-specific configurations:
+```python
+class DevelopmentConfig(Config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///...'
+
+class ProductionConfig(Config):
+    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = 'postgresql://...'
+```
+
+### Environment Configuration
+
+**Using Different Environments:**
+
+```bash
+# Development (default)
+python main.py
+
+# Production
+FLASK_ENV=production python main.py
+
+# Testing
+FLASK_ENV=testing pytest
+```
+
+**Environment Variables:**
+
+Create a `.env` file for production:
+```bash
+# Flask Configuration
+FLASK_ENV=production
+SECRET_KEY=your-very-secure-random-key-here-min-32-chars
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost/prophere
+
+# File Upload
+UPLOAD_FOLDER=/var/www/prophere/uploads
+MAX_CONTENT_LENGTH=16777216  # 16MB in bytes
+```
+
+**Configuration Class Selection:**
+
+The app automatically selects the right config based on `FLASK_ENV`:
+- `development` → `DevelopmentConfig` (default)
+- `testing` → `TestingConfig`
+- `production` → `ProductionConfig`
+
+**Programmatic Config Selection:**
+```python
+from src.app import create_app
+
+# Explicit environment
+app = create_app('production')
+
+# Or use environment variable
+import os
+app = create_app(os.getenv('FLASK_ENV'))
 ```
 
 ### Database Models
@@ -152,12 +255,40 @@ def load_user(user_id):
 - `@admin_required` - Must be admin/manager
 
 ### Input Validation
-- Email format validation
-- Password length (6+ characters)
-- Event code format (3-20 alphanumeric)
-- Keyword validation (2+ keywords, 50 chars max)
-- File type and size checking
-- SQL injection prevention (SQLAlchemy ORM)
+
+**`src/utils/validators.py`**
+- `validate_email()` - Email format validation
+- `validate_password()` - Password strength (6+ chars)
+- `validate_keywords()` - Keyword count and format
+- `validate_file_extension()` - File type checking
+- `sanitize_keywords()` - Clean and deduplicate keywords
+
+### Custom Decorators
+
+**`src/utils/decorators.py`**
+- `@admin_required` - Must be authenticated admin
+- `@prevent_admin_action` - Block admins from user actions
+- `@requires_membership` - Check event membership
+- `@anonymous_required` - Redirect authenticated users
+- `@log_action()` - Action logging decorator factory
+
+### Helper Functions
+
+**`src/utils/helpers.py`**
+- `format_datetime()`, `format_date()` - Date formatting
+- `truncate_text()` - Text truncation with suffix  
+- `get_file_size_str()` - Human-readable file sizes
+- `clean_filename()` - Safe filesystem names
+- `parse_keywords()` - Parse comma-separated keywords
+
+### JavaScript Modules
+
+**`src/static/js/`**
+
+Reusable JavaScript modules extracted from templates:
+- `notifications.js` - Toast notification system
+- `modals.js` - Confirmation dialog system
+- `keywords.js` - Tag-based keyword input
 
 ---
 
@@ -287,33 +418,46 @@ tests/
 
 ## Production Deployment
 
-### Environment Variables
+### Environment Setup
 
-Create `.env` file:
+**1. Set Environment Variables:**
 ```bash
-FLASK_ENV=production
-SECRET_KEY=your-secure-random-key-here
-DATABASE_URL=postgresql://user:pass@localhost/dbname
-UPLOAD_FOLDER=/var/www/uploads
+export FLASK_ENV=production
+export SECRET_KEY=$(python -c 'import secrets; print(secrets.token_hex(32))')
+export DATABASE_URL=postgresql://user:pass@localhost/prophere
 ```
 
-### Database Configuration
+**2. Install Production Dependencies:**
+```bash
+pip install gunicorn psycopg2-binary
+```
 
-**Change from SQLite to PostgreSQL**:
-```python
-import os
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL',
-    'sqlite:///instance/nfc_networking.db'
-)
+### Database Migration
+
+**Switch from SQLite to PostgreSQL:**
+```bash
+# Export data from development
+python scripts/import_database.py --export
+
+# Update DATABASE_URL environment variable
+export DATABASE_URL=postgresql://user:pass@localhost/prophere
+
+# Import data to production
+python scripts/import_database.py --import
 ```
 
 ### Production Server
 
-Use Gunicorn:
+**Run with Gunicorn:**
 ```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 'src.app:app'
+# Basic
+gunicorn -w 4 -b 0.0.0.0:8000 'src.app:create_app()'
+
+# With timeout for ML operations
+gunicorn -w 4 -b 0.0.0.0:8000 --timeout 120 'src.app:create_app()'
+
+# With environment
+FLASK_ENV=production gunicorn -w 4 -b 0.0.0.0:8000 'src.app:create_app("production")'
 ```
 
 **Gunicorn Options**:

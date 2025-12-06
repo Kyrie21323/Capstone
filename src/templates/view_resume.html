@@ -175,7 +175,7 @@
     <div class="container">
         <div class="header">
             <h1>View Resume</h1>
-            <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+            <a href="{{ url_for('user.dashboard') }}" class="back-btn">Back to Dashboard</a>
         </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -214,18 +214,18 @@
             <h3>Resume Preview</h3>
             {% if resume.mime_type == 'application/pdf' %}
                 <div class="pdf-container">
-                    <embed src="{{ url_for('uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
+                    <embed src="{{ url_for('user.uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
                            type="application/pdf" 
                            class="pdf-embed">
                 </div>
-                <a href="{{ url_for('uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
+                <a href="{{ url_for('user.uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
                    download="{{ resume.original_name }}" 
                    class="download-btn">Download Resume</a>
             {% else %}
                 <div class="no-pdf-message">
                     <p>This file type cannot be previewed in the browser.</p>
                     <p>You can download the file to view it.</p>
-                    <a href="{{ url_for('uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
+                    <a href="{{ url_for('user.uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}" 
                        download="{{ resume.original_name }}" 
                        class="download-btn">Download Resume</a>
                 </div>

@@ -11,11 +11,11 @@
         </div>
         <div class="header-right">
             {% if current_user.is_administrator() %}
-            <a href="{{ url_for('event_graph_page', event_id=event.id) }}" class="btn btn-secondary">
+            <a href="{{ url_for('matching.event_graph_page', event_id=event.id) }}" class="btn btn-secondary">
                 View Event Network
             </a>
             {% endif %}
-            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary">
                 Back to Dashboard
             </a>
         </div>
@@ -58,7 +58,7 @@
             <div class="no-matches-content">
                 <h3>No matches yet</h3>
                 <p>Keep swiping to find your professional connections!</p>
-                <a href="{{ url_for('event_matching', event_id=event.id) }}" class="btn btn-primary">
+                <a href="{{ url_for('matching.event_matching', event_id=event.id) }}" class="btn btn-primary">
                     Start Matching
                 </a>
             </div>

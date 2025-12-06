@@ -56,24 +56,32 @@ At large events, attendees struggle to track connections and coordinate meetings
 - **File Processing**: PyPDF2, python-docx
 - **Migrations**: Flask-Migrate for schema management
 
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| **[SETUP.md](SETUP.md)** | Installation, configuration, and troubleshooting |
-| **[FEATURES.md](FEATURES.md)** | Detailed feature descriptions and usage |
-| **[DATABASE.md](DATABASE.md)** | Database models, operations, and management |
-| **[API.md](API.md)** | Complete API routes reference |
-| **[DEVELOPMENT.md](DEVELOPMENT.md)** | Technical architecture and developer guide |
-
-## Project Structure
-
 ```
 Capstone/
 ├── src/                    # Application code
-│   ├── app.py             # Main Flask app
+│   ├── app.py             # Application factory (160 lines)
+│   ├── config.py          # Environment configuration
 │   ├── models.py          # Database models
 │   ├── matching_engine.py # NLP matching
+│   ├── allocation_engine.py # Meeting scheduling
+│   ├── routes/            # Modular blueprints
+│   │   ├── auth.py        # Authentication
+│   │   ├── user.py        # User features
+│   │   ├── admin.py       # Admin panel
+│   │   ├── matching.py    # Matching system
+│   │   ├── scheduling.py  # Scheduling
+│   │   └── api.py         # API endpoints
+│   ├── utils/             # Utilities
+│   │   ├── validators.py  # Input validation
+│   │   ├── helpers.py     # Common functions
+│   │   ├── decorators.py  # Custom decorators
+│   │   └── graph_utils.py # Graph generation
+│   ├── static/            
+│   │   ├── css/style.css  # Design system
+│   │   └── js/            # JavaScript modules
+│   │       ├── notifications.js
+│   │       ├── modals.js
+│   │       └── keywords.js
 │   └── templates/         # HTML templates
 ├── scripts/               # Management scripts
 │   ├── manage_users.py    # User management
@@ -83,6 +91,16 @@ Capstone/
 ├── migrations/            # Database migrations
 └── main.py               # Entry point
 ```
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[SETUP.md](SETUP.md)** | Installation, configuration, and troubleshooting |
+| **[FEATURES.md](FEATURES.md)** | Detailed feature descriptions and usage |
+| **[DATABASE.md](DATABASE.md)** | Database models, operations, and management |
+| **[API.md](API.md)** | Complete API routes reference |
+| **[DEVELOPMENT.md](DEVELOPMENT.md)** | Technical architecture and developer guide |
 
 ---
 
@@ -105,21 +123,17 @@ python scripts/setup_database.py
 ### Run the Application
 
 ```bash
+# Development (default)
 python main.py
+
+# Production
+FLASK_ENV=production python main.py
 ```
 
 ### Access the Application
 
 - **Main Site**: http://127.0.0.1:5000
 - **Admin Panel**: http://127.0.0.1:5000/admin
-
-### Graph Visualizer (Admin Only)
-
-- **Event Network Graph**: `/event/<event_id>/graph` - Visualize attendee connections for a specific event
-- **Dev Graph Visualizer**: 
-  - `/admin/graph/dev/small` - Small synthetic dataset
-  - `/admin/graph/dev/medium` - Medium synthetic dataset
-  - `/admin/graph/dev/large` - Large synthetic dataset
 
 ### Default Login Credentials
 

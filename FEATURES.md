@@ -80,6 +80,14 @@ Prophere provides a comprehensive suite of features for professional networking 
 - **Delete Events**: Remove events with cascade deletion of related data
 - **Event Statistics**: View member count, match count, resume count
 
+#### Graph Visualizer
+
+- **Event Network Graph**: `/event/<event_id>/graph` - Visualize attendee connections for a specific event
+- **Dev Graph Visualizer**: `/admin/graph/dev/<dataset_size>`
+  - `/admin/graph/dev/small` - Small synthetic dataset
+  - `/admin/graph/dev/medium` - Medium synthetic dataset
+  - `/admin/graph/dev/large` - Large synthetic dataset
+
 ---
 
 ## Intelligent Matching System

@@ -248,10 +248,10 @@
         <div class="header">
             <h1>Admin Dashboard</h1>
             <div class="header-actions">
-                <form method="POST" action="{{ url_for('admin_cleanup_files') }}" style="display: inline; margin-right: 10px;" onsubmit="return showCleanupConfirmation(event)">
+                <form method="POST" action="{{ url_for('admin.admin_cleanup_files') }}" style="display: inline; margin-right: 10px;" onsubmit="return showCleanupConfirmation(event)">
                     <button type="submit" class="btn btn-warning">Cleanup Files</button>
                 </form>
-                <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Logout</a>
             </div>
         </div>
         
@@ -266,9 +266,9 @@
         {% endwith %}
         
         <div class="nav-links">
-            <a href="{{ url_for('admin_dashboard') }}" class="nav-link">Dashboard</a>
-            <a href="{{ url_for('admin_events') }}" class="nav-link">Manage Events</a>
-            <a href="{{ url_for('admin_users') }}" class="nav-link active">Manage Users</a>
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link">Dashboard</a>
+            <a href="{{ url_for('admin.admin_events') }}" class="nav-link">Manage Events</a>
+            <a href="{{ url_for('admin.admin_users') }}" class="nav-link active">Manage Users</a>
         </div>
         
         {% if users %}
@@ -315,12 +315,12 @@
                         </div>
                         <div style="text-align: center;">
                             {% if user.id != current_user.id %}
-                                <form method="POST" action="{{ url_for('admin_toggle_admin', user_id=user.id) }}" style="display: inline; margin-right: 8px;">
+                                <form method="POST" action="{{ url_for('admin.admin_toggle_admin', user_id=user.id) }}" style="display: inline; margin-right: 8px;">
                                     <button type="submit" class="btn {% if user.is_admin %}btn-warning{% else %}btn-success{% endif %}" style="padding: 6px 12px; font-size: 0.8rem;">
                                         {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
                                     </button>
                                 </form>
-                                <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}" style="display: inline;" onsubmit="return showDeleteUserConfirmation(event, '{{ user.name }}')">
+                                <form method="POST" action="{{ url_for('admin.admin_delete_user', user_id=user.id) }}" style="display: inline;" onsubmit="return showDeleteUserConfirmation(event, '{{ user.name }}')">
                                     <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;">Delete</button>
                                 </form>
                             {% else %}

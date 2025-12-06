@@ -206,7 +206,7 @@
         <div class="header">
             <h1>Admin Dashboard</h1>
             <div class="header-actions">
-                <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Logout</a>
             </div>
         </div>
         
@@ -221,9 +221,9 @@
         {% endwith %}
         
         <div class="nav-links">
-            <a href="{{ url_for('admin_dashboard') }}" class="nav-link active">Dashboard</a>
-            <a href="{{ url_for('admin_events') }}" class="nav-link">Manage Events</a>
-            <a href="{{ url_for('admin_users') }}" class="nav-link">Manage Users</a>
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link active">Dashboard</a>
+            <a href="{{ url_for('admin.admin_events') }}" class="nav-link">Manage Events</a>
+            <a href="{{ url_for('admin.admin_users') }}" class="nav-link">Manage Users</a>
         </div>
         
         <div class="stats-grid">
