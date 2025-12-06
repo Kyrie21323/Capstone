@@ -68,8 +68,6 @@ At large events, attendees struggle to track connections and coordinate meetings
 | **[API.md](API.md)** | Complete API routes reference |
 | **[DEVELOPMENT.md](DEVELOPMENT.md)** | Technical architecture and developer guide |
 
----
-
 ## Project Structure
 
 ```
