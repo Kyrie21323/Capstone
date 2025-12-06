@@ -26,8 +26,6 @@ At large events, attendees struggle to track connections and coordinate meetings
 - **Educational Institutions**: Universities hosting career fairs and networking events
 - **Corporate Events**: Company networking sessions, industry meetups, trade shows
 
----
-
 ## Key Features
 
 ### For Attendees
