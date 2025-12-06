@@ -502,8 +502,7 @@
         card.classList.add('card-swipe-left');
 
         const currentUser = cards[currentCardIndex];
-        const eventId = {{ event.id }
-    };
+        const eventId = {{ event.id }};
 
     // Send pass to server
     fetch(`/event/${eventId}/pass/${currentUser.user_id}`, {
@@ -538,8 +537,7 @@
         card.classList.add('card-swipe-right');
 
         const currentUser = cards[currentCardIndex];
-        const eventId = {{ event.id }
-    };
+        const eventId = {{ event.id }};
 
     // Send like to server
     fetch(`/event/${eventId}/like/${currentUser.user_id}`, {

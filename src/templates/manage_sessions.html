@@ -4,181 +4,182 @@
 
 {% block styles %}
 <style>
-body {
-padding: 20px;
-}
+    body {
+        padding: 20px;
+    }
 
-.container {
-background: white;
-padding: 40px;
-border-radius: 20px;
-box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-max-width: 1000px;
-margin: 0 auto;
-}
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        margin: 0 auto;
+    }
 
-.header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 40px;
-padding-bottom: 20px;
-border-bottom: 2px solid #e9ecef;
-}
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+    }
 
-.header h1 {
-font-size: 2rem;
-font-weight: 700;
-color: #2c3e50;
-margin: 0;
-}
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
 
-.back-btn {
-background: #6c757d;
-color: white;
-padding: 10px 20px;
-border-radius: 8px;
-text-decoration: none;
-font-weight: 600;
-transition: all 0.3s ease;
-}
+    .back-btn {
+        background: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
 
-.back-btn:hover {
-background: #5a6268;
-transform: translateY(-2px);
-}
+    .back-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
 
-.section {
-margin-bottom: 40px;
-}
+    .section {
+        margin-bottom: 40px;
+    }
 
-.form-card {
-background: #f8f9fa;
-padding: 25px;
-border-radius: 15px;
-border: 1px solid #e9ecef;
-}
+    .form-card {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid #e9ecef;
+    }
 
-.form-group {
-margin-bottom: 20px;
-}
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-.form-group label {
-display: block;
-margin-bottom: 8px;
-font-weight: 600;
-color: #2c3e50;
-}
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
 
-.form-group input {
-width: 100%;
-padding: 12px;
-border: 2px solid #e9ecef;
-border-radius: 8px;
-font-size: 1rem;
-transition: all 0.3s ease;
-}
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
 
-.form-group input:focus {
-outline: none;
-border-color: #57068c;
-box-shadow: 0 0 0 3px rgba(87, 6, 140, 0.1);
-}
+    .form-group input:focus {
+        outline: none;
+        border-color: #57068c;
+        box-shadow: 0 0 0 3px rgba(87, 6, 140, 0.1);
+    }
 
-.submit-btn {
-background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-color: white;
-padding: 12px 24px;
-border: none;
-border-radius: 8px;
-cursor: pointer;
-font-size: 1rem;
-font-weight: 600;
-width: 100%;
-transition: all 0.3s ease;
-}
+    .submit-btn {
+        background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
 
-.submit-btn:hover {
-transform: translateY(-2px);
-box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
-}
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+    }
 
-.session-list {
-display: flex;
-flex-direction: column;
-gap: 15px;
-}
+    .session-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
 
-.session-item {
-background: white;
-padding: 20px;
-border-radius: 10px;
-border: 1px solid #e9ecef;
-display: flex;
-justify-content: space-between;
-align-items: center;
-transition: all 0.3s ease;
-}
+    .session-item {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
 
-.session-item:hover {
-box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-transform: translateY(-2px);
-}
+    .session-item:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+    }
 
-.session-info h3 {
-margin: 0 0 5px 0;
-color: #2c3e50;
-}
+    .session-info h3 {
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+    }
 
-.session-time {
-color: #6c757d;
-font-size: 0.9rem;
-}
+    .session-time {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
 
-.session-location {
-color: #17a2b8;
-font-size: 0.9rem;
-margin-top: 5px;
-}
+    .session-location {
+        color: #17a2b8;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
 
-.delete-btn {
-background: #dc3545;
-color: white;
-padding: 8px 16px;
-border: none;
-border-radius: 6px;
-cursor: pointer;
-font-size: 0.9rem;
-transition: all 0.3s ease;
-}
+    .delete-btn {
+        background: #dc3545;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
 
-.delete-btn:hover {
-background: #c82333;
-}
-.alert {
-padding: 15px;
-margin-bottom: 20px;
-border-radius: 8px;
-border: 1px solid transparent;
-}
+    .delete-btn:hover {
+        background: #c82333;
+    }
 
-.alert-success {
-background-color: #d4edda;
-color: #155724;
-border-color: #c3e6cb;
-}
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+    }
 
-.alert-error {
-background-color: #f8d7da;
-color: #721c24;
-border-color: #f5c6cb;
-}
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+    }
 
-.alert-info {
-background-color: #d1ecf1;
-color: #0c5460;
-border-color: #bee5eb;
-}
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+    }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border-color: #bee5eb;
+    }
 </style>
 {% endblock %}
 
@@ -186,7 +187,7 @@ border-color: #bee5eb;
 <div class="container">
     <div class="header">
         <h1>Manage Sessions</h1>
-        <a href="{{ url_for('admin.admin_dashboard') }}" class="back-btn">Back to Dashboard</a>
+        <a href="{{ url_for('admin.admin_events') }}" class="back-btn">Back to Events</a>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
