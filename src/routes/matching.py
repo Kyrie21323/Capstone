@@ -137,9 +137,17 @@ def event_matching(event_id):
         # Extract just the user data (without scores) for the template
         potential_matches = [match_data for match_data, score in best_matches]
         
-        # Debug: Print matching scores to terminal (optional, keeping minimal output)
-        # print(f"\n=== MATCHING SCORES DEBUG ===")
-        # ...
+        # Debug: Print matching scores to terminal
+        print(f"\n=== MATCHING SCORES DEBUG ===")
+        print(f"Current User: {current_user.name} (ID: {current_user.id})")
+        print(f"Event: {event.name}")
+        print(f"Total potential matches: {len(best_matches)}")
+        print("-" * 50)
+        
+        for i, (match_data, score) in enumerate(best_matches, 1):
+            print(f"{i:2d}. {match_data['name']:\u003c20} Score: {score:.4f} ({score*100:.1f}%)")
+        
+        print("=" * 50)
         
         # Determine the reason for no matches
         no_matches_reason = None
