@@ -26,6 +26,69 @@ At large events, attendees struggle to track connections and coordinate meetings
 - **Educational Institutions**: Universities hosting career fairs and networking events
 - **Corporate Events**: Company networking sessions, industry meetups, trade shows
 
+---
+
+## Key Features
+
+### For Attendees
+✅ Join events with unique codes  
+✅ Upload resumes for intelligent matching  
+✅ Tinder-style matching interface  
+✅ View confirmed matches  
+✅ Indicate meeting availability  
+
+### For Event Managers
+✅ Create and manage events  
+✅ Define sessions and locations  
+✅ Run automated meeting allocation  
+✅ Analytics dashboard  
+✅ Export/import database  
+
+📖 **Full feature documentation**: [FEATURES.md](FEATURES.md)
+
+---
+
+## Technology Stack
+
+- **Backend**: Flask 2.3.3, SQLAlchemy, Flask-Login
+- **Database**: SQLite (development), PostgreSQL-ready
+- **NLP**: Sentence Transformers for semantic matching
+- **Frontend**: HTML5, CSS3, JavaScript, Jinja2
+- **Graph Visualization**: Cytoscape.js for interactive network graphs
+- **File Processing**: PyPDF2, python-docx
+- **Migrations**: Flask-Migrate for schema management
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[SETUP.md](SETUP.md)** | Installation, configuration, and troubleshooting |
+| **[FEATURES.md](FEATURES.md)** | Detailed feature descriptions and usage |
+| **[DATABASE.md](DATABASE.md)** | Database models, operations, and management |
+| **[API.md](API.md)** | Complete API routes reference |
+| **[DEVELOPMENT.md](DEVELOPMENT.md)** | Technical architecture and developer guide |
+
+---
+
+## Project Structure
+
+```
+Capstone/
+├── src/                    # Application code
+│   ├── app.py             # Main Flask app
+│   ├── models.py          # Database models
+│   ├── matching_engine.py # NLP matching
+│   └── templates/         # HTML templates
+├── scripts/               # Management scripts
+│   ├── manage_users.py    # User management
+│   ├── setup_database.py  # Database setup
+│   └── import_database.py # Export/import
+├── uploads/               # User files
+├── migrations/            # Database migrations
+└── main.py               # Entry point
+```
+
+---
 
 ## Quick Start
 
@@ -68,73 +131,6 @@ python main.py
 - **Sample Events**: NYUAD2025, TECH2025, STARTUP2025
 
 📖 **Full installation guide**: [SETUP.md](SETUP.md)
-
----
-
-## Key Features
-
-### For Attendees
-✅ Join events with unique codes  
-✅ Upload resumes for intelligent matching  
-✅ Tinder-style matching interface  
-✅ View confirmed matches  
-✅ Indicate meeting availability  
-
-### For Event Managers
-✅ Create and manage events  
-✅ Define sessions and locations  
-✅ Run automated meeting allocation  
-✅ Analytics dashboard  
-✅ Export/import database  
-
-📖 **Full feature documentation**: [FEATURES.md](FEATURES.md)
-
----
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| **[SETUP.md](SETUP.md)** | Installation, configuration, and troubleshooting |
-| **[FEATURES.md](FEATURES.md)** | Detailed feature descriptions and usage |
-| **[DATABASE.md](DATABASE.md)** | Database models, operations, and management |
-| **[API.md](API.md)** | Complete API routes reference |
-| **[DEVELOPMENT.md](DEVELOPMENT.md)** | Technical architecture and developer guide |
-
----
-
-## Technology Stack
-
-- **Backend**: Flask 2.3.3, SQLAlchemy, Flask-Login
-- **Database**: SQLite (development), PostgreSQL-ready
-- **NLP**: Sentence Transformers for semantic matching
-- **Frontend**: HTML5, CSS3, JavaScript, Jinja2
-- **Graph Visualization**: Cytoscape.js for interactive network graphs
-- **File Processing**: PyPDF2, python-docx
-- **Migrations**: Flask-Migrate for schema management
-
----
-
-
-## Project Structure
-
-```
-Capstone/
-├── src/                    # Application code
-│   ├── app.py             # Main Flask app
-│   ├── models.py          # Database models
-│   ├── matching_engine.py # NLP matching
-│   └── templates/         # HTML templates
-├── scripts/               # Management scripts
-│   ├── manage_users.py    # User management
-│   ├── setup_database.py  # Database setup
-│   └── import_database.py # Export/import
-├── uploads/               # User files
-├── migrations/            # Database migrations
-└── main.py               # Entry point
-```
-
----
 
 ## Common Tasks
 
@@ -179,8 +175,6 @@ python main.py
 **Debug mode** enabled by default at http://127.0.0.1:5000
 
 📖 **Developer guide**: [DEVELOPMENT.md](DEVELOPMENT.md)
-
----
 
 ## Production Deployment
 
