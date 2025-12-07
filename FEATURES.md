@@ -136,41 +136,65 @@ The platform uses advanced NLP (Natural Language Processing) to match users base
 
 ## Meeting Scheduling
 
+### Hierarchical Location System
+
+#### Three-Tier Architecture
+1. **Session Locations**: Physical venues (e.g., "Main Hall", "Conference Room A")
+2. **Event Sessions**: Time-based activities within locations (e.g., "Morning Networking")
+3. **Meeting Points**: Specific meeting spots (e.g., "Table 1", "Booth 5")
+
+This hierarchy provides clear organization and flexible meeting allocation.
+
 ### For Event Participants
 
-#### Availability Management
-- **Session Selection**: Indicate which event sessions you can attend
-- **Time Preferences**: Select preferred time slots within sessions
-- **Availability Updates**: Modify availability at any time before allocation
-- **Visual Calendar**: Clear interface showing all available time slots
+#### Session Selection
+- **Availability Management**: Select which event sessions you plan to attend
+- **Matching-Enabled Sessions**: Only sessions with matching enabled are shown
+- **Visual Feedback**: Clickable cards with day badges and times
+- **Session Filtering**: See only attendees from your selected sessions (toggle available)
 
 ### For Event Managers
 
-#### Session Management
+#### Session Location Management
+- **Create Locations**: Define physical venues where sessions take place
+- **Assign Purpose**: Link sessions and meeting points to locations
+- **Guided Workflow**: Step-by-step interface for setup
+
+#### Session Management (Day-Based)
 - **Create Sessions**: Define event sessions with:
   - Session name (e.g., "Morning Networking")
-  - Start time and end time
-  - Location description (e.g., "Grand Hall")
-- **Edit Sessions**: Modify session details
+  - Day number (Day 1, Day 2, Day 3, etc.)
+  - Start time and end time (time-only, no dates!)
+  - Assigned session location
+  - Enable/disable matching per session
+- **Day-Based System**: Sessions use relative days instead of specific dates
+- **Flexible Dating**: Event dates set separately, sessions calculated at runtime
+- **Edit Sessions**: Modify session details and toggle matching
 - **Delete Sessions**: Remove sessions (with cascade cleanup)
-- **Session Overview**: View all sessions in chronological order
+- **Session Overview**: View all sessions ordered by day and time
 
-#### Location Management
-- **Create Locations**: Define meeting locations with:
+#### Meeting Point Management
+- **Create Meeting Points**: Define specific meeting spots with:
   - Location name (e.g., "Hall 1 Table 11")
-  - Capacity (default: 2 people)
-- **Organize Locations**: Group by event
-- **Delete Locations**: Remove unused locations
-- **Capacity Planning**: Set appropriate capacity for each location
+  - Capacity (default: 2 people for 1-on-1 meetings)
+  - Assigned session location
+- **Auto-Assignment Ready**: Meeting points used for automatic allocation
+- **Delete Points**: Remove unused meeting points
 
-#### Automated Allocation
-- **One-Click Allocation**: Run algorithm to assign meetings
-- **Intelligent Matching**:
-  - Matches participants based on mutual availability
-  - Assigns appropriate meeting locations
-  - Respects location capacity constraints
-- **Conflict Resolution**: Handles scheduling conflicts automatically
-- **Results Preview**: View allocation results before confirming
+#### Automatic Meeting Assignment
+- **On-Match Trigger**: Automatically assigns meetings when users match
+- **Intelligence**:
+  - Finds overlapping session availability
+  - Allocates 15-minute time slots
+  - Assigns available meeting points
+  - Avoids scheduling conflicts
+- **Error Handling**: Gracefully handles edge cases
+- **Logging**: Detailed logs for debugging and monitoring
+
+#### Event Publishing Workflow
+- **Draft Mode**: Create events without dates (not publicly visible)
+- **Publish**: Requires start/end dates, enables attendee registration
+- **Flexible Setup**: Set up sessions and locations before publishing
 
 ---
 
