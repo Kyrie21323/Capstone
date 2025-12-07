@@ -212,16 +212,16 @@
         <h3>Resume Preview</h3>
         {% if resume.mime_type == 'application/pdf' %}
         <div class="pdf-container">
-            <embed src="{{ url_for('user.uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}"
+            <embed src="{{ url_for('user.uploaded_file', filename=resume.user_id|string + '/' + resume.filename) }}"
                 type="application/pdf" class="pdf-embed">
         </div>
-        <a href="{{ url_for('user.uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}"
+        <a href="{{ url_for('user.uploaded_file', filename=resume.user_id|string + '/' + resume.filename) }}"
             download="{{ resume.original_name }}" class="download-btn">Download Resume</a>
         {% else %}
         <div class="no-pdf-message">
             <p>This file type cannot be previewed in the browser.</p>
             <p>You can download the file to view it.</p>
-            <a href="{{ url_for('user.uploaded_file', filename=resume.event_id|string + '/' + resume.filename) }}"
+            <a href="{{ url_for('user.uploaded_file', filename=resume.user_id|string + '/' + resume.filename) }}"
                 download="{{ resume.original_name }}" class="download-btn">Download Resume</a>
         </div>
         {% endif %}

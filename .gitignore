@@ -29,7 +29,9 @@ env/
 .env
 
 # Flask
-instance/
+instance/*.db
+instance/*.sqlite
+instance/*.sqlite3
 .webassets-cache
 
 # Database (commented out for development sync)

@@ -1,31 +1,87 @@
-#!/usr/bin/env python3
-"""
-Prophere - Main Entry Point
-"""
-
-import sys
 import os
+import sys
 
-# Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-# Import and run the Flask app
-from app import app, db
-from models import User
+from app import app
+from models import db, User
 
-def check_and_init_db():
-    """Check if database needs initialization"""
+def initialize_database():
+    """
+    Initialize the database if it doesn't exist.
+    Works with both SQLite (file-based) and Postgres (connection-based).
+    """
     with app.app_context():
-        try:
-            # Try to query the database
-            User.query.count()
-            print("✅ Database is ready!")
-        except Exception:
-            print("⚠️  Database not initialized. Running initialization...")
-            # Import and run the init script
-            from init_db import init_database
-            init_database()
+        uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+        
+        if uri.startswith('sqlite:///'):
+            # Handle SQLite file-based DB
+            db_path = uri.replace('sqlite:///', '', 1)
+            db_path = os.path.abspath(db_path)
+            db_dir = os.path.dirname(db_path)
+            
+            if not os.path.exists(db_path):
+                print(f"🔄 SQLite database not found at {db_path}, initializing...")
+                os.makedirs(db_dir, exist_ok=True)
+                db.create_all()
+                print("✅ SQLite database initialized successfully!")
+                print("   - All tables created")
+                print("   - Ready for use")
+            else:
+                print(f"✅ SQLite database already exists at {db_path}, skipping initialization.")
+        else:
+            # Handle Postgres or any non-SQLite database
+            print("🔄 Non-SQLite database detected (likely Postgres). Ensuring tables exist with db.create_all()...")
+            db.create_all()
+            print("✅ Tables ensured for non-SQLite database.")
 
-if __name__ == '__main__':
-    check_and_init_db()
-    app.run(debug=True)
+def ensure_admin_user():
+    """
+    Ensure an admin user exists, creating one from environment variables if needed.
+    This runs on every startup but only creates an admin if none exists.
+    Works with both SQLite and Postgres.
+    """
+    with app.app_context():
+        # Check if any admin already exists
+        existing_admin = User.query.filter_by(is_admin=True).first()
+        
+        if existing_admin:
+            print(f"✅ Admin user already exists (email: {existing_admin.email}), skipping creation.")
+            return
+        
+        # No admin exists, try to create one from environment variables
+        admin_email = os.environ.get('ADMIN_EMAIL')
+        admin_password = os.environ.get('ADMIN_PASSWORD')
+        
+        if not admin_email or not admin_password:
+            print("⚠️  Warning: No admin user found and ADMIN_EMAIL/ADMIN_PASSWORD not set.")
+            print("   Skipping admin creation. Set environment variables to auto-create admin.")
+            return
+        
+        # Import the create_admin_user function
+        # Add scripts to path temporarily for import
+        scripts_path = os.path.join(os.path.dirname(__file__), 'scripts')
+        if scripts_path not in sys.path:
+            sys.path.insert(0, scripts_path)
+        
+        try:
+            from manage_users import create_admin_user
+            
+            # Create the admin user
+            user = create_admin_user(email=admin_email, password=admin_password)
+            print(f"✅ Default admin created with email: {admin_email}")
+        except Exception as e:
+            print(f"❌ Error creating admin user: {e}")
+            # Don't raise - allow app to start even if admin creation fails
+            print("   App will continue without admin user.")
+
+
+if __name__ == "__main__":
+    # Auto-initialize database if it doesn't exist
+    initialize_database()
+    
+    # Ensure admin user exists (from environment variables)
+    ensure_admin_user()
+    
+    # Start the Flask app
+    app.run(host="0.0.0.0", port=5000)

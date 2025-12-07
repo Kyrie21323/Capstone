@@ -23,9 +23,32 @@ def create_app(config_name=None):
     config_class = get_config(config_name)
     app.config.from_object(config_class)
     
-    # Override database path to use PROJECT_ROOT
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(PROJECT_ROOT, "instance", "nfc_networking.db")}'
-    app.config['UPLOAD_FOLDER'] = os.path.join(PROJECT_ROOT, 'uploads')
+    # For SQLite: ensure the database directory exists and use absolute path
+    # For Postgres: don't override DATABASE_URL (it's already set from config/environment)
+    db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+    if db_uri.startswith('sqlite:///'):
+        # Extract path and make it absolute relative to PROJECT_ROOT
+        db_path = db_uri.replace('sqlite:///', '', 1)
+        # If it's a relative path, make it absolute relative to PROJECT_ROOT
+        if not os.path.isabs(db_path):
+            db_path = os.path.join(PROJECT_ROOT, db_path)
+        else:
+            # If already absolute, use as-is but ensure directory exists
+            pass
+        
+        # Normalize and ensure directory exists
+        db_path = os.path.abspath(db_path)
+        db_dir = os.path.dirname(db_path)
+        os.makedirs(db_dir, exist_ok=True)
+        
+        # Update config with absolute path
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+    
+    # Ensure UPLOAD_FOLDER is absolute and consistent
+    upload_folder = os.path.join(PROJECT_ROOT, 'uploads')
+    upload_folder = os.path.abspath(upload_folder)  # Normalize to absolute path
+    os.makedirs(upload_folder, exist_ok=True)  # Ensure uploads/ folder exists
+    app.config['UPLOAD_FOLDER'] = upload_folder
     
     # Initialize extensions
     db.init_app(app)
