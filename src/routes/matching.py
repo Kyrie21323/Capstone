@@ -264,24 +264,70 @@ def like_user(event_id, target_user_id):
             action='like'
         ).first()
         
-        is_match = False
         if mutual_like:
-            # Create a match
-            match = Match(
-                user1_id=min(current_user.id, target_user_id),
-                user2_id=max(current_user.id, target_user_id),
+            # It's a match! Create match record
+            # Ensure consistent ordering (lower user_id first)
+            user1_id = min(current_user.id, target_user_id)
+            user2_id = max(current_user.id, target_user_id)
+            
+            # Check if match already exists
+            existing_match = Match.query.filter_by(
+                user1_id=user1_id,
+                user2_id=user2_id,
                 event_id=event_id
-            )
-            db.session.add(match)
-            is_match = True
+            ).first()
+            
+            if not existing_match:
+                match = Match(
+                    user1_id=user1_id,
+                    user2_id=user2_id,
+                    event_id=event_id
+                )
+                db.session.add(match)
+                db.session.flush()  # Get the match ID
+                
+                # Try to auto-assign meeting
+                try:
+                    from utils.auto_assign import auto_assign_meeting
+                    event = Event.query.get(event_id)
+                    
+                    success, message, meeting = auto_assign_meeting(
+                        match.id,
+                        user1_id,
+                        user2_id,
+                        event_id,
+                        event
+                    )
+                    
+                    if success:
+                        print(f"✅ Auto-assigned meeting for match {match.id}: {message}")
+                        print(f"   Meeting: {meeting.start_time} at {meeting.location.name}")
+                    else:
+                        print(f"⚠️ Could not auto-assign meeting for match {match.id}: {message}")
+                        match.assignment_attempted = True
+                        match.assignment_failed_reason = message
+                        
+                except Exception as e:
+                    print(f"❌ Error during auto-assignment: {str(e)}")
+                    match.assignment_attempted = True
+                    match.assignment_failed_reason = f"System error: {str(e)}"
+                
+                db.session.commit()
+                
+                return {
+                    'success': True,
+                    'message': 'It\'s a match!',
+                    'is_match': True,
+                    'match_id': match.id
+                }, 200
         
         db.session.commit()
         
         return {
-            'success': True, 
-            'is_match': is_match,
-            'message': 'Match!' if is_match else 'Like recorded'
-        }
+            'success': True,
+            'message': 'Like recorded',
+            'is_match': False
+        }, 200
         
     except Exception as e:
         db.session.rollback()

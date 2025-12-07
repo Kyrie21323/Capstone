@@ -31,14 +31,18 @@ At large events, attendees struggle to track connections and coordinate meetings
 ### For Attendees
 ✅ Join events with unique codes  
 ✅ Upload resumes for intelligent matching  
-✅ Tinder-style matching interface  
-✅ View confirmed matches  
-✅ Indicate meeting availability  
+✅ Select which sessions to attend  
+✅ Tinder-style matching interface with session filtering  
+✅ View confirmed matches with auto-assigned meetings  
+✅ Download calendar invites (coming soon)  
 
 ### For Event Managers
-✅ Create and manage events  
-✅ Define sessions and locations  
-✅ Run automated meeting allocation  
+✅ Create and manage events with publishing workflow  
+✅ Define session locations and event sessions  
+✅ Day-based session creation (Day 1, Day 2, etc.)  
+✅ Enable matching per session  
+✅ Create meeting points for auto-assignment  
+✅ Automated meeting allocation on match  
 ✅ Analytics dashboard  
 ✅ Export/import database  
 
