@@ -123,14 +123,26 @@ Complete guide to database management, models, and operations.
 
 ---
 
-### MeetingLocation
-**Purpose**: Define specific meeting locations
+### MeetingPoint (Table: `meeting_location`)
+**Purpose**: Define specific meeting spots (e.g., tables)
 
 **Fields**:
 - `id` - Primary key
 - `event_id` - Foreign key to Event
 - `name` - Location name (e.g., "Hall 1 Table 11")
-- `capacity` - Maximum attendees (default: 2)
+- `capacity` - Number of concurrent pairs (default: 1)
+
+**Relationships**:
+- `session_locations` → Many-to-Many with `SessionLocation`
+
+---
+
+### meeting_point_locations (Association Table)
+**Purpose**: Link Meeting Points to multiple Event Locations
+
+**Fields**:
+- `meeting_point_id` - Foreign key to MeetingPoint
+- `session_location_id` - Foreign key to SessionLocation
 
 ---
 
@@ -264,7 +276,7 @@ python scripts/import_database.py --import
 | `match` | Matches | Confirmed connections | user ← → user ← → event |
 | `user_interaction` | Interactions | Like/pass tracking | user → user → event |
 | `event_session` | Sessions | Time slots | → event, → availability |
-| `meeting_location` | Locations | Meeting places | → event |
+| `meeting_location` | MeetingPoint | Specific meeting spots | → event, ←→ session_location |
 | `participant_availability` | Availability | User time preferences | user → session → event |
 
 ---

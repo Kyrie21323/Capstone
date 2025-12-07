@@ -25,6 +25,7 @@ Prophere provides a comprehensive suite of features for professional networking 
   - **Interactive Elements**: Zoom, pan, and click nodes to see details
   - **Statistics**: Real-time stats on connected components and density
 - ✅ **Admin Panel**: Complete event and user management system with analytics
+- ✅ **Mobile Responsive Interface**: Optimized for usage on smartphones and tablets
 - ✅ **Cross-device Sync**: Database and file synchronization between devices via export/import
 
 ### Future Capabilities
@@ -35,20 +36,11 @@ Prophere provides a comprehensive suite of features for professional networking 
 
 ---
 
-## User Authentication System
-
 ### Registration & Login
-- **Email-based Authentication**: Secure registration and login using email addresses
-- **Password Security**: Passwords hashed using Werkzeug's PBKDF2-SHA256 with salt
-- **Session Management**: Persistent sessions using Flask-Login
-- **Remember Me**: Optional persistent login across browser sessions
-
-### Role-Based Access Control
-- **Event Attendee**: Standard user role for event participants
-- **Event Manager**: Administrative role with full event management capabilities
-- **Role Promotion**: Admins can promote attendees to managers
-- **Role Demotion**: Admins can demote managers to attendees
-- **Self-Protection**: Users cannot modify their own admin status
+- **Secure Access**: Email-based login with persistent sessions
+- **Role-Based Access**:
+  - **Event Attendee**: Standard role for participating in events
+  - **Event Manager**: Admin role for creating and managing events
 
 ---
 
@@ -159,9 +151,9 @@ The platform uses advanced NLP (Natural Language Processing) to match users base
 ### Hierarchical Location System
 
 #### Three-Tier Architecture
-1. **Session Locations**: Physical venues (e.g., "Main Hall", "Conference Room A")
+1. **Event Locations**: Physical venues (e.g., "Main Hall", "Conference Room A")
 2. **Event Sessions**: Time-based activities within locations (e.g., "Morning Networking")
-3. **Meeting Points**: Specific meeting spots (e.g., "Table 1", "Booth 5")
+3. **Meeting Points**: Specific spots for pairs to meet (e.g., "Table 1", "Booth 5")
 
 This hierarchy provides clear organization and flexible meeting allocation.
 
@@ -175,7 +167,7 @@ This hierarchy provides clear organization and flexible meeting allocation.
 
 ### For Event Managers
 
-#### Session Location Management
+#### Event Location Management
 - **Create Locations**: Define physical venues where sessions take place
 - **Assign Purpose**: Link sessions and meeting points to locations
 - **Guided Workflow**: Step-by-step interface for setup
@@ -185,7 +177,7 @@ This hierarchy provides clear organization and flexible meeting allocation.
   - Session name (e.g., "Morning Networking")
   - Day number (Day 1, Day 2, Day 3, etc.)
   - Start time and end time (time-only, no dates!)
-  - Assigned session location
+  - Assigned event location
   - Enable/disable matching per session
 - **Day-Based System**: Sessions use relative days instead of specific dates
 - **Flexible Dating**: Event dates set separately, sessions calculated at runtime
@@ -196,9 +188,9 @@ This hierarchy provides clear organization and flexible meeting allocation.
 #### Meeting Point Management
 - **Create Meeting Points**: Define specific meeting spots with:
   - Location name (e.g., "Hall 1 Table 11")
-  - Capacity (default: 2 people for 1-on-1 meetings)
-  - Assigned session location
-- **Auto-Assignment Ready**: Meeting points used for automatic allocation
+  - Capacity (Number of *concurrent pairs* that can meet here)
+  - **Multi-Location Assignment**: A single meeting point can be associated with *multiple* Event Locations (e.g., a central "Networking Hub" used by sessions in strictly different rooms)
+- **Auto-Assignment Ready**: Meeting points are automatically selected based on session location
 - **Delete Points**: Remove unused meeting points
 
 #### Automatic Meeting Assignment
@@ -240,19 +232,10 @@ This hierarchy provides clear organization and flexible meeting allocation.
 4. System validates file type and size
 5. File uploaded and processed for matching
 
-### File Security
-
-#### Validation
-- **Type Checking**: Only PDF, DOC, DOCX files accepted
-- **Size Verification**: Files must be under 16MB
-- **Virus Scanning**: (Planned) Malware detection
-- **Secure Filenames**: System generates secure unique filenames
-
-#### Storage
-- **User Isolation**: Each user has separate upload directory
-- **Event Isolation**: One resume per user per event
-- **Access Control**: Only file owner can view/download/delete
-- **Metadata Tracking**: Original filename, MIME type, size, upload timestamp
+### File Security & Privacy
+- **Validation**: strict type checking (PDF/DOCX) and size limits (16MB)
+- **Isolation**: Files are securely stored with unique filenames
+- **Access Control**: Strict ownership checks ensure only you can view your files
 
 ### File Operations
 - **View**: Preview uploaded resumes

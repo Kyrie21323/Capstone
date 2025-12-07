@@ -59,18 +59,7 @@ Capstone/
 ### Application Entry Point
 
 **`main.py`**
-```python
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-
-from app import app
-
-if __name__ == '__main__':
-    app.run(debug=True)
-```
-
-Configures Python path and starts Flask application.
+Configures the Python path and serves as the application entry point. It initializes the Flask app instance from `src.app`.
 
 ### Core Application
 
@@ -188,7 +177,8 @@ All models inherit from `db.Model` (SQLAlchemy):
 - `Match` - Confirmed connections
 - `UserInteraction` - Like/pass tracking
 - `EventSession` - Time slots
-- `MeetingLocation` - Meeting places
+- `MeetingPoint` - Specific meeting spots (Table 1, Booth 5)
+- `SessionLocation` - Physical venues (Main Hall, Room A)
 - `ParticipantAvailability` - User availability
 
 ### Matching Engine

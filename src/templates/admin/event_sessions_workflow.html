@@ -181,6 +181,23 @@
         color: #856404;
         margin: 5px 0 0 0;
     }
+
+    .step-content-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+
+    @media (max-width: 768px) {
+        .step-content-flex {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .step-status {
+            align-self: flex-start;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -204,7 +221,7 @@
             <div class="step-header">
                 <div class="step-number">1</div>
                 <div class="step-content">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div class="step-content-flex">
                         <div>
                             <div class="step-title">Define Event Locations</div>
                             <div class="step-description">
@@ -232,7 +249,7 @@
             <div class="step-header">
                 <div class="step-number">2</div>
                 <div class="step-content">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div class="step-content-flex">
                         <div>
                             <div class="step-title">Create Event Sessions</div>
                             <div class="step-description">
@@ -242,7 +259,7 @@
                             </div>
                         </div>
                         {% if sessions_count > 0 %}
-                        <span class="step-status status-complete">✓ {{ sessions_count }} session{{ 's' if sessions_count
+                        <span class="step-status status-complete">✓ {{ sessions_count }} Session{{ 's' if sessions_count
                             != 1 else '' }}</span>
                         {% else %}
                         <span class="step-status status-pending">Not started</span>
@@ -260,17 +277,17 @@
             <div class="step-header">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div class="step-content-flex">
                         <div>
                             <div class="step-title">Add Meeting Points</div>
                             <div class="step-description">
-                                Create specific meeting spots within your event locations (e.g., "Table 1", "Booth
-                                5"). When attendees match, they'll be automatically assigned to available meeting points
-                                for their 15-minute chat.
+                                Create specific meeting spots (e.g., "Table 1", "Booth 5") and associate them with your
+                                event locations. When attendees match, they'll be automatically assigned to available
+                                meeting points for their 15-minute chat.
                             </div>
                         </div>
                         {% if meeting_points_count > 0 %}
-                        <span class="step-status status-complete">✓ {{ meeting_points_count }} point{{ 's' if
+                        <span class="step-status status-complete">✓ {{ meeting_points_count }} Meeting Point{{ 's' if
                             meeting_points_count != 1 else '' }}</span>
                         {% else %}
                         <span class="step-status status-pending">Not started</span>
@@ -285,7 +302,8 @@
     </div>
 
     <div class="helper-note">
-        <strong>💡 Tip:</strong>
+        <strong><i data-lucide="lightbulb"
+                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"></i> Tip:</strong>
         <p>Complete these steps in order for the best experience. Attendees can only select sessions that have matching
             enabled, and will only be matched with others in the same sessions.</p>
     </div>

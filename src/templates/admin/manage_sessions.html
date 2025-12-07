@@ -378,7 +378,8 @@
                     <div>🕐 {{ session.start_time.strftime('%I:%M %p') }} - {{ session.end_time.strftime('%I:%M %p') }}
                     </div>
                     {% if session.session_location %}
-                    <div>📍 {{ session.session_location.name }}</div>
+                    <div><i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle;"></i> {{
+                        session.session_location.name }}</div>
                     {% endif %}
                     {% if session.matching_enabled %}
                     <div style="margin-top: 8px;">
@@ -412,7 +413,7 @@
         </div>
         {% else %}
         <div class="empty-state">
-            <div class="empty-state-icon">📅</div>
+            <div class="empty-state-icon"><i data-lucide="calendar" style="width: 48px; height: 48px;"></i></div>
             <h3 style="color: #2c3e50;">No Sessions Yet</h3>
             <p>Create your first session to get started!</p>
             <p class="helper-text">Sessions define when your event activities take place.</p>

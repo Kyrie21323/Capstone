@@ -254,7 +254,8 @@
                         <option value="{{ location.id }}">{{ location.name }}</option>
                         {% endfor %}
                     </select>
-                    <div class="helper-text">Hold Ctrl/Cmd to select multiple event locations</div>
+                    <div class="helper-text">Select one or more locations depending on your device (Ctrl/Cmd+Click on
+                        desktop)</div>
                 </div>
 
                 <button type="submit" class="submit-btn"><i data-lucide="plus" style="width: 16px; height: 16px;"></i>
@@ -274,15 +275,18 @@
             <div class="location-card">
                 <h3 class="location-name">{{ location.name }}</h3>
                 <div class="location-details">
-                    <div>👥 Capacity: {{ location.capacity }}</div>
+                    <div><i data-lucide="users" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+                        Capacity: {{ location.capacity }}</div>
                     {% if location.session_locations %}
-                    <div>📍 Locations:
+                    <div><i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+                        Locations:
                         {% for loc in location.session_locations %}
                         <span class="info-badge" style="margin-right: 4px; font-size: 0.8rem;">{{ loc.name }}</span>
                         {% endfor %}
                     </div>
                     {% elif location.session_location %}
-                    <div>📍 {{ location.session_location.name }}</div>
+                    <div><i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle;"></i> {{
+                        location.session_location.name }}</div>
                     {% endif %}
                 </div>
                 <form method="POST" onsubmit="return confirm('Delete this meeting point?');">
@@ -296,7 +300,7 @@
         </div>
         {% else %}
         <div class="empty-state">
-            <div class="empty-state-icon">📍</div>
+            <div class="empty-state-icon"><i data-lucide="map-pin" style="width: 48px; height: 48px;"></i></div>
             <h3 style="color: #2c3e50;">No Meeting Points Yet</h3>
             <p>Create your first meeting point to enable automatic match assignment!</p>
             <p class="helper-text">Meeting points are specific locations where matched attendees will meet.</p>

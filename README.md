@@ -39,8 +39,8 @@ At large events, attendees struggle to track connections and coordinate meetings
 
 ### For Event Managers
 ✅ Create and manage events with publishing workflow 
-✅ Define session locations and event sessions 
-✅ Enable matching per session and create meeting points for auto-assignment 
+✅ Define event locations and sessions 
+✅ Enable matching per session and configure meeting points 
 ✅ Analytics dashboard 
 ✅ Export/import database 
 ✅ Dual Notification System (Email + Web Push)
@@ -86,6 +86,8 @@ Capstone/
 │   │       ├── modals.js
 │   │       └── keywords.js
 │   └── templates/         # HTML templates
+│       ├── admin/         # Admin-specific templates
+│       └── ...            # Public templates
 ├── scripts/               # Management scripts
 │   ├── manage_users.py    # User management
 │   ├── setup_database.py  # Database setup

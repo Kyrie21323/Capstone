@@ -172,7 +172,8 @@
     </div>
 
     <div class="info-section">
-        <h3>📊 How Matching Works</h3>
+        <h3><i data-lucide="bar-chart-2" style="width: 18px; height: 18px; vertical-align: middle;"></i> How Matching
+            Works</h3>
         <p>The smart matching system connects attendees based on their interests and availability:</p>
         <ul>
             <li><strong>Session-Based Filtering:</strong> Attendees are matched primarily with others attending the same
@@ -200,14 +201,15 @@
             <li>✓ Meeting points created for automatic assignment</li>
         </ul>
         {% if matching_enabled_sessions == 0 %}
-        <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="action-button">
-            📅 Enable Matching on Sessions
+        <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="action-button"
+            style="display: inline-flex; align-items: center; gap: 8px;">
+            <i data-lucide="calendar-plus" style="width: 16px; height: 16px;"></i> Enable Matching on Sessions
         </a>
         {% endif %}
     </div>
 
     <div class="helper-note">
-        <strong>💡 Tip:</strong>
+        <strong><i data-lucide="lightbulb" style="width: 16px; height: 16px; vertical-align: middle;"></i> Tip:</strong>
         <p>Attendees will only see potential matches from sessions they've marked as attending. They can click "Show all
             attendees" to see cross-session matches if needed.</p>
     </div>
