@@ -2,7 +2,7 @@
 
 A Flask-based networking platform for events with intelligent matching, meeting scheduling, and location management capabilities.
 
-![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8+-green.svg)
 ![License](https://img.shields.io/badge/license-Academic-orange.svg)
 
@@ -34,6 +34,7 @@ At large events, attendees struggle to track connections and coordinate meetings
 ✅ Select which sessions to attend  
 ✅ Tinder-style matching interface with session filtering  
 ✅ Instant Meeting Assignment: Matches are automatically scheduled in real-time
+✅ Smart Availability Management: Automatic meeting validation and reassignment
 ✅ Real-time web and browser notifications for matches
 ✅ Automatic email calendar invites  
 
@@ -59,43 +60,24 @@ At large events, attendees struggle to track connections and coordinate meetings
 - **File Processing**: PyPDF2, python-docx
 - **Migrations**: Flask-Migrate for schema management
 
+## Project Structure
+
 ```
 Capstone/
-├── src/                    # Application code
-│   ├── app.py             # Application factory (160 lines)
-│   ├── config.py          # Environment configuration
-│   ├── models.py          # Database models
-│   ├── matching_engine.py # NLP matching
-│   ├── allocation_engine.py # Meeting scheduling
-│   ├── routes/            # Modular blueprints
-│   │   ├── auth.py        # Authentication
-│   │   ├── user.py        # User features
-│   │   ├── admin.py       # Admin panel
-│   │   ├── matching.py    # Matching system
-│   │   ├── scheduling.py  # Scheduling
-│   │   └── api.py         # API endpoints
-│   ├── utils/             # Utilities
-│   │   ├── validators.py  # Input validation
-│   │   ├── helpers.py     # Common functions
-│   │   ├── decorators.py  # Custom decorators
-│   │   └── graph_utils.py # Graph generation
-│   ├── static/            
-│   │   ├── css/style.css  # Design system
-│   │   └── js/            # JavaScript modules
-│   │       ├── notifications.js
-│   │       ├── modals.js
-│   │       └── keywords.js
-│   └── templates/         # HTML templates
-│       ├── admin/         # Admin-specific templates
-│       └── ...            # Public templates
-├── scripts/               # Management scripts
-│   ├── manage_users.py    # User management
-│   ├── setup_database.py  # Database setup
-│   └── import_database.py # Export/import
-├── uploads/               # User files
-├── migrations/            # Database migrations
-└── main.py               # Entry point
+├── src/                # Application code
+│   ├── routes/         # Modular blueprints
+│   ├── utils/          # Utilities and helpers
+│   ├── templates/      # HTML templates
+│   └── static/         # CSS and JavaScript
+├── scripts/            # Management scripts
+├── uploads/            # User files
+├── migrations/         # Database migrations
+└── main.py            # Entry point
 ```
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed architecture.
+
+---
 
 ## Documentation
 
@@ -111,8 +93,6 @@ Capstone/
 
 ## Quick Start
 
-### Installation
-
 ```bash
 # Clone and setup
 git clone <repository-url>
@@ -123,29 +103,18 @@ pip install -r requirements.txt
 
 # Setup database
 python scripts/setup_database.py
-```
 
-### Run the Application
-
-```bash
-# Development (default)
+# Run application
 python main.py
-
-# Production
-FLASK_ENV=production python main.py
 ```
 
-### Access the Application
+Access at http://127.0.0.1:5000
 
-- **Main Site**: http://127.0.0.1:5000
-- **Admin Panel**: http://127.0.0.1:5000/admin
-
-### Default Login Credentials
-
-- **Admin**: `admin@nfcnetworking.com` / `admin123`
-- **Sample Events**: NYUAD2025, TECH2025, STARTUP2025
+**Login**: `admin@nfcnetworking.com` / `admin123`
 
 📖 **Full installation guide**: [SETUP.md](SETUP.md)
+
+---
 
 ## Common Tasks
 
@@ -175,48 +144,11 @@ python scripts/setup_database.py --fix
 
 ---
 
-## Development
+## Development & Deployment
 
-### Prerequisites
-- Python 3.8+
-- pip
-
-### Setup Development Environment
-```bash
-source .venv/bin/activate
-python main.py
-```
-
-**Debug mode** enabled by default at http://127.0.0.1:5000
-
-📖 **Developer guide**: [DEVELOPMENT.md](DEVELOPMENT.md)
-
-## Production Deployment
-
-```bash
-# Install production server
-pip install gunicorn
-
-# Run with Gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 'src.app:app'
-```
-
-**Important**:
-- Change `SECRET_KEY` in production
-- Use PostgreSQL instead of SQLite
-- Enable HTTPS/SSL
-- Configure proper file storage
-
-📖 **Deployment guide**: [DEVELOPMENT.md#production-deployment](DEVELOPMENT.md#production-deployment)
+For local development, production deployment, database migrations, and advanced configuration, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ---
-
-
-## License and Contributors
-
-This project is a part of *NYU Abu Dhabi Interactive Media Capstone 2026*.
-
-The ownership lies to the repository owners and contributors.
 
 ## Support
 

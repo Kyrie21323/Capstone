@@ -28,20 +28,6 @@ Prophere provides a comprehensive suite of features for professional networking 
 - ✅ **Mobile Responsive Interface**: Optimized for usage on smartphones and tablets
 - ✅ **Cross-device Sync**: Database and file synchronization between devices via export/import
 
-### Future Capabilities
-- 🔜 **NFC Integration**: Tap-to-connect functionality for seamless contact exchange
-- 🔜 **Mobile Apps**: iOS and Android native applications
-- 🔜 **Real-time Messaging**: Direct messages between matched users
-- 🔜 **Post-Event Analytics**: Insights on networking effectiveness and follow-up opportunities
-
----
-
-### Registration & Login
-- **Secure Access**: Email-based login with persistent sessions
-- **Role-Based Access**:
-  - **Event Attendee**: Standard role for participating in events
-  - **Event Manager**: Admin role for creating and managing events
-
 ---
 
 ## Event Management
@@ -124,7 +110,7 @@ The platform uses advanced NLP (Natural Language Processing) to match users base
 - **No Duplicates**: Each user appears only once in your matching queue
 - **Privacy**: Your interactions are private (not visible to other users)
 
-### Match Outcomes & Meeting Assignment (New)
+### Match Outcomes & Meeting Assignment
 
 #### Real-Time Assignment
 - **Immediate Feedback**: When a match occurs, the system instantly attempts to schedule a meeting
@@ -164,6 +150,11 @@ This hierarchy provides clear organization and flexible meeting allocation.
 - **Matching-Enabled Sessions**: Only sessions with matching enabled are shown
 - **Visual Feedback**: Clickable cards with day badges and times
 - **Session Filtering**: See only attendees from your selected sessions (toggle available)
+
+#### Smart Availability Management
+- **Impact Analysis**: System warns you if deselecting a session will affect existing meetings
+- **Automatic Reassignment**: If you become unavailable for a scheduled meeting, the system tries to reschedule it to another mutual free slot
+- **Transparent Status**: Immediate feedback on whether meetings were successfully moved or if they require manual rescheduling
 
 ### For Event Managers
 
@@ -265,7 +256,7 @@ This hierarchy provides clear organization and flexible meeting allocation.
 
 #### User Operations
 - **List Users**: View all registered users with details
-- **Search**: Filter users by name or email (coming soon)
+- **Search**: Filter users by name or email
 - **Toggle Admin Status**: Promote/demote users
 - **Delete Users**: Remove users with cascade cleanup
   - Removes all memberships
@@ -289,7 +280,7 @@ This hierarchy provides clear organization and flexible meeting allocation.
 #### Advanced Features
 - **Session Management**: Access session configuration for any event
 - **Location Management**: Configure meeting locations
-- **Network Graphs**: Visualize connection networks (coming soon)
+- **Network Graphs**: Visualize connection networks
 - **Allocation Control**: Run/reset meeting allocations
 
 ### File Management
@@ -365,13 +356,13 @@ python scripts/import_database.py --import
 
 ## Additional Features
 
-### Network Visualization (Coming Soon)
+### Network Visualization
 - Interactive graphs showing connection networks
 - Visual representation of matching patterns
 - Community detection algorithms
 - Export network data for analysis
 
-### Messaging System (Planned)
+### Messaging System (Future)
 - Direct messaging between matched users
 - Event-specific message boards
 - Notification system for new messages

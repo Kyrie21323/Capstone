@@ -12,7 +12,7 @@ Capstone/
 │   ├── models.py             # SQLAlchemy database models
 │   ├── matching_engine.py    # NLP matching system
 │   ├── allocation_engine.py  # Meeting allocation algorithm
-│   ├── routes/               # Blueprint modules (NEW)
+│   ├── routes/               # Blueprint modules
 │   │   ├── __init__.py      # Blueprint registration
 │   │   ├── auth.py          # Authentication routes
 │   │   ├── user.py          # User feature routes
@@ -21,11 +21,12 @@ Capstone/
 │   │   ├── scheduling.py    # Scheduling routes
 │   │   ├── api.py           # JSON API endpoints
 │   │   └── utils.py         # Shared route utilities
-│   ├── utils/               # Utility modules (ENHANCED)
+│   ├── utils/               # Utility modules
 │   │   ├── validators.py    # Input validation
 │   │   ├── helpers.py       # Common functions
 │   │   ├── decorators.py    # Custom decorators
 │   │   ├── graph_utils.py   # Network graph generation
+│   │   ├── session_validation.py # Meeting reassignment logic
 │   │   └── sample_graph_data.py
 │   ├── templates/           # Jinja2 HTML templates
 │   │   ├── admin/          # Admin panel templates
@@ -63,7 +64,7 @@ Configures the Python path and serves as the application entry point. It initial
 
 ### Core Application
 
-**`src/app.py`** (160 lines)
+**`src/app.py`**
 - Application factory pattern using `create_app()`
 - Environment-based configuration loading
 - Blueprint registration
@@ -90,14 +91,12 @@ Defines and registers all blueprints:
 - `api_bp` - JSON endpoints (URL prefix: `/api`)
 
 **Blueprint Files**:
-- `routes/auth.py` - 111 lines
-- `routes/user.py` - 380 lines
-- `routes/admin.py` - 305 lines
-- `routes/matching.py` - 355 lines
-- `routes/scheduling.py` - 165 lines
-- `routes/matching.py` - 355 lines
-- `routes/scheduling.py` - 165 lines
-- `routes/api.py` - 55 lines
+- `routes/auth.py` - Authentication logic
+- `routes/user.py` - User-facing features
+- `routes/admin.py` - Administrative functions
+- `routes/matching.py` - Matching interface and logic
+- `routes/scheduling.py` - Scheduling and availability
+- `routes/api.py` - Unified API endpoints
 
 
 ### Configuration Management
@@ -214,6 +213,15 @@ Constraint satisfaction algorithm for meeting scheduling:
 2. Match users with overlapping time slots
 3. Assign meeting locations respecting capacity
 4. Optimize for maximum meetings
+
+### Session Validation Logic
+
+**`src/utils/session_validation.py`**
+
+Ensures meeting consistency when user availability changes:
+1. **Validation**: Checks if updated session selections conflict with existing scheduled meetings.
+2. **Reassignment**: Automatically attempts to reschedule invalid meetings to other mutual free slots.
+3. **Impact Analysis**: Provides frontend with data on which meetings will be affected by changes.
 
 ---
 
