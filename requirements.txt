@@ -10,6 +10,7 @@ python-dotenv==1.2.1
 bcrypt==5.0.0
 Pillow==12.0.0
 python-magic==0.4.27  # Works on Mac and Linux (NOT python-magic-bin which is Windows-only)
+psycopg2-binary
 
 # NLP and matching libraries
 sentence-transformers==5.1.2
