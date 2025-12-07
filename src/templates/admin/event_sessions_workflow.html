@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Event Sessions Setup - {{ event.name }}{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        padding: 20px;
+    }
+
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .back-btn {
+        background: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .intro-section {
+        background: #f0f7ff;
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 4px solid #57068c;
+        margin-bottom: 40px;
+    }
+
+    .intro-section h2 {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+    }
+
+    .intro-section p {
+        color: #6c757d;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .workflow-steps {
+        display: grid;
+        gap: 25px;
+    }
+
+    .step-card {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .step-card:hover {
+        border-color: #57068c;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .step-number {
+        background: #57068c;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .step-content {
+        flex: 1;
+        margin-left: 20px;
+    }
+
+    .step-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+
+    .step-description {
+        color: #6c757d;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+
+    .step-action {
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .step-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(87, 6, 140, 0.3);
+    }
+
+    .step-status {
+        font-size: 0.85rem;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .status-complete {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+        border: 1px solid #b1dfbb;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+    }
+
+    .helper-note {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 30px;
+    }
+
+    .helper-note strong {
+        color: #856404;
+    }
+
+    .helper-note p {
+        color: #856404;
+        margin: 5px 0 0 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>📅 Event Sessions Setup</h1>
+        <a href="{{ url_for('admin.admin_events') }}" class="back-btn">← Back to Events</a>
+    </div>
+
+    <div class="intro-section">
+        <h2>Set up your event sessions and meeting locations</h2>
+        <p style="font-weight: 500;">Follow these steps to configure where and when your event sessions will take place,
+            and where attendees can
+            meet after matching.</p>
+    </div>
+
+    <div class="workflow-steps">
+        <!-- Step 1: Session Locations -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <div class="step-title">Define Session Locations</div>
+                            <div class="step-description">
+                                Create physical venues where your event sessions will take place (e.g., "Main Hall",
+                                "Conference Room A"). These are the broad locations that contain your sessions.
+                            </div>
+                        </div>
+                        {% if session_locations_count > 0 %}
+                        <span class="step-status status-complete">✓ {{ session_locations_count }} location{{ 's' if
+                            session_locations_count != 1 else '' }}</span>
+                        {% else %}
+                        <span class="step-status status-pending">Not started</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('scheduling.manage_session_locations', event_id=event.id) }}"
+                        class="step-action">
+                        📍 Manage Session Locations
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Event Sessions -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <div class="step-title">Create Event Sessions</div>
+                            <div class="step-description">
+                                Add your event sessions with specific times (e.g., "Morning Networking 9-12"). Assign
+                                each session to a location from Step 1, then enable matching for sessions where you want
+                                attendees to find each other.
+                            </div>
+                        </div>
+                        {% if sessions_count > 0 %}
+                        <span class="step-status status-complete">✓ {{ sessions_count }} session{{ 's' if sessions_count
+                            != 1 else '' }}</span>
+                        {% else %}
+                        <span class="step-status status-pending">Not started</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('scheduling.manage_sessions', event_id=event.id) }}" class="step-action">
+                        📅 Manage Sessions
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Meeting Points -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <div class="step-title">Add Meeting Points</div>
+                            <div class="step-description">
+                                Create specific meeting spots within your session locations (e.g., "Table 1", "Booth
+                                5"). When attendees match, they'll be automatically assigned to available meeting points
+                                for their 15-minute chat.
+                            </div>
+                        </div>
+                        {% if meeting_points_count > 0 %}
+                        <span class="step-status status-complete">✓ {{ meeting_points_count }} point{{ 's' if
+                            meeting_points_count != 1 else '' }}</span>
+                        {% else %}
+                        <span class="step-status status-pending">Not started</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('scheduling.manage_locations', event_id=event.id) }}" class="step-action">
+                        📍 Manage Meeting Points
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="helper-note">
+        <strong>💡 Tip:</strong>
+        <p>Complete these steps in order for the best experience. Attendees can only select sessions that have matching
+            enabled, and will only be matched with others in the same sessions.</p>
+    </div>
+</div>
+{% endblock %}

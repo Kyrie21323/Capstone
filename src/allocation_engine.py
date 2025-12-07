@@ -1,4 +1,4 @@
-from models import db, Match, Meeting, EventSession, MeetingLocation, ParticipantAvailability
+from models import db, Match, Meeting, EventSession, MeetingPoint, ParticipantAvailability
 from datetime import timedelta
 
 class AllocationEngine:
@@ -12,7 +12,7 @@ class AllocationEngine:
         
         # 2. Get all sessions and locations
         sessions = EventSession.query.filter_by(event_id=self.event_id).order_by(EventSession.start_time).all()
-        locations = MeetingLocation.query.filter_by(event_id=self.event_id).all()
+        locations = MeetingPoint.query.filter_by(event_id=self.event_id).all()
         
         if not sessions or not locations:
             return {"status": "error", "message": "No sessions or locations defined"}

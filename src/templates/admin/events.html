@@ -4,272 +4,273 @@
 
 {% block styles %}
 <style>
-body {
-padding: 20px;
-}
+    body {
+        padding: 20px;
+    }
 
-.container {
-background: white;
-padding: 40px;
-border-radius: 20px;
-box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-max-width: 1400px;
-margin: 0 auto;
-}
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
 
-.header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 40px;
-padding-bottom: 20px;
-border-bottom: 2px solid #e9ecef;
-}
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+    }
 
-.header h1 {
-font-size: 2rem;
-font-weight: 700;
-color: #2c3e50;
-margin: 0;
-}
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
 
-.header-actions {
-display: flex;
-gap: 15px;
-align-items: center;
-}
+    .header-actions {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
 
-.btn {
-padding: 12px 24px;
-border: none;
-border-radius: 10px;
-cursor: pointer;
-text-decoration: none;
-font-weight: 600;
-transition: all 0.3s ease;
-display: inline-block;
-}
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
 
-.btn-primary {
-background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
-color: white;
-}
+    .btn-primary {
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
+        color: white;
+    }
 
-.btn-primary:hover {
-transform: translateY(-2px);
-box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
-}
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
+    }
 
-.btn-secondary {
-background: #6c757d;
-color: white;
-}
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
 
-.btn-secondary:hover {
-background: #5a6268;
-transform: translateY(-2px);
-}
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
 
-.btn-danger {
-background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-color: white;
-}
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+    }
 
-.btn-danger:hover {
-transform: translateY(-2px);
-box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
-}
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+    }
 
-.btn-success {
-background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-color: white;
-}
+    .btn-success {
+        background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+        color: white;
+    }
 
-.btn-success:hover {
-transform: translateY(-2px);
-box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
-}
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+    }
 
-.nav-links {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 30px;
-}
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
 
-.nav-left {
-display: flex;
-gap: 15px;
-}
+    .nav-left {
+        display: flex;
+        gap: 15px;
+    }
 
-.nav-right {
-display: flex;
-align-items: center;
-}
+    .nav-right {
+        display: flex;
+        align-items: center;
+    }
 
-.nav-link {
-background: #e9ecef;
-color: #495057;
-padding: 10px 20px;
-border-radius: 8px;
-text-decoration: none;
-font-weight: 500;
-transition: all 0.3s ease;
-}
+    .nav-link {
+        background: #e9ecef;
+        color: #495057;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
 
-.nav-link:hover, .nav-link.active {
-background: #57068c;
-color: white;
-}
+    .nav-link:hover,
+    .nav-link.active {
+        background: #57068c;
+        color: white;
+    }
 
-.events-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-gap: 25px;
-}
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 25px;
+    }
 
-.event-card {
-background: #f8f9fa;
-padding: 25px;
-border-radius: 15px;
-border-left: 5px solid #57068c;
-transition: all 0.3s ease;
-}
+    .event-card {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 5px solid #57068c;
+        transition: all 0.3s ease;
+    }
 
-.event-card:hover {
-transform: translateY(-5px);
-box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-}
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
 
-.event-header {
-display: flex;
-justify-content: center;
-align-items: center;
-margin-bottom: 15px;
-flex-direction: column;
-}
+    .event-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-direction: column;
+    }
 
-.event-header > div {
-display: flex;
-flex-direction: column;
-align-items: center;
-width: 100%;
-}
+    .event-header>div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
 
-.event-name {
-font-weight: 700;
-font-size: 1.3rem;
-color: #2c3e50;
-margin-bottom: 5px;
-text-align: center;
-}
+    .event-name {
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: #2c3e50;
+        margin-bottom: 5px;
+        text-align: center;
+    }
 
-.event-code {
-color: #7f8c8d;
-font-family: 'Courier New', monospace;
-background: #e9ecef;
-padding: 4px 8px;
-border-radius: 5px;
-font-size: 0.9rem;
-display: inline-block;
-min-width: 120px;
-text-align: center;
-margin: 0 auto;
-}
+    .event-code {
+        color: #7f8c8d;
+        font-family: 'Courier New', monospace;
+        background: #e9ecef;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        display: inline-block;
+        min-width: 120px;
+        text-align: center;
+        margin: 0 auto;
+    }
 
-.event-description {
-color: #6c757d;
-font-size: 0.9rem;
-line-height: 1.4;
-margin: 10px 0;
-text-align: center;
-font-style: italic;
-}
+    .event-description {
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin: 10px 0;
+        text-align: center;
+        font-style: italic;
+    }
 
-.event-dates {
-color: #7f8c8d;
-font-size: 0.9rem;
-margin-bottom: 15px;
-}
+    .event-dates {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
 
-.event-stats {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 10px;
-margin-bottom: 20px;
-}
+    .event-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
 
-.stat-item {
-background: white;
-padding: 10px;
-border-radius: 8px;
-text-align: center;
-}
+    .stat-item {
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+    }
 
-.stat-number {
-font-weight: 700;
-color: #2c3e50;
-font-size: 1.1rem;
-}
+    .stat-number {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
 
-.stat-label {
-color: #7f8c8d;
-font-size: 0.8rem;
-}
+    .stat-label {
+        color: #7f8c8d;
+        font-size: 0.8rem;
+    }
 
-.event-actions {
-display: flex;
-gap: 10px;
-flex-wrap: wrap;
-justify-content: center;
-}
+    .event-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 
-.btn-small {
-padding: 8px 16px;
-font-size: 0.9rem;
-height: 36px;
-line-height: 20px;
-box-sizing: border-box;
-}
+    .btn-small {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        height: 36px;
+        line-height: 20px;
+        box-sizing: border-box;
+    }
 
-.flash-messages {
-margin-bottom: 30px;
-}
+    .flash-messages {
+        margin-bottom: 30px;
+    }
 
-.flash {
-padding: 15px 20px;
-border-radius: 10px;
-margin-bottom: 15px;
-font-size: 1rem;
-font-weight: 500;
-}
+    .flash {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
 
-.flash.success {
-background: #d4edda;
-color: #155724;
-border: 1px solid #c3e6cb;
-}
+    .flash.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
 
-.flash.error {
-background: #f8d7da;
-color: #721c24;
-border: 1px solid #f5c6cb;
-}
+    .flash.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
 
-.no-events {
-text-align: center;
-color: #7f8c8d;
-font-style: italic;
-padding: 60px 40px;
-background: #f8f9fa;
-border-radius: 15px;
-border: 2px dashed #e9ecef;
-}
+    .no-events {
+        text-align: center;
+        color: #7f8c8d;
+        font-style: italic;
+        padding: 60px 40px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        border: 2px dashed #e9ecef;
+    }
 
-.no-events h3 {
-margin-bottom: 15px;
-color: #2c3e50;
-}
+    .no-events h3 {
+        margin-bottom: 15px;
+        color: #2c3e50;
+    }
 </style>
 {% endblock %}
 
@@ -340,18 +341,17 @@ color: #2c3e50;
             </div>
 
             <div class="event-actions">
-                <a href="{{ url_for('scheduling.manage_sessions', event_id=event.id) }}"
-                    class="btn btn-secondary btn-small">Sessions</a>
-                <a href="{{ url_for('scheduling.manage_locations', event_id=event.id) }}"
-                    class="btn btn-secondary btn-small">Locations</a>
-                <a href="{{ url_for('matching.event_graph_page', event_id=event.id) }}" class="btn btn-primary btn-small">View
-                    Network Graph</a>
-                <a href="{{ url_for('admin.admin_edit_event', event_id=event.id) }}" class="btn btn-success btn-small">Edit
+                <a href="{{ url_for('admin.admin_edit_event', event_id=event.id) }}"
+                    class="btn btn-success btn-small">✏️ Edit
                     Event</a>
                 <form method="POST" action="{{ url_for('admin.admin_delete_event', event_id=event.id) }}"
                     style="display: inline;" onsubmit="return showDeleteEventConfirmation(event, '{{ event.name }}')">
-                    <button type="submit" class="btn btn-danger btn-small">Delete Event</button>
+                    <button type="submit" class="btn btn-danger btn-small">🗑️ Delete Event</button>
                 </form>
+                <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}"
+                    class="btn btn-primary btn-small">📅 Set up Event Sessions</a>
+                <a href="{{ url_for('scheduling.attendee_matching_workflow', event_id=event.id) }}"
+                    class="btn btn-secondary btn-small">🎯 Attendee Matching</a>
             </div>
         </div>
         {% endfor %}
@@ -360,7 +360,8 @@ color: #2c3e50;
     <div class="no-events">
         <h3>No Events Created Yet</h3>
         <p>Create your first event to get started with the platform.</p>
-        <a href="{{ url_for('admin.admin_create_event') }}" class="btn btn-primary" style="margin-top: 20px;">Create First
+        <a href="{{ url_for('admin.admin_create_event') }}" class="btn btn-primary" style="margin-top: 20px;">Create
+            First
             Event</a>
     </div>
     {% endif %}

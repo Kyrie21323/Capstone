@@ -27,8 +27,9 @@ class Event(db.Model):
     name = db.Column(db.String(200), nullable=False)
     code = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.Text, nullable=True)
-    start_date = db.Column(db.DateTime)
-    end_date = db.Column(db.DateTime)
+    start_date = db.Column(db.DateTime, nullable=True)  # Optional initially, required to publish
+    end_date = db.Column(db.DateTime, nullable=True)  # Optional initially, required to publish
+    is_published = db.Column(db.Boolean, default=False, nullable=False)  # Controls public availability
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
@@ -81,10 +82,17 @@ class Match(db.Model):
     matched_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     
+    # Auto-assignment tracking
+    assigned_meeting_id = db.Column(db.Integer, db.ForeignKey('meeting.id'), nullable=True)
+    assignment_attempted = db.Column(db.Boolean, default=False)
+    assignment_failed_reason = db.Column(db.String(200), nullable=True)
+    assigned_at = db.Column(db.DateTime, nullable=True)
+    
     # Relationships
     user1 = db.relationship('User', foreign_keys=[user1_id], backref='matches_as_user1')
     user2 = db.relationship('User', foreign_keys=[user2_id], backref='matches_as_user2')
     event = db.relationship('Event', backref='matches')
+    # Note: assigned_meeting accessed via Meeting.query.filter_by(match_id=self.id).first()
     
     # Ensure unique pairs and prevent self-matching
     __table_args__ = (
@@ -127,31 +135,54 @@ class UserInteraction(db.Model):
     def __repr__(self):
         return f'<UserInteraction User {self.user_id} {self.action}s User {self.target_user_id} in Event {self.event_id}>'
 
+class SessionLocation(db.Model):
+    """Physical location where sessions take place (e.g., 'Main Hall', 'Conference Room A')"""
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    event = db.relationship('Event', backref='session_locations')
+    
+    def __repr__(self):
+        return f'<SessionLocation {self.name} for Event {self.event_id}>'
+
 class EventSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)  # e.g., "Morning Session"
-    start_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
-    location_description = db.Column(db.String(200), nullable=True)  # General location info
+    day_number = db.Column(db.Integer, nullable=False)  # e.g., 1 for Day 1, 2 for Day 2
+    start_time = db.Column(db.Time, nullable=False)  # Time only (e.g., 09:00)
+    end_time = db.Column(db.Time, nullable=False)  # Time only (e.g., 12:00)
+    location_description = db.Column(db.String(200), nullable=True)  # General location info (deprecated, use session_location)
+    session_location_id = db.Column(db.Integer, db.ForeignKey('session_location.id'), nullable=True)
+    matching_enabled = db.Column(db.Boolean, default=False, nullable=False)
     
     # Relationships
     event = db.relationship('Event', backref='sessions')
+    session_location = db.relationship('SessionLocation', backref='sessions')
     
     def __repr__(self):
         return f'<EventSession {self.name} for Event {self.event_id}>'
 
-class MeetingLocation(db.Model):
+class MeetingPoint(db.Model):
+    """Specific meeting spot within a session location (e.g., 'Table 1', 'Booth 5')"""
+    __tablename__ = 'meeting_location'  # Keep existing table name for backward compatibility
+    
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    session_location_id = db.Column(db.Integer, db.ForeignKey('session_location.id'), nullable=True)
     name = db.Column(db.String(100), nullable=False)  # e.g., "Hall 1 Table 11"
     capacity = db.Column(db.Integer, default=2)  # Usually 2 for 1-on-1
     
     # Relationships
-    event = db.relationship('Event', backref='locations')
+    event = db.relationship('Event', backref='meeting_points')
+    session_location = db.relationship('SessionLocation', backref='meeting_points')
     
     def __repr__(self):
-        return f'<MeetingLocation {self.name} for Event {self.event_id}>'
+        return f'<MeetingPoint {self.name} for Event {self.event_id}>'
 
 class ParticipantAvailability(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -182,9 +213,9 @@ class Meeting(db.Model):
     status = db.Column(db.String(20), default='scheduled')  # scheduled, cancelled, completed
     
     # Relationships
-    match = db.relationship('Match', backref='meetings')
+    match = db.relationship('Match', foreign_keys=[match_id], backref='meetings')
     session = db.relationship('EventSession', backref='meetings')
-    location = db.relationship('MeetingLocation', backref='meetings')
+    location = db.relationship('MeetingPoint', backref='meetings')
     
     def __repr__(self):
         return f'<Meeting Match {self.match_id} at {self.start_time}>'

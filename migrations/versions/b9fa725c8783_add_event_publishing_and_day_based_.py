@@ -1,8 +1,8 @@
-"""Initial migration with all models
+"""Add event publishing and day-based sessions
 
-Revision ID: 1140fae793cc
+Revision ID: b9fa725c8783
 Revises: 
-Create Date: 2025-12-06 22:44:04.536255
+Create Date: 2025-12-07 09:18:50.021895
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1140fae793cc'
+revision = 'b9fa725c8783'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,9 +25,42 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('start_date', sa.DateTime(), nullable=True),
     sa.Column('end_date', sa.DateTime(), nullable=True),
+    sa.Column('is_published', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('code')
+    )
+    op.create_table('match',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user1_id', sa.Integer(), nullable=False),
+    sa.Column('user2_id', sa.Integer(), nullable=False),
+    sa.Column('event_id', sa.Integer(), nullable=False),
+    sa.Column('matched_at', sa.DateTime(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('assigned_meeting_id', sa.Integer(), nullable=True),
+    sa.Column('assignment_attempted', sa.Boolean(), nullable=True),
+    sa.Column('assignment_failed_reason', sa.String(length=200), nullable=True),
+    sa.Column('assigned_at', sa.DateTime(), nullable=True),
+    sa.CheckConstraint('user1_id != user2_id', name='no_self_match'),
+    sa.ForeignKeyConstraint(['assigned_meeting_id'], ['meeting.id'], ),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.ForeignKeyConstraint(['user1_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['user2_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user1_id', 'user2_id', 'event_id', name='unique_match_pair')
+    )
+    op.create_table('meeting',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('match_id', sa.Integer(), nullable=False),
+    sa.Column('session_id', sa.Integer(), nullable=False),
+    sa.Column('location_id', sa.Integer(), nullable=False),
+    sa.Column('start_time', sa.DateTime(), nullable=False),
+    sa.Column('end_time', sa.DateTime(), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=True),
+    sa.ForeignKeyConstraint(['location_id'], ['meeting_location.id'], ),
+    sa.ForeignKeyConstraint(['match_id'], ['match.id'], ),
+    sa.ForeignKeyConstraint(['session_id'], ['event_session.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -38,38 +71,6 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
-    )
-    op.create_table('event_session',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('event_id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('start_time', sa.DateTime(), nullable=False),
-    sa.Column('end_time', sa.DateTime(), nullable=False),
-    sa.Column('location_description', sa.String(length=200), nullable=True),
-    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('match',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user1_id', sa.Integer(), nullable=False),
-    sa.Column('user2_id', sa.Integer(), nullable=False),
-    sa.Column('event_id', sa.Integer(), nullable=False),
-    sa.Column('matched_at', sa.DateTime(), nullable=True),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.CheckConstraint('user1_id != user2_id', name='no_self_match'),
-    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
-    sa.ForeignKeyConstraint(['user1_id'], ['user.id'], ),
-    sa.ForeignKeyConstraint(['user2_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('user1_id', 'user2_id', 'event_id', name='unique_match_pair')
-    )
-    op.create_table('meeting_location',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('event_id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('capacity', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
-    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('membership',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -96,6 +97,15 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('user_id', 'event_id', name='unique_user_event_resume')
     )
+    op.create_table('session_location',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('event_id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('user_interaction',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -111,17 +121,28 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('user_id', 'target_user_id', 'event_id', name='unique_user_interaction')
     )
-    op.create_table('meeting',
+    op.create_table('event_session',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('match_id', sa.Integer(), nullable=False),
-    sa.Column('session_id', sa.Integer(), nullable=False),
-    sa.Column('location_id', sa.Integer(), nullable=False),
-    sa.Column('start_time', sa.DateTime(), nullable=False),
-    sa.Column('end_time', sa.DateTime(), nullable=False),
-    sa.Column('status', sa.String(length=20), nullable=True),
-    sa.ForeignKeyConstraint(['location_id'], ['meeting_location.id'], ),
-    sa.ForeignKeyConstraint(['match_id'], ['match.id'], ),
-    sa.ForeignKeyConstraint(['session_id'], ['event_session.id'], ),
+    sa.Column('event_id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('day_number', sa.Integer(), nullable=False),
+    sa.Column('start_time', sa.Time(), nullable=False),
+    sa.Column('end_time', sa.Time(), nullable=False),
+    sa.Column('location_description', sa.String(length=200), nullable=True),
+    sa.Column('session_location_id', sa.Integer(), nullable=True),
+    sa.Column('matching_enabled', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.ForeignKeyConstraint(['session_location_id'], ['session_location.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('meeting_location',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('event_id', sa.Integer(), nullable=False),
+    sa.Column('session_location_id', sa.Integer(), nullable=True),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('capacity', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.ForeignKeyConstraint(['session_location_id'], ['session_location.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('participant_availability',
@@ -142,13 +163,14 @@ def upgrade():
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('participant_availability')
-    op.drop_table('meeting')
+    op.drop_table('meeting_location')
+    op.drop_table('event_session')
     op.drop_table('user_interaction')
+    op.drop_table('session_location')
     op.drop_table('resume')
     op.drop_table('membership')
-    op.drop_table('meeting_location')
-    op.drop_table('match')
-    op.drop_table('event_session')
     op.drop_table('user')
+    op.drop_table('meeting')
+    op.drop_table('match')
     op.drop_table('event')
     # ### end Alembic commands ###

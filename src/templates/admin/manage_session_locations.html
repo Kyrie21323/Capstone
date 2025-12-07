@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Meeting Points - {{ event.name }}{% endblock %}
+{% block title %}Manage Session Locations - {{ event.name }}{% endblock %}
 
 {% block styles %}
 <style>
@@ -59,13 +59,6 @@
         border: 1px solid #e9ecef;
     }
 
-    .form-row {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
     .form-group {
         margin-bottom: 20px;
     }
@@ -78,17 +71,23 @@
     }
 
     .form-group input,
-    .form-group select {
+    .form-group textarea {
         width: 100%;
         padding: 12px;
         border: 2px solid #e9ecef;
         border-radius: 8px;
         font-size: 1rem;
         transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-group textarea {
+        min-height: 80px;
+        resize: vertical;
     }
 
     .form-group input:focus,
-    .form-group select:focus {
+    .form-group textarea:focus {
         outline: none;
         border-color: #57068c;
         box-shadow: 0 0 0 3px rgba(87, 6, 140, 0.1);
@@ -114,7 +113,6 @@
 
     .locations-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 20px;
     }
 
@@ -132,17 +130,24 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .location-name {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin: 0 0 10px 0;
+    .location-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 10px;
     }
 
-    .location-details {
+    .location-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .location-description {
         color: #6c757d;
         font-size: 0.95rem;
-        margin-bottom: 15px;
+        margin-top: 8px;
     }
 
     .delete-btn {
@@ -154,7 +159,6 @@
         cursor: pointer;
         font-size: 0.9rem;
         font-weight: 600;
-        width: 100%;
         transition: all 0.3s ease;
     }
 
@@ -186,24 +190,7 @@
         padding: 4px 12px;
         border-radius: 12px;
         font-size: 0.85rem;
-    }
-
-    .warning-box {
-        background: #fff3cd;
-        border-left: 4px solid #ffc107;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-    }
-
-    .warning-box strong {
-        color: #856404;
-    }
-
-    .warning-box p {
-        color: #856404;
-        margin: 5px 0 0 0;
-        font-weight: 500;
+        margin-top: 10px;
     }
 </style>
 {% endblock %}
@@ -211,87 +198,83 @@
 {% block content %}
 <div class="container">
     <div class="header">
-        <h1>📍 Meeting Points</h1>
-        <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="back-btn">← Back to
-            Workflow</a>
+        <h1>📍 Session Locations</h1>
+        <a href="{{ url_for('admin.admin_events') }}" class="back-btn">← Back to Events</a>
     </div>
 
-    {% if not session_locations %}
-    <div class="warning-box">
-        <strong>⚠️ No Session Locations</strong>
-        <p>You need to create session locations first before adding meeting points. <a
-                href="{{ url_for('scheduling.manage_session_locations', event_id=event.id) }}"
-                style="color: #856404; text-decoration: underline;">Create Session Locations</a></p>
-    </div>
-    {% else %}
-
-    <!-- Add New Meeting Point Form -->
+    <!-- Add New Location Form -->
     <div class="section">
-        <h2 style="margin-bottom: 20px; color: #2c3e50;">Add New Meeting Point</h2>
+        <h2 style="margin-bottom: 20px; color: #2c3e50;">Add New Session Location</h2>
         <div class="form-card">
             <form method="POST">
                 <input type="hidden" name="action" value="add">
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="name">Meeting Point Name *</label>
-                        <input type="text" id="name" name="name" placeholder="e.g., Table 1, Booth 5" required>
-                        <div class="helper-text">Specific spot where matched attendees will meet</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="capacity">Capacity</label>
-                        <input type="number" id="capacity" name="capacity" value="2" min="2" max="10">
-                        <div class="helper-text">Usually 2 for 1-on-1</div>
-                    </div>
+                <div class="form-group">
+                    <label for="name">Location Name *</label>
+                    <input type="text" id="name" name="name" placeholder="e.g., Main Hall, Conference Room A" required>
+                    <div class="helper-text">Physical venue where sessions take place</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="session_location_id">Located In *</label>
-                    <select id="session_location_id" name="session_location_id" required>
-                        <option value="">Select Session Location</option>
-                        {% for location in session_locations %}
-                        <option value="{{ location.id }}">{{ location.name }}</option>
-                        {% endfor %}
-                    </select>
-                    <div class="helper-text">Which session location contains this meeting point</div>
+                    <label for="description">Description (Optional)</label>
+                    <textarea id="description" name="description"
+                        placeholder="e.g., Ground floor, near the elevator"></textarea>
+                    <div class="helper-text">Additional details to help attendees find the location</div>
                 </div>
 
-                <button type="submit" class="submit-btn">➕ Add Meeting Point</button>
+                <button type="submit" class="submit-btn">➕ Add Session Location</button>
             </form>
         </div>
     </div>
-    {% endif %}
 
-    <!-- Existing Meeting Points List -->
+    <!-- Existing Locations List -->
     <div class="section">
-        <h2 style="margin-bottom: 20px; color: #2c3e50;">Existing Meeting Points</h2>
+        <h2 style="margin-bottom: 20px; color: #2c3e50;">Existing Session Locations</h2>
 
-        {% if locations %}
+        {% if session_locations %}
         <div class="locations-grid">
-            {% for location in locations %}
+            {% for location in session_locations %}
             <div class="location-card">
-                <h3 class="location-name">{{ location.name }}</h3>
-                <div class="location-details">
-                    <div>👥 Capacity: {{ location.capacity }}</div>
-                    {% if location.session_location %}
-                    <div>📍 {{ location.session_location.name }}</div>
-                    {% endif %}
+                <div class="location-header">
+                    <div>
+                        <h3 class="location-name">{{ location.name }}</h3>
+                        {% if location.description %}
+                        <p class="location-description">{{ location.description }}</p>
+                        {% endif %}
+
+                        {% set sessions_count = location.sessions|length %}
+                        {% set meeting_points_count = location.meeting_points|length %}
+                        {% if sessions_count > 0 or meeting_points_count > 0 %}
+                        <div style="margin-top: 10px;">
+                            {% if sessions_count > 0 %}
+                            <span class="info-badge">{{ sessions_count }} session{{ 's' if sessions_count != 1 else ''
+                                }}</span>
+                            {% endif %}
+                            {% if meeting_points_count > 0 %}
+                            <span class="info-badge">{{ meeting_points_count }} meeting point{{ 's' if
+                                meeting_points_count != 1 else '' }}</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <form method="POST" onsubmit="return confirm('Are you sure you want to delete this location?');"
+                        style="display: inline;">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="location_id" value="{{ location.id }}">
+                        <button type="submit" class="delete-btn">🗑️ Delete</button>
+                    </form>
                 </div>
-                <form method="POST" onsubmit="return confirm('Delete this meeting point?');">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="location_id" value="{{ location.id }}">
-                    <button type="submit" class="delete-btn">🗑️ Delete</button>
-                </form>
             </div>
             {% endfor %}
         </div>
         {% else %}
         <div class="empty-state">
             <div class="empty-state-icon">📍</div>
-            <h3 style="color: #2c3e50;">No Meeting Points Yet</h3>
-            <p>Create your first meeting point to enable automatic match assignment!</p>
-            <p class="helper-text">Meeting points are specific locations where matched attendees will meet.</p>
+            <h3 style="color: #2c3e50;">No Session Locations Yet</h3>
+            <p>Create your first session location to get started!</p>
+            <p class="helper-text">Session locations are physical venues like "Main Hall" or "Room A" where your event
+                sessions will take place.</p>
         </div>
         {% endif %}
     </div>

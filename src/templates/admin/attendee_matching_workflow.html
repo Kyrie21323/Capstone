@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Attendee Matching - {{ event.name }}{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        padding: 20px;
+    }
+
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .back-btn {
+        background: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .intro-section {
+        background: #f0f7ff;
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 4px solid #57068c;
+        margin-bottom: 40px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #57068c;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .info-section {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+    }
+
+    .info-section h3 {
+        color: #2c3e50;
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+
+    .info-section p {
+        color: #6c757d;
+        line-height: 1.6;
+        margin: 0 0 15px 0;
+    }
+
+    .info-section ul {
+        color: #6c757d;
+        line-height: 1.8;
+        margin: 10px 0 0 20px;
+    }
+
+    .action-button {
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(87, 6, 140, 0.3);
+    }
+
+    .helper-note {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 30px;
+    }
+
+    .helper-note strong {
+        color: #856404;
+    }
+
+    .helper-note p {
+        color: #856404;
+        margin: 5px 0 0 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>🎯 Attendee Matching</h1>
+        <a href="{{ url_for('admin.admin_events') }}" class="back-btn">← Back to Events</a>
+    </div>
+
+    <div class="intro-section">
+        <h2 style="color: #2c3e50; margin: 0 0 10px 0;">Smart Matching System</h2>
+        <p style="margin: 0 0 15px 0;">Monitor and manage how attendees are matched for networking at your event.</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_members }}</div>
+                <div class="stat-label">Total Members</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ matching_enabled_sessions }}</div>
+                <div class="stat-label">Matching Enabled Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_matches }}</div>
+                <div class="stat-label">Successful Matches</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>📊 How Matching Works</h3>
+        <p>The smart matching system connects attendees based on their interests and availability:</p>
+        <ul>
+            <li><strong>Session-Based Filtering:</strong> Attendees are matched primarily with others attending the same
+                sessions</li>
+            <li><strong>Smart Algorithm:</strong> Uses keyword similarity and document analysis to find the best matches
+            </li>
+            <li><strong>Automatic Assignment:</strong> When two users match, they're automatically assigned a meeting
+                time and location</li>
+            <li><strong>Threshold:</strong> Only matches with >26% compatibility are shown to ensure quality connections
+            </li>
+        </ul>
+        <a href="{{ url_for('matching.event_graph_page', event_id=event.id) }}" class="action-button">
+            📊 View Network Graph
+        </a>
+    </div>
+
+    <div class="info-section">
+        <h3>⚙️ Requirements</h3>
+        <p>For matching to work, ensure the following are set up:</p>
+        <ul>
+            <li>✓ Attendees must be registered for the event ({{ total_members }} currently registered)</li>
+            <li>{% if matching_enabled_sessions > 0 %}✓{% else %}⚠️{% endif %} At least one session with matching
+                enabled ({{ matching_enabled_sessions }} currently)</li>
+            <li>✓ Attendees select their session availability before matching</li>
+            <li>✓ Meeting points created for automatic assignment</li>
+        </ul>
+        {% if matching_enabled_sessions == 0 %}
+        <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="action-button">
+            📅 Enable Matching on Sessions
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="helper-note">
+        <strong>💡 Tip:</strong>
+        <p>Attendees will only see potential matches from sessions they've marked as attending. They can click "Show all
+            attendees" to see cross-session matches if needed.</p>
+    </div>
+</div>
+{% endblock %}
