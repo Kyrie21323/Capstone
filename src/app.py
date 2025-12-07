@@ -27,7 +27,12 @@ def create_app(config_name=None):
     instance_dir = os.path.join(PROJECT_ROOT, 'instance')
     os.makedirs(instance_dir, exist_ok=True)  # Ensure instance/ folder exists
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "nfc_networking.db")}'
-    app.config['UPLOAD_FOLDER'] = os.path.join(PROJECT_ROOT, 'uploads')
+    
+    # Ensure UPLOAD_FOLDER is absolute and consistent
+    upload_folder = os.path.join(PROJECT_ROOT, 'uploads')
+    upload_folder = os.path.abspath(upload_folder)  # Normalize to absolute path
+    os.makedirs(upload_folder, exist_ok=True)  # Ensure uploads/ folder exists
+    app.config['UPLOAD_FOLDER'] = upload_folder
     
     # Initialize extensions
     db.init_app(app)

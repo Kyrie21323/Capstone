@@ -213,14 +213,18 @@ def upload_resume(event_id):
         # I should stick to what `upload_resume` did in app.py:328: 
         # upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], str(current_user.id))
         
-        upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id))
+        # Ensure UPLOAD_FOLDER is absolute and exists
+        upload_folder = os.path.abspath(current_app.config['UPLOAD_FOLDER'])
+        upload_dir = os.path.join(upload_folder, str(current_user.id))
+        
         try:
             os.makedirs(upload_dir, exist_ok=True)
         except Exception as e:
             flash('Error creating upload directory. Please try again.', 'error')
             return redirect(url_for('user.upload_resume', event_id=event_id))
         
-        file_path = os.path.join(upload_dir, unique_filename)
+        # Use absolute path for file saving
+        file_path = os.path.abspath(os.path.join(upload_dir, unique_filename))
         try:
             file.save(file_path)
         except Exception as e:
@@ -400,17 +404,23 @@ def update_keywords():
 @user_bp.route('/uploads/<path:filename>')
 @login_required
 def uploaded_file(filename):
-    # Extract event_id and user_id from filename
+    # Extract user_id and actual filename from path
+    # Format: {user_id}/{filename}
     parts = filename.split('/')
     if len(parts) < 2:
         flash('Invalid file path!', 'error')
         return redirect(url_for('user.dashboard'))
     
-    event_id = parts[0]
+    try:
+        user_id = int(parts[0])
+    except ValueError:
+        flash('Invalid file path!', 'error')
+        return redirect(url_for('user.dashboard'))
+    
     actual_filename = '/'.join(parts[1:])
     
-    # Find the resume record
-    resume = Resume.query.filter_by(filename=actual_filename, event_id=event_id).first()
+    # Find the resume record by filename and user_id
+    resume = Resume.query.filter_by(filename=actual_filename, user_id=user_id).first()
     
     if not resume:
         flash('File not found!', 'error')
@@ -421,8 +431,14 @@ def uploaded_file(filename):
         flash('You are not authorized to access this file!', 'error')
         return redirect(url_for('user.dashboard'))
     
-    # Construct the full file path
-    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+    # Construct the full file path using the same structure as upload
+    # Files are saved to: UPLOAD_FOLDER/{user_id}/{filename}
+    # Ensure we use absolute path for consistency
+    upload_folder = os.path.abspath(current_app.config['UPLOAD_FOLDER'])
+    file_path = os.path.join(upload_folder, str(resume.user_id), resume.filename)
+    
+    # Normalize path to handle any path separator issues
+    file_path = os.path.abspath(os.path.normpath(file_path))
     
     # Check if file exists
     if not os.path.exists(file_path):
