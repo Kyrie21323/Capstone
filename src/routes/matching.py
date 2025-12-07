@@ -4,7 +4,7 @@ Handles event matching, likes, passes, matches, and graph processing.
 """
 from flask import render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
-from models import db, Event, Membership, Resume, UserInteraction, Match, ParticipantAvailability
+from models import db, Event, Membership, Resume, UserInteraction, Match, ParticipantAvailability, Meeting
 from . import matching_bp
 import os
 

@@ -287,10 +287,10 @@
 
     {% if not session_locations %}
     <div class="warning-box">
-        <strong><i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> No Session Locations</strong>
-        <p>You need to create session locations first before adding sessions. <a
-                href="{{ url_for('scheduling.manage_session_locations', event_id=event.id) }}"
-                style="color: #856404; text-decoration: underline;">Create Session Locations</a></p>
+        <strong><i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> No Event Locations</strong>
+        <p style="color: #7f8c8d;">You need to create Event Locations first! <a
+                href="{{ url_for('scheduling.manage_event_locations', event_id=event.id) }}"
+                style="color: #856404; text-decoration: underline;">Create Event Locations</a></p>
     </div>
     {% else %}
 
@@ -422,7 +422,7 @@
 
     <!-- Navigation Footer -->
     <div style="margin-top: 40px; text-align: right; padding-top: 20px; border-top: 2px solid #e9ecef;">
-        <a href="{{ url_for('scheduling.manage_locations', event_id=event.id) }}" class="submit-btn"
+        <a href="{{ url_for('scheduling.manage_meeting_points', event_id=event.id) }}" class="submit-btn"
             style="display: inline-block; width: auto; text-decoration: none;">
             Next Step: Add Meeting Points →
         </a>

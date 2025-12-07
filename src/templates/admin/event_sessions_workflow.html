@@ -199,29 +199,29 @@
     </div>
 
     <div class="workflow-steps">
-        <!-- Step 1: Session Locations -->
+        <!-- Step 1: Event Locations -->
         <div class="step-card">
             <div class="step-header">
                 <div class="step-number">1</div>
                 <div class="step-content">
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div>
-                            <div class="step-title">Define Session Locations</div>
+                            <div class="step-title">Define Event Locations</div>
                             <div class="step-description">
                                 Create physical venues where your event sessions will take place (e.g., "Main Hall",
                                 "Conference Room A"). These are the broad locations that contain your sessions.
                             </div>
                         </div>
                         {% if session_locations_count > 0 %}
-                        <span class="step-status status-complete">✓ {{ session_locations_count }} location{{ 's' if
+                        <span class="step-status status-complete">✓ {{ session_locations_count }} Event Location{{ 's'
+                            if
                             session_locations_count != 1 else '' }}</span>
                         {% else %}
                         <span class="step-status status-pending">Not started</span>
                         {% endif %}
                     </div>
-                    <a href="{{ url_for('scheduling.manage_session_locations', event_id=event.id) }}"
-                        class="step-action">
-                        <i data-lucide="building" style="width: 16px; height: 16px;"></i> Manage Session Locations
+                    <a href="{{ url_for('scheduling.manage_event_locations', event_id=event.id) }}" class="step-action">
+                        <i data-lucide="building" style="width: 16px; height: 16px;"></i> Manage Event Locations
                     </a>
                 </div>
             </div>
@@ -276,7 +276,7 @@
                         <span class="step-status status-pending">Not started</span>
                         {% endif %}
                     </div>
-                    <a href="{{ url_for('scheduling.manage_locations', event_id=event.id) }}" class="step-action">
+                    <a href="{{ url_for('scheduling.manage_meeting_points', event_id=event.id) }}" class="step-action">
                         <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i> Manage Meeting Points
                     </a>
                 </div>

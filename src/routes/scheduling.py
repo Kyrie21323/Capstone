@@ -9,11 +9,11 @@ from datetime import datetime
 from . import scheduling_bp
 from .utils import admin_required
 
-@scheduling_bp.route('/<int:event_id>/session-locations', methods=['GET', 'POST'])
+@scheduling_bp.route('/<int:event_id>/event-locations', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def manage_session_locations(event_id):
-    """Manage session locations (physical venues for sessions)"""
+def manage_event_locations(event_id):
+    """Manage event locations (physical venues for sessions)"""
     event = Event.query.get_or_404(event_id)
     
     if request.method == 'POST':
@@ -156,10 +156,10 @@ def manage_sessions(event_id):
     sessions = EventSession.query.filter_by(event_id=event_id).order_by(EventSession.day_number, EventSession.start_time).all()
     return render_template('manage_sessions.html', event=event, sessions=sessions, session_locations=session_locations)
 
-@scheduling_bp.route('/<int:event_id>/locations', methods=['GET', 'POST'])
+@scheduling_bp.route('/<int:event_id>/meeting-points', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def manage_locations(event_id):
+def manage_meeting_points(event_id):
     # Admin check handled by decorator
     
     event = Event.query.get_or_404(event_id)
@@ -170,7 +170,7 @@ def manage_locations(event_id):
         
         if action == 'add':
             name = request.form.get('name')
-            capacity = request.form.get('capacity', 2)
+            capacity = request.form.get('capacity', 1)
             session_location_id = request.form.get('session_location_id')
             
             try:

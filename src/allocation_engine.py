@@ -72,7 +72,7 @@ class AllocationEngine:
                 
             # Check for available location
             for location in locations:
-                if self.is_location_free(location.id, current_time, end_time):
+                if self.is_location_free(location, current_time, end_time):
                     return {
                         'start_time': current_time,
                         'end_time': end_time,
@@ -95,12 +95,12 @@ class AllocationEngine:
         
         return existing_meeting is None
         
-    def is_location_free(self, location_id, start_time, end_time):
-        existing_meeting = Meeting.query.filter(
-            Meeting.location_id == location_id,
+    def is_location_free(self, location, start_time, end_time):
+        meeting_count = Meeting.query.filter(
+            Meeting.location_id == location.id,
             Meeting.start_time < end_time,
             Meeting.end_time > start_time,
             Meeting.status != 'cancelled'
-        ).first()
+        ).count()
         
-        return existing_meeting is None
+        return meeting_count < location.capacity

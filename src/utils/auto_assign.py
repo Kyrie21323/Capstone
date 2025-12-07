@@ -66,8 +66,8 @@ def find_available_meeting_point(session_location_id, session_id, start_time, en
     
     # Check each meeting point for availability
     for point in meeting_points:
-        # Check if this point has any overlapping meetings
-        overlapping_meetings = Meeting.query.filter(
+        # Count overlapping meetings
+        overlapping_count = Meeting.query.filter(
             Meeting.location_id == point.id,
             Meeting.session_id == session_id,
             Meeting.status != 'cancelled',
@@ -76,9 +76,9 @@ def find_available_meeting_point(session_location_id, session_id, start_time, en
                 Meeting.start_time < end_time,
                 Meeting.end_time > start_time
             )
-        ).first()
+        ).count()
         
-        if not overlapping_meetings:
+        if overlapping_count < point.capacity:
             # This point is available!
             return point
     

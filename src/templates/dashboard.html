@@ -174,20 +174,7 @@
             showNotificationPermissionModal();
         }
 
-        // Check if user just logged in (flash message exists) and show browser notification
-        const flashMessages = document.querySelectorAll('.flash-messages .flash.success');
-        flashMessages.forEach(function (flash) {
-            const message = flash.textContent.trim();
-            if (message.includes('Login successful') && typeof notificationManager !== 'undefined') {
-                // Show browser notification if permission granted
-                if (notificationManager.permissionGranted) {
-                    notificationManager.showNotification('Login Successful', {
-                        body: message,
-                        icon: '/static/images/logo.png'
-                    });
-                }
-            }
-        });
+
 
         // Add event listeners to all leave event buttons
         document.querySelectorAll('.leave-event-btn').forEach(button => {

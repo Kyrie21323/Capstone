@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Session Locations - {{ event.name }}{% endblock %}
+{% block title %}Manage Event Locations - {{ event.name }}{% endblock %}
 
 {% block styles %}
 <style>
@@ -198,7 +198,7 @@
 {% block content %}
 <div class="container">
     <div class="header">
-        <h1><i data-lucide="building" style="width: 24px; height: 24px;"></i> Session Locations</h1>
+        <h1><i data-lucide="building" style="width: 24px; height: 24px;"></i> Event Locations</h1>
         <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="back-btn">← Back to
             Workflow</a>
     </div>
@@ -231,7 +231,7 @@
 
     <!-- Existing Locations List -->
     <div class="section">
-        <h2 style="margin-bottom: 20px; color: #2c3e50;">Existing Session Locations</h2>
+        <h2 style="margin-bottom: 20px; color: #2c3e50;">Existing Event Locations</h2>
 
         {% if session_locations %}
         <div class="locations-grid">
@@ -274,10 +274,8 @@
         {% else %}
         <div class="empty-state">
             <div class="empty-state-icon">📍</div>
-            <h3 style="color: #2c3e50;">No Session Locations Yet</h3>
-            <p>Create your first session location to get started!</p>
-            <p class="helper-text">Session locations are physical venues like "Main Hall" or "Room A" where your event
-                sessions will take place.</p>
+            <h3 style="color: #2c3e50;">No Event Locations Yet</h3>
+            <p style="color: #7f8c8d;">Create your first event location above to get started.</p>
         </div>
         {% endif %}
     </div>
