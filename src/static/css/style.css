@@ -141,7 +141,7 @@ h4 {
     font-weight: 600;
 }
 
-/* ==================== BUTTONS - Unified System ==================== */
+/* ==================== BUTTONS (Unified) ==================== */
 /* Base button styles */
 .btn {
     padding: 10px 20px;
@@ -390,7 +390,7 @@ h4 {
     font-size: 0.9rem;
     line-height: 1.4;
     margin: 10px 0;
-    font-style: italic;
+    /* font-style: italic; Removed in favor of normal text */
 }
 
 .event-keywords {
@@ -954,8 +954,16 @@ h4 {
 }
 
 /* Text */
+/* Text */
 .text-muted {
     color: var(--color-text-secondary);
+}
+
+.text-subtle {
+    color: var(--color-text-muted);
+    font-size: 0.9em;
+    font-weight: 500;
+    opacity: 0.9;
 }
 
 /* ==================== SPECIFIC COMPONENTS ==================== */
@@ -978,7 +986,7 @@ h4 {
 .no-events {
     text-align: center;
     color: var(--color-text-secondary);
-    font-style: italic;
+    /* font-style: italic; Removed in favor of normal text */
     padding: 60px 40px;
     background: var(--color-bg-muted);
     border-radius: 15px;
