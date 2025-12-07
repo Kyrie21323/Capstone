@@ -247,14 +247,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="session_location_id">Located Around *</label>
-                    <select id="session_location_id" name="session_location_id" required>
-                        <option value="">Select Event Location</option>
+                    <label for="session_location_ids">Located Around *</label>
+                    <select id="session_location_ids" name="session_location_ids" multiple required
+                        style="height: 120px;">
                         {% for location in session_locations %}
                         <option value="{{ location.id }}">{{ location.name }}</option>
                         {% endfor %}
                     </select>
-                    <div class="helper-text">Which event location contains this meeting point</div>
+                    <div class="helper-text">Hold Ctrl/Cmd to select multiple event locations</div>
                 </div>
 
                 <button type="submit" class="submit-btn"><i data-lucide="plus" style="width: 16px; height: 16px;"></i>
@@ -275,7 +275,13 @@
                 <h3 class="location-name">{{ location.name }}</h3>
                 <div class="location-details">
                     <div>👥 Capacity: {{ location.capacity }}</div>
-                    {% if location.session_location %}
+                    {% if location.session_locations %}
+                    <div>📍 Locations:
+                        {% for loc in location.session_locations %}
+                        <span class="info-badge" style="margin-right: 4px; font-size: 0.8rem;">{{ loc.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% elif location.session_location %}
                     <div>📍 {{ location.session_location.name }}</div>
                     {% endif %}
                 </div>

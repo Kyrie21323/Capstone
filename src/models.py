@@ -167,19 +167,31 @@ class EventSession(db.Model):
     def __repr__(self):
         return f'<EventSession {self.name} for Event {self.event_id}>'
 
+# Association table for MeetingPoint <-> SessionLocation
+meeting_point_locations = db.Table('meeting_point_locations',
+    db.Column('meeting_point_id', db.Integer, db.ForeignKey('meeting_location.id'), primary_key=True),
+    db.Column('session_location_id', db.Integer, db.ForeignKey('session_location.id'), primary_key=True)
+)
+
 class MeetingPoint(db.Model):
     """Specific meeting spot within a session location (e.g., 'Table 1', 'Booth 5')"""
     __tablename__ = 'meeting_location'  # Keep existing table name for backward compatibility
     
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    # session_location_id kept for backward compatibility during migration, but new code should use relationship
     session_location_id = db.Column(db.Integer, db.ForeignKey('session_location.id'), nullable=True)
     name = db.Column(db.String(100), nullable=False)  # e.g., "Hall 1 Table 11"
     capacity = db.Column(db.Integer, default=1)  # Number of concurrent meetings (pairs)
     
     # Relationships
     event = db.relationship('Event', backref='meeting_points')
-    session_location = db.relationship('SessionLocation', backref='meeting_points')
+    # Old single relationship - kept for backward compatibility only
+    session_location = db.relationship('SessionLocation', foreign_keys=[session_location_id], backref='_old_meeting_points')
+    # New many-to-many relationship - this is the primary one
+    session_locations = db.relationship('SessionLocation',
+                                       secondary=meeting_point_locations,
+                                       backref='meeting_points')
     
     def __repr__(self):
         return f'<MeetingPoint {self.name} for Event {self.event_id}>'

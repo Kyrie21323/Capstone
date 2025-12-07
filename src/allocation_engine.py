@@ -10,9 +10,18 @@ class AllocationEngine:
         matches = Match.query.filter_by(event_id=self.event_id, is_active=True).all()
         matches_to_schedule = [m for m in matches if not m.meetings]
         
-        # 2. Get all sessions and locations
+        # 2. Get all sessions and build a list of all meeting points from all session locations
         sessions = EventSession.query.filter_by(event_id=self.event_id).order_by(EventSession.start_time).all()
-        locations = MeetingPoint.query.filter_by(event_id=self.event_id).all()
+        
+        # Collect all unique meeting points from session locations
+        locations = set()
+        for session in sessions:
+            if session.session_location:
+                # Get meeting points associated with this session location
+                session_locations_list = session.session_location.meeting_points.all() if hasattr(session.session_location.meeting_points, 'all') else session.session_location.meeting_points
+                locations.update(session_locations_list)
+        
+        locations = list(locations)  # Convert set to list
         
         if not sessions or not locations:
             return {"status": "error", "message": "No sessions or locations defined"}

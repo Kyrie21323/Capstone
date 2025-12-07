@@ -39,9 +39,11 @@ def manage_event_locations(event_id):
             location_id = request.form.get('location_id')
             session_location = SessionLocation.query.get(location_id)
             if session_location and session_location.event_id == event_id:
-                # Check if any sessions are using this location
-                sessions_using = EventSession.query.filter_by(session_location_id=location_id).count()
-                meeting_points_using = MeetingPoint.query.filter_by(session_location_id=location_id).count()
+                # Check if any sessions or meeting points are using this location
+                sessions_using = len([s for s in session_location.sessions if s.event_id == event_id])
+                # Count meeting points associated via many-to-many
+                meeting_points_list = session_location.meeting_points.all() if hasattr(session_location.meeting_points, 'all') else session_location.meeting_points
+                meeting_points_using = len(meeting_points_list)
                 
                 if sessions_using > 0 or meeting_points_using > 0:
                     flash(f'Cannot delete "{session_location.name}": {sessions_using} session(s) and {meeting_points_using} meeting point(s) are using it.', 'error')
@@ -51,7 +53,7 @@ def manage_event_locations(event_id):
                     flash(f'Event location "{session_location.name}" deleted successfully!', 'success')
                     
     session_locations = SessionLocation.query.filter_by(event_id=event_id).all()
-    return render_template('admin/manage_session_locations.html', event=event, session_locations=session_locations)
+    return render_template('admin/manage_event_locations.html', event=event, session_locations=session_locations)
 
 @scheduling_bp.route('/<int:event_id>/event-sessions-workflow')
 @login_required
@@ -154,7 +156,7 @@ def manage_sessions(event_id):
                 flash(f'Matching {status} for {session.name}!', 'success')
                 
     sessions = EventSession.query.filter_by(event_id=event_id).order_by(EventSession.day_number, EventSession.start_time).all()
-    return render_template('manage_sessions.html', event=event, sessions=sessions, session_locations=session_locations)
+    return render_template('admin/manage_sessions.html', event=event, sessions=sessions, session_locations=session_locations)
 
 @scheduling_bp.route('/<int:event_id>/meeting-points', methods=['GET', 'POST'])
 @login_required
@@ -171,16 +173,25 @@ def manage_meeting_points(event_id):
         if action == 'add':
             name = request.form.get('name')
             capacity = request.form.get('capacity', 1)
-            session_location_id = request.form.get('session_location_id')
+            session_location_ids = request.form.getlist('session_location_ids')
             
             try:
                 capacity = int(capacity)
                 location = MeetingPoint(
                     event_id=event_id,
                     name=name,
-                    capacity=capacity,
-                    session_location_id=int(session_location_id) if session_location_id else None
+                    capacity=capacity
                 )
+                
+                # Associate with multiple event locations
+                if session_location_ids:
+                    # Also set the first one as primary for backward compatibility if needed
+                    # location.session_location_id = int(session_location_ids[0])
+                    for loc_id in session_location_ids:
+                        session_loc = SessionLocation.query.get(int(loc_id))
+                        if session_loc:
+                            location.session_locations.append(session_loc)
+                            
                 db.session.add(location)
                 db.session.commit()
                 flash('Meeting point added successfully!', 'success')
@@ -196,7 +207,7 @@ def manage_meeting_points(event_id):
                 flash('Meeting point deleted successfully!', 'success')
                 
     locations = MeetingPoint.query.filter_by(event_id=event_id).all()
-    return render_template('manage_locations.html', event=event, locations=locations, session_locations=session_locations)
+    return render_template('admin/manage_meeting_points.html', event=event, locations=locations, session_locations=session_locations)
 
 @scheduling_bp.route('/<int:event_id>/availability', methods=['GET', 'POST'])
 @login_required

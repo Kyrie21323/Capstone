@@ -43,12 +43,12 @@ def find_overlapping_sessions(user1_id, user2_id, event_id):
     return overlapping_sessions
 
 
-def find_available_meeting_point(session_location_id, session_id, start_time, end_time):
+def find_available_meeting_point(session_location, session_id, start_time, end_time):
     """
     Find an available meeting point for the given time slot.
     
     Args:
-        session_location_id: ID of the session location
+        session_location: SessionLocation object
         session_id: ID of the session
         start_time: Start time of the meeting (datetime)
         end_time: End time of the meeting (datetime)
@@ -56,10 +56,8 @@ def find_available_meeting_point(session_location_id, session_id, start_time, en
     Returns:
         MeetingPoint or None if no available point found
     """
-    # Get all meeting points in this session location
-    meeting_points = MeetingPoint.query.filter_by(
-        session_location_id=session_location_id
-    ).all()
+    # Get all meeting points associated with this session location via many-to-many
+    meeting_points = session_location.meeting_points.all() if hasattr(session_location.meeting_points, 'all') else session_location.meeting_points
     
     if not meeting_points:
         return None
@@ -134,7 +132,7 @@ def auto_assign_meeting(match_id, user1_id, user2_id, event_id, event):
                 
                 # Find available meeting point
                 meeting_point = find_available_meeting_point(
-                    session.session_location_id,
+                    session.session_location,
                     session.id,
                     meeting_start,
                     meeting_end

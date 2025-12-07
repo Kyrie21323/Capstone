@@ -1,0 +1,253 @@
+{
+  "user": [
+    {
+      "id": 1,
+      "name": "Super Admin",
+      "email": "admin@nfcnetworking.com",
+      "password_hash": "pbkdf2:sha256:600000$vBYbzajm1cclb4dj$bc7dbbea557bdda0348a3feb7587b5074d7291c2b6cba05921c236815c89fd9e",
+      "is_admin": 1,
+      "created_at": "2025-12-07T05:18:54.255776"
+    },
+    {
+      "id": 2,
+      "name": "John Smith",
+      "email": "john.smith@email.com",
+      "password_hash": "pbkdf2:sha256:600000$7kE6aGEzCiHuDjcz$76f2b68c610141dfd70fc008f39c0a7ab7eda8e9daf23293e93a3300c1f4c694",
+      "is_admin": 0,
+      "created_at": "2025-12-07T05:18:54.255782"
+    },
+    {
+      "id": 3,
+      "name": "Sarah Johnson",
+      "email": "sarah.johnson@email.com",
+      "password_hash": "pbkdf2:sha256:600000$JnV33MoA4Q26KZx5$c953d022f535a71bf13901cb96571eb78c270857ffd5c92ef82c65667aac9192",
+      "is_admin": 0,
+      "created_at": "2025-12-07T05:18:54.255784"
+    },
+    {
+      "id": 4,
+      "name": "Ahmed Al-Rashid",
+      "email": "ahmed.rashid@email.com",
+      "password_hash": "pbkdf2:sha256:600000$ZmrKgxjRGCdn8qd4$77666bfa548fa5df549bf6c8c700c1a96007677ec13bb96fcdd2e7a1c7239eb4",
+      "is_admin": 0,
+      "created_at": "2025-12-07T05:18:54.255785"
+    },
+    {
+      "id": 5,
+      "name": "Kun Woo Park",
+      "email": "kyrie@gmail.com",
+      "password_hash": "pbkdf2:sha256:600000$IG64QQ6blVx91TAF$81cbe5bb2ebce8efae945b336a30322295609a92089716826acb9f0f4a0bbbcd",
+      "is_admin": 0,
+      "created_at": "2025-12-07T05:18:54.255786"
+    },
+    {
+      "id": 6,
+      "name": "Junyong Moon",
+      "email": "jy@gmail.com",
+      "password_hash": "pbkdf2:sha256:600000$a69yyV9Bh4AzvLEl$2c0b46438982cefa235c60e1fee1c7d3ecc2d6ea589ce9f05364277db13b4c99",
+      "is_admin": 0,
+      "created_at": "2025-12-07T05:18:54.255787"
+    },
+    {
+      "id": 7,
+      "name": "Eunbom Jo",
+      "email": "ebjo@gmail.com",
+      "password_hash": "pbkdf2:sha256:600000$E13rnIDNZzIdZptx$178bf837624d64d668dbe0af7466b3bfffdf2c066cfcf10e89410c408142c57e",
+      "is_admin": 0,
+      "created_at": "2025-12-07T05:18:54.255788"
+    },
+    {
+      "id": 8,
+      "name": "11",
+      "email": "1@1.1",
+      "password_hash": "pbkdf2:sha256:600000$68AHl56K4Pu8G54v$5d04919410ac916d271e869a6865fbc5329ca474a93169f13db67d0d854fbd1d",
+      "is_admin": 0,
+      "created_at": "2025-12-07T06:44:43.017582"
+    },
+    {
+      "id": 10,
+      "name": "33",
+      "email": "3@3.3",
+      "password_hash": "pbkdf2:sha256:600000$AHhgc32q7iapAmvp$9011b1d1f73a641082e264b6ebce39dca2bab411fbd9d2a208fb6570156198b8",
+      "is_admin": 0,
+      "created_at": "2025-12-07T07:08:47.747331"
+    },
+    {
+      "id": 11,
+      "name": "22",
+      "email": "2@2.2",
+      "password_hash": "pbkdf2:sha256:600000$QGDk77LXqu1RRBQl$f986a14b65e494bc37e99914a0e1f975b64ac9090fc7c8346cf41051afcc76a8",
+      "is_admin": 0,
+      "created_at": "2025-12-07T07:36:34.331835"
+    }
+  ],
+  "event": [
+    {
+      "id": 1,
+      "name": "NYUAD Career Fair 2025",
+      "code": "NYUAD2025",
+      "description": "Join us for the largest career fair at NYU Abu Dhabi! Connect with top employers from various industries including technology, finance, consulting, and more. This event brings together students, recent graduates, and industry professionals for meaningful networking opportunities and career exploration.",
+      "start_date": "2025-03-15T00:00:00",
+      "end_date": "2025-03-16T00:00:00",
+      "created_at": "2025-12-07T05:18:54.257728"
+    },
+    {
+      "id": 2,
+      "name": "Tech Conference Dubai",
+      "code": "TECH2025",
+      "description": "The premier technology conference in the Middle East featuring cutting-edge innovations, AI developments, and digital transformation strategies. Network with tech leaders, entrepreneurs, and developers while exploring the latest trends in software development, cybersecurity, and emerging technologies.",
+      "start_date": "2025-04-20T00:00:00",
+      "end_date": "2025-04-22T00:00:00",
+      "created_at": "2025-12-07T05:18:54.257730"
+    },
+    {
+      "id": 3,
+      "name": "Startup Networking Event",
+      "code": "STARTUP2025",
+      "description": "A dynamic networking event designed for entrepreneurs, investors, and startup enthusiasts. Share ideas, find co-founders, connect with potential investors, and learn from successful startup founders. Perfect for anyone looking to launch their next venture or join the startup ecosystem.",
+      "start_date": "2025-05-10T00:00:00",
+      "end_date": "2025-05-11T00:00:00",
+      "created_at": "2025-12-07T05:18:54.257732"
+    }
+  ],
+  "membership": [
+    {
+      "id": 1,
+      "user_id": 5,
+      "event_id": 1,
+      "keywords": "NLP,computer vision",
+      "joined_at": "2025-10-06T16:42:39.151294"
+    },
+    {
+      "id": 2,
+      "user_id": 6,
+      "event_id": 1,
+      "keywords": "LLM,machine learning,image mapping",
+      "joined_at": "2025-10-06T16:43:48.475209"
+    },
+    {
+      "id": 3,
+      "user_id": 7,
+      "event_id": 1,
+      "keywords": "political science,international relations",
+      "joined_at": "2025-10-06T18:33:34.633933"
+    },
+    {
+      "id": 4,
+      "user_id": 8,
+      "event_id": 1,
+      "keywords": "AI,ML",
+      "joined_at": "2025-12-07T06:45:07.970654"
+    },
+    {
+      "id": 5,
+      "user_id": 10,
+      "event_id": 1,
+      "keywords": "ML,CV",
+      "joined_at": "2025-12-07T07:08:59.202102"
+    },
+    {
+      "id": 6,
+      "user_id": 11,
+      "event_id": 1,
+      "keywords": "ai,ml",
+      "joined_at": "2025-12-07T07:38:10.256670"
+    }
+  ],
+  "resume": [
+    {
+      "id": 1,
+      "user_id": 5,
+      "event_id": 1,
+      "filename": "5_1_20251006_232812_Kyrie_Kun_Woo_Park_Resume.pdf",
+      "original_name": "Kyrie Kun Woo Park Resume.pdf",
+      "mime_type": "application/pdf",
+      "file_size": 95140,
+      "uploaded_at": "2025-10-06T19:28:12.025242"
+    }
+  ],
+  "match": [
+    {
+      "id": 1,
+      "user1_id": 8,
+      "user2_id": 10,
+      "event_id": 1,
+      "matched_at": "2025-12-07T07:21:06.670189",
+      "is_active": 1
+    },
+    {
+      "id": 2,
+      "user1_id": 8,
+      "user2_id": 11,
+      "event_id": 1,
+      "matched_at": "2025-12-07T08:10:10.195094",
+      "is_active": 1
+    }
+  ],
+  "user_interaction": [
+    {
+      "id": 1,
+      "user_id": 8,
+      "target_user_id": 5,
+      "event_id": 1,
+      "action": "like",
+      "created_at": "2025-12-07T06:47:14.002892"
+    },
+    {
+      "id": 2,
+      "user_id": 8,
+      "target_user_id": 6,
+      "event_id": 1,
+      "action": "like",
+      "created_at": "2025-12-07T06:47:15.020834"
+    },
+    {
+      "id": 3,
+      "user_id": 10,
+      "target_user_id": 8,
+      "event_id": 1,
+      "action": "like",
+      "created_at": "2025-12-07T07:10:19.824254"
+    },
+    {
+      "id": 4,
+      "user_id": 10,
+      "target_user_id": 5,
+      "event_id": 1,
+      "action": "like",
+      "created_at": "2025-12-07T07:10:20.698993"
+    },
+    {
+      "id": 5,
+      "user_id": 10,
+      "target_user_id": 6,
+      "event_id": 1,
+      "action": "like",
+      "created_at": "2025-12-07T07:10:21.509575"
+    },
+    {
+      "id": 6,
+      "user_id": 8,
+      "target_user_id": 10,
+      "event_id": 1,
+      "action": "like",
+      "created_at": "2025-12-07T07:21:06.663026"
+    },
+    {
+      "id": 7,
+      "user_id": 11,
+      "target_user_id": 8,
+      "event_id": 1,
+      "action": "like",
+      "created_at": "2025-12-07T07:38:38.574620"
+    },
+    {
+      "id": 8,
+      "user_id": 8,
+      "target_user_id": 11,
+      "event_id": 1,
+      "action": "like",
+      "created_at": "2025-12-07T08:10:10.191728"
+    }
+  ]
+}
