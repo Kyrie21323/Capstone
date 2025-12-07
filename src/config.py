@@ -38,6 +38,12 @@ class Config:
     # Application
     APP_NAME = 'Prophere'
     APP_VERSION = '1.0.0'
+    
+    # Matching Configuration
+    # Maximum number of attendees to process in a single matching request
+    # This prevents OOM errors on Render for very large events
+    # Set via environment variable MAX_MATCH_ATTENDEES (default: 500)
+    MAX_MATCH_ATTENDEES = int(os.environ.get('MAX_MATCH_ATTENDEES', 500))
 
 class DevelopmentConfig(Config):
     """Development environment configuration"""

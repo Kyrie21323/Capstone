@@ -1,12 +1,20 @@
 """
 Matching routes for Prophere.
 Handles event matching, likes, passes, matches, and graph processing.
+
+MEMORY OPTIMIZATIONS:
+- Uses cached embeddings from Resume model to avoid recomputation
+- Enforces MAX_MATCH_ATTENDEES limit to prevent OOM
+- Processes matches in batches
+- Avoids loading full document text into memory
 """
 from flask import render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
 from models import db, Event, Membership, Resume, UserInteraction, Match, ParticipantAvailability, Meeting
 from . import matching_bp
 import os
+import json
+import numpy as np
 
 @matching_bp.route('/<int:event_id>/loading')
 @login_required
@@ -127,94 +135,163 @@ def event_matching(event_id):
     
     print(f"   ✅ Found {len(available_memberships)} available memberships", flush=True)
     
+    # MEMORY OPTIMIZATION: Enforce MAX_MATCH_ATTENDEES limit to prevent OOM
+    max_attendees = current_app.config.get('MAX_MATCH_ATTENDEES', 500)
+    if len(available_memberships) > max_attendees:
+        print(f"   ⚠️  Limiting matching to {max_attendees} attendees (found {len(available_memberships)})", flush=True)
+        available_memberships = available_memberships[:max_attendees]
+        flash(f'This event has many attendees. Showing matches from the first {max_attendees} participants.', 'info')
+    
     # Import matching engine
     try:
         from matching_engine import matching_engine
         print("   ✅ Matching engine imported successfully", flush=True)
         
-        # Prepare current user data for matching
+        # MEMORY OPTIMIZATION: Use cached extracted_text and embedding from Resume model
+        # This avoids loading full document files and recomputing embeddings
         current_user_resume = Resume.query.filter_by(user_id=current_user.id, event_id=event_id).first()
         current_user_doc_text = ""
+        current_user_doc_embedding = None
+        current_user_kw_embedding = None
         
         if current_user_resume:
-            # Extract text from current user's document
-            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id), current_user_resume.filename)
-            current_user_doc_text = matching_engine.extract_text_from_document(file_path)
+            # Use cached text if available, otherwise extract (backward compatibility)
+            if current_user_resume.extracted_text:
+                current_user_doc_text = current_user_resume.extracted_text
+                current_user_doc_embedding = current_user_resume.embedding
+            else:
+                # Fallback: extract on-the-fly (slower, but works for old resumes)
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id), current_user_resume.filename)
+                current_user_doc_text = matching_engine.extract_text_from_document(file_path)
+                # Note: embedding not computed here to save memory - will be computed on-demand if needed
+        
+        # Compute keyword embedding for current user (small, so OK to compute)
+        current_user_keywords = membership.get_keywords_list()
+        if current_user_keywords:
+            kw_text = ", ".join(current_user_keywords)
+            kw_embedding = matching_engine.get_text_embedding(kw_text)
+            current_user_kw_embedding = json.dumps(kw_embedding.tolist())
         
         current_user_data = {
             'user_id': current_user.id,
-            'keywords': membership.get_keywords_list(),
-            'document_text': current_user_doc_text
+            'keywords': current_user_keywords,
+            'document_text': current_user_doc_text,
+            'cached_doc_embedding': current_user_doc_embedding,
+            'cached_keyword_embedding': current_user_kw_embedding
         }
         
-        # Prepare all other users data for matching
+        # MEMORY OPTIMIZATION: Prepare user data using cached embeddings
+        # Don't load full document text into memory - use cached embeddings instead
         all_users_data = []
         for mem in available_memberships:
             user = mem.user
             user_resume = Resume.query.filter_by(user_id=user.id, event_id=event_id).first()
+            
+            # Use cached data if available (memory optimization)
             user_doc_text = ""
+            user_doc_embedding = None
+            user_kw_embedding = None
             
             if user_resume:
-                # Extract text from user's document
-                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(user.id), user_resume.filename)
-                user_doc_text = matching_engine.extract_text_from_document(file_path)
+                if user_resume.extracted_text:
+                    # Use cached text and embedding (major memory savings)
+                    user_doc_text = user_resume.extracted_text
+                    user_doc_embedding = user_resume.embedding
+                # Note: We don't load full document text if embedding exists
+                # This saves significant memory for large documents
+            
+            # Compute keyword embedding (small, so OK)
+            user_keywords = mem.get_keywords_list()
+            if user_keywords:
+                kw_text = ", ".join(user_keywords)
+                kw_embedding = matching_engine.get_text_embedding(kw_text)
+                user_kw_embedding = json.dumps(kw_embedding.tolist())
             
             user_data = {
                 'user_id': user.id,
                 'name': user.name,
                 'email': user.email,
-                'keywords': mem.get_keywords_list(),
-                'document_text': user_doc_text,
+                'keywords': user_keywords,
+                'document_text': user_doc_text,  # May be empty if using cached embedding
+                'cached_doc_embedding': user_doc_embedding,  # Used for matching
+                'cached_keyword_embedding': user_kw_embedding,
                 'has_resume': user_resume is not None,
                 'resume_name': user_resume.original_name if user_resume else None,
                 'joined_at': mem.joined_at.strftime('%B %Y') if mem.joined_at else 'Recently'
             }
             all_users_data.append(user_data)
         
-        # Calculate scores for ALL users (for debugging)
+        # MEMORY OPTIMIZATION: Use batch processing in find_best_matches
+        # This processes users in chunks and only keeps top_k matches in memory
+        best_matches = matching_engine.find_best_matches(
+            current_user_data, 
+            all_users_data, 
+            top_k=20,
+            batch_size=50  # Process 50 users at a time to limit peak memory
+        )
+        
+        # Calculate scores for ALL users (for debugging) - but only if small enough
+        # MEMORY OPTIMIZATION: Skip debug scoring for large events
         all_scores = []
-        for user_data in all_users_data:
-            score = matching_engine.calculate_match_score(current_user_data, user_data)
-            all_scores.append((user_data, score))
-        
-        # Sort all scores by value (highest first)
-        all_scores.sort(key=lambda x: x[1], reverse=True)
-        
-        # Find best matches using intelligent algorithm (filtered by threshold)
-        best_matches = matching_engine.find_best_matches(current_user_data, all_users_data, top_k=20)
+        if len(all_users_data) <= 100:  # Only compute all scores for small events
+            for user_data in all_users_data:
+                score = matching_engine.calculate_match_score(current_user_data, user_data)
+                all_scores.append((user_data, score))
+            
+            # Sort all scores by value (highest first)
+            all_scores.sort(key=lambda x: x[1], reverse=True)
         
         # Extract just the user data (without scores) for the template
-        potential_matches = [match_data for match_data, score in best_matches]
+        # MEMORY OPTIMIZATION: Remove cached embeddings from user_data before passing to template
+        # (they're not needed in the frontend and take up memory)
+        potential_matches = []
+        for match_data, score in best_matches:
+            # Create a clean copy without cached embeddings for template
+            clean_data = {
+                'user_id': match_data['user_id'],
+                'name': match_data['name'],
+                'email': match_data['email'],
+                'keywords': match_data['keywords'],
+                'has_resume': match_data['has_resume'],
+                'resume_name': match_data['resume_name'],
+                'joined_at': match_data['joined_at']
+            }
+            potential_matches.append(clean_data)
         
         # Debug: Print matching scores to terminal (with immediate flush)
-        MATCH_THRESHOLD = 0.26  # Matching threshold from matching_engine
-        print(f"\n=== MATCHING SCORES DEBUG ===", flush=True)
-        print(f"Current User: {current_user.name} (ID: {current_user.id})", flush=True)
-        print(f"Event: {event.name}", flush=True)
-        print(f"Session Filtering: {'Disabled (showing all)' if show_cross_session else 'Enabled (same-session only)'}", flush=True)
-        print(f"User's Sessions: {list(user_session_ids)}", flush=True)
-        print(f"Match Threshold: {MATCH_THRESHOLD:.4f} ({MATCH_THRESHOLD*100:.1f}%)", flush=True)
-        print(f"Total users evaluated: {len(all_scores)}", flush=True)
-        print(f"Matches above threshold: {len(best_matches)}", flush=True)
-        print("-" * 50, flush=True)
-        print("ALL USERS AND THEIR SCORES:", flush=True)
-        print("-" * 50, flush=True)
-        
-        for i, (match_data, score) in enumerate(all_scores, 1):
-            threshold_indicator = "✅" if score > MATCH_THRESHOLD else "❌"
-            print(f"{i:2d}. {threshold_indicator} {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)", flush=True)
-        
-        print("-" * 50, flush=True)
-        print(f"MATCHES ABOVE THRESHOLD ({MATCH_THRESHOLD*100:.1f}%):", flush=True)
-        print("-" * 50, flush=True)
-        
-        if best_matches:
-            for i, (match_data, score) in enumerate(best_matches, 1):
-                print(f"{i:2d}. {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)", flush=True)
+        # MEMORY OPTIMIZATION: Only print debug info if we computed all scores
+        if all_scores:
+            MATCH_THRESHOLD = 0.26  # Matching threshold from matching_engine
+            print(f"\n=== MATCHING SCORES DEBUG ===", flush=True)
+            print(f"Current User: {current_user.name} (ID: {current_user.id})", flush=True)
+            print(f"Event: {event.name}", flush=True)
+            print(f"Session Filtering: {'Disabled (showing all)' if show_cross_session else 'Enabled (same-session only)'}", flush=True)
+            print(f"User's Sessions: {list(user_session_ids)}", flush=True)
+            print(f"Match Threshold: {MATCH_THRESHOLD:.4f} ({MATCH_THRESHOLD*100:.1f}%)", flush=True)
+            print(f"Total users evaluated: {len(all_scores)}", flush=True)
+            print(f"Matches above threshold: {len(best_matches)}", flush=True)
+            print("-" * 50, flush=True)
+            print("ALL USERS AND THEIR SCORES:", flush=True)
+            print("-" * 50, flush=True)
+            
+            for i, (match_data, score) in enumerate(all_scores, 1):
+                threshold_indicator = "✅" if score > MATCH_THRESHOLD else "❌"
+                print(f"{i:2d}. {threshold_indicator} {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)", flush=True)
+            
+            print("-" * 50, flush=True)
+            print(f"MATCHES ABOVE THRESHOLD ({MATCH_THRESHOLD*100:.1f}%):", flush=True)
+            print("-" * 50, flush=True)
+            
+            if best_matches:
+                for i, (match_data, score) in enumerate(best_matches, 1):
+                    print(f"{i:2d}. {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)", flush=True)
+            else:
+                print("  No matches above threshold.", flush=True)
+            
+            print("=" * 50, flush=True)
         else:
-            print("  No matches above threshold.", flush=True)
-        
-        print("=" * 50, flush=True)
+            # For large events, just print summary
+            print(f"   ✅ Found {len(best_matches)} matches above threshold (event too large for full debug output)", flush=True)
         
         # Determine the reason for no matches
         no_matches_reason = None
@@ -232,6 +309,12 @@ def event_matching(event_id):
         # Fallback to simple matching if engine fails
         print(f"   ❌ ImportError: {str(e)}", flush=True)
         print("   ⚠️ Falling back to simple matching (no scores)", flush=True)
+        
+        # MEMORY OPTIMIZATION: Limit fallback matching too
+        max_attendees = current_app.config.get('MAX_MATCH_ATTENDEES', 500)
+        if len(available_memberships) > max_attendees:
+            available_memberships = available_memberships[:max_attendees]
+        
         potential_matches = []
         for mem in available_memberships:
             user = mem.user

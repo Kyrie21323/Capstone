@@ -47,11 +47,19 @@ def run_database_migrations():
         if not uri.startswith('sqlite:///'):
             print("🔄 Running database migrations for non-SQLite database...")
             try:
-                from utils.db_migrations import upgrade_password_hash_column
+                from utils.db_migrations import upgrade_password_hash_column, upgrade_resume_embedding_fields
+                
+                # Migrate password_hash column
                 success, message = upgrade_password_hash_column()
                 print(f"   {message}")
                 if not success:
-                    print("   ⚠️  Migration had issues, but continuing startup...")
+                    print("   ⚠️  Password hash migration had issues, but continuing startup...")
+                
+                # Migrate resume embedding fields
+                success, message = upgrade_resume_embedding_fields()
+                print(f"   {message}")
+                if not success:
+                    print("   ⚠️  Resume embedding fields migration had issues, but continuing startup...")
             except Exception as e:
                 print(f"   ⚠️  Error during migration: {e}")
                 print("   Continuing startup... (migration may need manual intervention)")

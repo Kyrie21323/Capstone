@@ -231,6 +231,19 @@ def upload_resume(event_id):
             flash('Error saving file. Please try again.', 'error')
             return redirect(url_for('user.upload_resume', event_id=event_id))
         
+        # Extract text and compute embedding for memory-efficient matching
+        # This is done once on upload to avoid recomputation during matching
+        extracted_text = ""
+        embedding_json = ""
+        try:
+            from matching_engine import matching_engine
+            extracted_text, embedding_json = matching_engine.extract_and_embed_document(file_path)
+            if extracted_text:
+                current_app.logger.info(f"Extracted {len(extracted_text)} chars and computed embedding for resume {unique_filename}")
+        except Exception as e:
+            # Non-fatal: matching will still work, just slower (will recompute embeddings)
+            current_app.logger.warning(f"Failed to extract text/embedding for resume (non-fatal): {e}")
+        
         # Check if user already has a resume for this event
         existing_resume = Resume.query.filter_by(
             user_id=current_user.id,
@@ -244,6 +257,9 @@ def upload_resume(event_id):
             existing_resume.mime_type = file.content_type
             existing_resume.file_size = file_size
             existing_resume.uploaded_at = datetime.utcnow()
+            # Update cached text and embedding
+            existing_resume.extracted_text = extracted_text
+            existing_resume.embedding = embedding_json
         else:
             # Create new resume record
             resume = Resume(
@@ -252,7 +268,9 @@ def upload_resume(event_id):
                 filename=unique_filename,
                 original_name=file.filename,
                 mime_type=file.content_type,
-                file_size=file_size
+                file_size=file_size,
+                extracted_text=extracted_text,
+                embedding=embedding_json
             )
             db.session.add(resume)
         

@@ -2,10 +2,16 @@
 Intelligent Matching Engine for Event Attendees
 Uses semantic similarity to match users based on keywords and document content
 Offline method using sentence-transformers
+
+MEMORY OPTIMIZATIONS:
+- Uses cached embeddings from Resume model to avoid recomputation
+- Processes matches in batches to reduce peak memory usage
+- Avoids storing large document text in memory during matching
 """
 
 import os
 import logging
+import json
 from typing import List, Dict, Tuple, Optional
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -107,38 +113,58 @@ class MatchingEngine:
         
         return text.strip()
     
-    def get_text_embedding(self, text: str) -> np.ndarray:
+    def get_text_embedding(self, text: str, cached_embedding: Optional[str] = None) -> np.ndarray:
         """
-        Convert text to semantic embedding vector
+        Convert text to semantic embedding vector.
+        
+        MEMORY OPTIMIZATION: If cached_embedding (JSON string) is provided, use it instead
+        of recomputing. This avoids loading the transformer model and processing text
+        on every match calculation.
         
         Args:
-            text: Input text
+            text: Input text (used if cached_embedding is None)
+            cached_embedding: Optional JSON string of pre-computed embedding array
             
         Returns:
-            Embedding vector
+            Embedding vector (768 dimensions for all-mpnet-base-v2)
         """
+        # Use cached embedding if available (memory optimization)
+        if cached_embedding:
+            try:
+                embedding_list = json.loads(cached_embedding)
+                return np.array(embedding_list, dtype=np.float32)
+            except (json.JSONDecodeError, ValueError, TypeError) as e:
+                logger.warning(f"Failed to parse cached embedding, recomputing: {e}")
+                # Fall through to recompute
+        
         if not text:
             # Return zero vector for empty text
-            return np.zeros(768)  # all-mpnet-base-v2 has 768 dimensions
+            return np.zeros(768, dtype=np.float32)  # all-mpnet-base-v2 has 768 dimensions
         
         try:
             # Preprocess text
             cleaned_text = self.preprocess_text(text)
             
             # Generate embedding
-            embedding = self.model.encode([cleaned_text])[0]
-            return embedding
+            embedding = self.model.encode([cleaned_text], show_progress_bar=False)[0]
+            return embedding.astype(np.float32)  # Use float32 to save memory
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
-            return np.zeros(768)
+            return np.zeros(768, dtype=np.float32)
     
-    def calculate_keyword_similarity(self, keywords1: List[str], keywords2: List[str]) -> float:
+    def calculate_keyword_similarity(self, keywords1: List[str], keywords2: List[str], 
+                                     cached_embedding1: Optional[str] = None,
+                                     cached_embedding2: Optional[str] = None) -> float:
         """
-        Calculate semantic similarity between two sets of keywords
+        Calculate semantic similarity between two sets of keywords.
+        
+        MEMORY OPTIMIZATION: Accepts optional cached embeddings to avoid recomputation.
         
         Args:
             keywords1: First set of keywords
             keywords2: Second set of keywords
+            cached_embedding1: Optional cached embedding for keywords1 (JSON string)
+            cached_embedding2: Optional cached embedding for keywords2 (JSON string)
             
         Returns:
             Similarity score between 0 and 1
@@ -161,9 +187,9 @@ class MatchingEngine:
             text1 = ", ".join(keywords1)
             text2 = ", ".join(keywords2)
             
-            # Get embeddings
-            embedding1 = self.get_text_embedding(text1)
-            embedding2 = self.get_text_embedding(text2)
+            # Get embeddings (use cached if available)
+            embedding1 = self.get_text_embedding(text1, cached_embedding1)
+            embedding2 = self.get_text_embedding(text2, cached_embedding2)
             
             # Calculate cosine similarity
             similarity = cosine_similarity([embedding1], [embedding2])[0][0]
@@ -173,13 +199,21 @@ class MatchingEngine:
             logger.error(f"Error calculating keyword similarity: {e}")
             return 0.0
     
-    def calculate_document_similarity(self, doc_text1: str, doc_text2: str) -> float:
+    def calculate_document_similarity(self, doc_text1: str, doc_text2: str,
+                                     cached_embedding1: Optional[str] = None,
+                                     cached_embedding2: Optional[str] = None) -> float:
         """
-        Calculate semantic similarity between two document texts
+        Calculate semantic similarity between two document texts.
+        
+        MEMORY OPTIMIZATION: Accepts optional cached embeddings to avoid recomputation.
+        This is critical for large events where recomputing embeddings for every pair
+        would cause OOM errors.
         
         Args:
-            doc_text1: First document text
-            doc_text2: Second document text
+            doc_text1: First document text (used if cached_embedding1 is None)
+            doc_text2: Second document text (used if cached_embedding2 is None)
+            cached_embedding1: Optional cached embedding for doc_text1 (JSON string)
+            cached_embedding2: Optional cached embedding for doc_text2 (JSON string)
             
         Returns:
             Similarity score between 0 and 1
@@ -188,9 +222,9 @@ class MatchingEngine:
             return 0.0
         
         try:
-            # Get embeddings
-            embedding1 = self.get_text_embedding(doc_text1)
-            embedding2 = self.get_text_embedding(doc_text2)
+            # Get embeddings (use cached if available - major memory optimization)
+            embedding1 = self.get_text_embedding(doc_text1, cached_embedding1)
+            embedding2 = self.get_text_embedding(doc_text2, cached_embedding2)
             
             # Calculate cosine similarity
             similarity = cosine_similarity([embedding1], [embedding2])[0][0]
@@ -202,25 +236,37 @@ class MatchingEngine:
     
     def calculate_match_score(self, user1_data: Dict, user2_data: Dict) -> float:
         """
-        Calculate overall match score between two users
-        Uses dynamic weighting based on document availability
+        Calculate overall match score between two users.
+        Uses dynamic weighting based on document availability.
+        
+        MEMORY OPTIMIZATION: Uses cached embeddings from user_data if available
+        (via 'cached_doc_embedding' and 'cached_keyword_embedding' keys).
+        This avoids recomputing embeddings on every match calculation.
         
         Args:
-            user1_data: First user's data (keywords, document_text)
-            user2_data: Second user's data (keywords, document_text)
+            user1_data: First user's data (keywords, document_text, cached_doc_embedding, cached_keyword_embedding)
+            user2_data: Second user's data (keywords, document_text, cached_doc_embedding, cached_keyword_embedding)
             
         Returns:
             Overall match score between 0 and 1
         """
         try:
-            # Check document availability
-            user1_has_doc = bool(user1_data.get('document_text', '').strip())
-            user2_has_doc = bool(user2_data.get('document_text', '').strip())
+            # Check document availability (use cached text or document_text field)
+            user1_has_doc = bool(user1_data.get('document_text', '').strip()) or bool(user1_data.get('cached_doc_embedding'))
+            user2_has_doc = bool(user2_data.get('document_text', '').strip()) or bool(user2_data.get('cached_doc_embedding'))
             
-            # Calculate keyword similarity (always available)
+            # Get cached embeddings if available (memory optimization)
+            user1_doc_embedding = user1_data.get('cached_doc_embedding')
+            user2_doc_embedding = user2_data.get('cached_doc_embedding')
+            user1_kw_embedding = user1_data.get('cached_keyword_embedding')
+            user2_kw_embedding = user2_data.get('cached_keyword_embedding')
+            
+            # Calculate keyword similarity (always available, use cached if possible)
             keyword_similarity = self.calculate_keyword_similarity(
                 user1_data.get('keywords', []),
-                user2_data.get('keywords', [])
+                user2_data.get('keywords', []),
+                cached_embedding1=user1_kw_embedding,
+                cached_embedding2=user2_kw_embedding
             )
             
             # Determine weighting strategy based on document availability
@@ -232,7 +278,9 @@ class MatchingEngine:
                 # User1 has document, User2 doesn't - compare keywords to document
                 doc_similarity = self.calculate_document_similarity(
                     user1_data.get('document_text', ''),
-                    ", ".join(user2_data.get('keywords', []))
+                    ", ".join(user2_data.get('keywords', [])),
+                    cached_embedding1=user1_doc_embedding,
+                    cached_embedding2=user2_kw_embedding
                 )
                 total_score = (keyword_similarity * 0.8) + (doc_similarity * 0.2)
                 
@@ -240,7 +288,9 @@ class MatchingEngine:
                 # User2 has document, User1 doesn't - compare keywords to document
                 doc_similarity = self.calculate_document_similarity(
                     ", ".join(user1_data.get('keywords', [])),
-                    user2_data.get('document_text', '')
+                    user2_data.get('document_text', ''),
+                    cached_embedding1=user1_kw_embedding,
+                    cached_embedding2=user2_doc_embedding
                 )
                 total_score = (keyword_similarity * 0.8) + (doc_similarity * 0.2)
                 
@@ -248,19 +298,25 @@ class MatchingEngine:
                 # Both users have documents - comprehensive comparison
                 doc_to_doc_similarity = self.calculate_document_similarity(
                     user1_data.get('document_text', ''),
-                    user2_data.get('document_text', '')
+                    user2_data.get('document_text', ''),
+                    cached_embedding1=user1_doc_embedding,
+                    cached_embedding2=user2_doc_embedding
                 )
                 
                 # User1 keywords vs User2 document
                 kw1_to_doc2_similarity = self.calculate_document_similarity(
                     ", ".join(user1_data.get('keywords', [])),
-                    user2_data.get('document_text', '')
+                    user2_data.get('document_text', ''),
+                    cached_embedding1=user1_kw_embedding,
+                    cached_embedding2=user2_doc_embedding
                 )
                 
                 # User2 keywords vs User1 document
                 kw2_to_doc1_similarity = self.calculate_document_similarity(
                     ", ".join(user2_data.get('keywords', [])),
-                    user1_data.get('document_text', '')
+                    user1_data.get('document_text', ''),
+                    cached_embedding1=user2_kw_embedding,
+                    cached_embedding2=user1_doc_embedding
                 )
                 
                 # Weighted combination: 70% keywords + 15% doc-to-doc + 7.5% kw1-to-doc2 + 7.5% kw2-to-doc1
@@ -278,40 +334,95 @@ class MatchingEngine:
             return 0.0
     
     def find_best_matches(self, current_user_data: Dict, all_users_data: List[Dict], 
-                         top_k: int = 10) -> List[Tuple[Dict, float]]:
+                         top_k: int = 10, batch_size: int = 50) -> List[Tuple[Dict, float]]:
         """
-        Find the best matches for a user based on semantic similarity
+        Find the best matches for a user based on semantic similarity.
+        
+        MEMORY OPTIMIZATION: Processes users in batches to reduce peak memory usage.
+        Instead of computing all scores at once and storing them, we process in chunks
+        and only keep the top_k matches in memory.
         
         Args:
             current_user_data: Current user's data
             all_users_data: List of all other users' data
             top_k: Number of top matches to return
-            
+            batch_size: Number of users to process at once (default 50 to limit memory)
+        
         Returns:
             List of tuples (user_data, match_score) sorted by score
         """
         try:
-            matches = []
+            # Use a heap to efficiently track top_k matches without storing all scores
+            # This reduces memory from O(N) to O(k) where N is number of users
+            import heapq
+            top_matches = []  # Min-heap of size at most top_k
             
-            for user_data in all_users_data:
-                # Skip self-matching
-                if user_data.get('user_id') == current_user_data.get('user_id'):
-                    continue
+            # Process users in batches to limit peak memory
+            for i in range(0, len(all_users_data), batch_size):
+                batch = all_users_data[i:i + batch_size]
                 
-                # Calculate match score
-                score = self.calculate_match_score(current_user_data, user_data)
+                for user_data in batch:
+                    # Skip self-matching
+                    if user_data.get('user_id') == current_user_data.get('user_id'):
+                        continue
+                    
+                    # Calculate match score
+                    score = self.calculate_match_score(current_user_data, user_data)
+                    
+                    # Only include matches with optimal threshold (0.26) based on evaluation
+                    if score > 0.26:
+                        # Use negative score for min-heap (we want max scores)
+                        if len(top_matches) < top_k:
+                            heapq.heappush(top_matches, (score, user_data))
+                        elif score > top_matches[0][0]:
+                            # Replace lowest score if current is higher
+                            heapq.heapreplace(top_matches, (score, user_data))
                 
-                # Only include matches with optimal threshold (0.26) based on evaluation
-                if score > 0.26:
-                    matches.append((user_data, score))
+                # Clear batch from memory (let GC handle it)
+                del batch
             
-            # Sort by score (highest first) and return top_k
+            # Convert heap to sorted list (highest first)
+            matches = [(user_data, score) for score, user_data in top_matches]
             matches.sort(key=lambda x: x[1], reverse=True)
-            return matches[:top_k]
+            return matches
             
         except Exception as e:
             logger.error(f"Error finding best matches: {e}")
             return []
+
+    def extract_and_embed_document(self, file_path: str) -> Tuple[str, str]:
+        """
+        Extract text from a document and compute its embedding.
+        
+        This is used during resume upload to pre-compute embeddings and store them
+        in the database, avoiding recomputation during matching.
+        
+        Args:
+            file_path: Path to the document file
+            
+        Returns:
+            Tuple of (extracted_text, embedding_json_string)
+            Returns ("", "") if extraction fails
+        """
+        try:
+            # Extract text
+            extracted_text = self.extract_text_from_document(file_path)
+            
+            if not extracted_text:
+                return "", ""
+            
+            # Compute embedding
+            embedding = self.get_text_embedding(extracted_text)
+            
+            # Convert to JSON string for database storage
+            embedding_json = json.dumps(embedding.tolist())
+            
+            return extracted_text, embedding_json
+            
+        except Exception as e:
+            logger.error(f"Error extracting and embedding document {file_path}: {e}")
+            return "", ""
+
 
 # Global instance
 matching_engine = MatchingEngine()

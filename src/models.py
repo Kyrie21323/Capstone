@@ -70,6 +70,14 @@ class Resume(db.Model):
     file_size = db.Column(db.Integer, nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     
+    # Cached extracted text and embedding for memory-efficient matching
+    # These are computed once on upload and stored to avoid re-extraction/re-embedding
+    # extracted_text: Full text content extracted from the document (can be large, but stored once)
+    # embedding: Pre-computed 768-dim embedding vector stored as JSON string
+    #            This avoids loading the transformer model and recomputing embeddings on every match
+    extracted_text = db.Column(db.Text, nullable=True)  # Nullable for backward compatibility
+    embedding = db.Column(db.Text, nullable=True)  # JSON string of embedding array
+    
     # Ensure unique user-event resume pairs (one resume per user per event)
     __table_args__ = (db.UniqueConstraint('user_id', 'event_id', name='unique_user_event_resume'),)
     

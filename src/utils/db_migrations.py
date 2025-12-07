@@ -108,3 +108,63 @@ def upgrade_password_hash_column():
         error_msg = f"❌ Error during password_hash migration: {e}"
         current_app.logger.error(error_msg, exc_info=True)
         return False, error_msg
+
+
+def upgrade_resume_embedding_fields():
+    """
+    Add extracted_text and embedding columns to the Resume table for caching.
+    
+    This migration enables memory-efficient matching by storing pre-computed
+    document text and embeddings, avoiding re-extraction and re-embedding on every match.
+    
+    Returns:
+        tuple: (success: bool, message: str)
+    """
+    from models import db
+    
+    try:
+        db_uri = current_app.config.get('SQLALCHEMY_DATABASE_URI', '')
+        
+        # Skip migration for SQLite (it's more flexible with schema changes)
+        if db_uri.startswith('sqlite:///'):
+            return True, "SQLite database detected - columns will be added automatically on next schema update"
+        
+        inspector = inspect(db.engine)
+        
+        # Check if resume table exists
+        if 'resume' not in inspector.get_table_names():
+            return True, "Resume table doesn't exist yet - will be created with correct schema"
+        
+        # Get existing columns
+        columns = inspector.get_columns('resume')
+        column_names = {col['name'] for col in columns}
+        
+        columns_to_add = []
+        if 'extracted_text' not in column_names:
+            columns_to_add.append('extracted_text')
+        if 'embedding' not in column_names:
+            columns_to_add.append('embedding')
+        
+        if not columns_to_add:
+            return True, "Resume embedding fields already exist - no migration needed"
+        
+        # Execute ALTER TABLE to add columns
+        with db.engine.begin() as conn:
+            if 'postgresql' in db_uri.lower():
+                if 'extracted_text' in columns_to_add:
+                    conn.execute(text('ALTER TABLE resume ADD COLUMN IF NOT EXISTS extracted_text TEXT'))
+                if 'embedding' in columns_to_add:
+                    conn.execute(text('ALTER TABLE resume ADD COLUMN IF NOT EXISTS embedding TEXT'))
+            else:
+                # For other databases, try generic ALTER TABLE
+                if 'extracted_text' in columns_to_add:
+                    conn.execute(text('ALTER TABLE resume ADD COLUMN extracted_text TEXT'))
+                if 'embedding' in columns_to_add:
+                    conn.execute(text('ALTER TABLE resume ADD COLUMN embedding TEXT'))
+        
+        return True, f"✅ Successfully added columns to resume table: {', '.join(columns_to_add)}"
+    
+    except Exception as e:
+        error_msg = f"❌ Error during resume embedding fields migration: {e}"
+        current_app.logger.error(error_msg, exc_info=True)
+        return False, error_msg
