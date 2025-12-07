@@ -4,6 +4,9 @@ Environment-specific configurations for the Flask application
 """
 import os
 
+# Get the base directory (src/)
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 class Config:
     """Base configuration with common settings"""
     # Secret key for sessions
@@ -41,9 +44,11 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     
-    # Use SQLite for development
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'sqlite:///instance/nfc_networking.db'
+    # Use SQLite for development, with optional override via DEV_DATABASE_URI
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DEV_DATABASE_URI',
+        'sqlite:///' + os.path.join(basedir, '..', 'instance', 'nfc_networking.db')
+    )
     
     # Development settings
     SQLALCHEMY_ECHO = False  # Set to True to log SQL queries
@@ -64,9 +69,11 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     
-    # Production database
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'postgresql://localhost/prophere'
+    # Production database: prefer DATABASE_URL (Postgres on Render), fallback to SQLite
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL',
+        'sqlite:///' + os.path.join(basedir, '..', 'instance', 'nfc_networking.db')
+    )
     
     # Production security
     SESSION_COOKIE_SECURE = True  # Require HTTPS

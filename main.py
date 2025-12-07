@@ -3,75 +3,43 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-from app import app, db
-from models import User
-
-def get_database_file_path():
-    """
-    Extract the database file path from SQLALCHEMY_DATABASE_URI.
-    Returns None if not SQLite or if path cannot be determined.
-    """
-    uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
-    
-    # Check if it's SQLite
-    if not uri.startswith('sqlite:///'):
-        return None
-    
-    # SQLite URI formats:
-    # - sqlite:///relative/path (3 slashes, relative)
-    # - sqlite:////absolute/path (4 slashes, absolute)
-    # - sqlite:///absolute/path (3 slashes with absolute path - SQLAlchemy handles this)
-    
-    # Remove 'sqlite:///' prefix (3 slashes)
-    path = uri.replace('sqlite:///', '', 1)
-    
-    # Normalize path separators (handle both / and \)
-    # Convert forward slashes to OS-specific separators for proper path handling
-    path = os.path.normpath(path)
-    
-    # If it's already an absolute path, return it
-    if os.path.isabs(path):
-        return path
-    
-    # Handle relative paths - convert to absolute based on project root
-    project_root = os.path.dirname(os.path.abspath(__file__))
-    return os.path.abspath(os.path.join(project_root, path))
+from app import app
+from models import db, User
 
 def initialize_database():
     """
     Initialize the database if it doesn't exist.
-    This runs only once on fresh deployments.
+    Works with both SQLite (file-based) and Postgres (connection-based).
     """
-    db_path = get_database_file_path()
-    
-    if db_path is None:
-        # Not SQLite, skip initialization
-        print("ℹ️  Database is not SQLite, skipping auto-initialization")
-        return
-    
-    if os.path.exists(db_path):
-        # Database already exists, skip initialization
-        print(f"✅ Database already exists at {db_path}")
-        return
-    
-    # Database doesn't exist, initialize it
-    print(f"🔄 Database not found at {db_path}, initializing...")
-    
-    try:
-        with app.app_context():
-            # Create all tables
+    with app.app_context():
+        uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+        
+        if uri.startswith('sqlite:///'):
+            # Handle SQLite file-based DB
+            db_path = uri.replace('sqlite:///', '', 1)
+            db_path = os.path.abspath(db_path)
+            db_dir = os.path.dirname(db_path)
+            
+            if not os.path.exists(db_path):
+                print(f"🔄 SQLite database not found at {db_path}, initializing...")
+                os.makedirs(db_dir, exist_ok=True)
+                db.create_all()
+                print("✅ SQLite database initialized successfully!")
+                print("   - All tables created")
+                print("   - Ready for use")
+            else:
+                print(f"✅ SQLite database already exists at {db_path}, skipping initialization.")
+        else:
+            # Handle Postgres or any non-SQLite database
+            print("🔄 Non-SQLite database detected (likely Postgres). Ensuring tables exist with db.create_all()...")
             db.create_all()
-            print("✅ Database initialized successfully!")
-            print("   - All tables created")
-            print("   - Ready for use")
-    except Exception as e:
-        print(f"❌ Error initializing database: {e}")
-        raise
+            print("✅ Tables ensured for non-SQLite database.")
 
 def ensure_admin_user():
     """
     Ensure an admin user exists, creating one from environment variables if needed.
     This runs on every startup but only creates an admin if none exists.
+    Works with both SQLite and Postgres.
     """
     with app.app_context():
         # Check if any admin already exists
