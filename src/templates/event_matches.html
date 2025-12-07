@@ -93,7 +93,7 @@
     <div class="matches-empty">
         <h3>No matches yet</h3>
         <p>When you find matches they will appear here.</p>
-        <a href="{{ url_for('matching.event_matching', event_id=event.id) }}" class="btn btn-primary">Start Matching</a>
+        <a href="{{ url_for('matching.matching_loading', event_id=event.id) }}" class="btn btn-primary">Start Matching</a>
     </div>
     {% endif %}
 </div>
