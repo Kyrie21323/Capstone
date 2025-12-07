@@ -545,8 +545,11 @@ def event_matches(event_id):
     for match in matches:
         other_user = match.get_other_user(current_user.id)
         if other_user:
-            # Get meeting for this match
-            meeting = Meeting.query.filter_by(match_id=match.id).first()
+            # Get ACTIVE meeting for this match (exclude cancelled)
+            meeting = Meeting.query.filter_by(
+                match_id=match.id,
+                status='scheduled'
+            ).first()
             
             match_info = {
                 'match': match,

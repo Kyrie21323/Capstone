@@ -182,6 +182,139 @@
         border-radius: 12px;
         font-size: 0.85rem;
     }
+
+    /* Confirmation Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 500px;
+        margin: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+
+    .modal-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .modal-message {
+        color: #5a6c7d;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .modal-btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .modal-btn-primary {
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
+        color: white;
+    }
+
+    .modal-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(87, 6, 140, 0.4);
+    }
+
+    .modal-btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .modal-btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .loading-content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 60px;
+        text-align: center;
+        max-width: 400px;
+    }
+
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #57068c;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .loading-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .loading-message {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
 </style>
 {% endblock %}
 
@@ -236,7 +369,36 @@
     </form>
 </div>
 
+<!-- Confirmation Modal -->
+<div class="modal-overlay" id="confirmationModal">
+    <div class="modal-content">
+        <div class="modal-icon">⚠️</div>
+        <h2 class="modal-title">Confirm Session Changes</h2>
+        <p class="modal-message">
+            You have existing matches. Changing your session availability may affect your scheduled meetings.
+            <br><br>
+            <strong>Your meetings will be automatically reassigned when possible.</strong>
+        </p>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-secondary" onclick="cancelConfirmation()">Cancel</button>
+            <button class="modal-btn modal-btn-primary" onclick="proceedWithSubmission()">Continue</button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <h3 class="loading-title">Processing...</h3>
+        <p class="loading-message" id="loadingMessage">Saving your availability...</p>
+    </div>
+</div>
+
 <script>
+    let userHasMatches = false;
+    const eventId = {{ event.id }};
+
     function toggleCard(card) {
         const checkbox = card.querySelector('input[type="checkbox"]');
         const label = card.querySelector('.checkbox-label');
@@ -252,8 +414,86 @@
         }
     }
 
+    function showConfirmationModal() {
+        document.getElementById('confirmationModal').style.display = 'flex';
+    }
+
+    function cancelConfirmation() {
+        document.getElementById('confirmationModal').style.display = 'none';
+    }
+
+    function proceedWithSubmission() {
+        document.getElementById('confirmationModal').style.display = 'none';
+        submitForm();
+    }
+
+    function showLoading(message) {
+        document.getElementById('loadingMessage').textContent = message;
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    function submitForm() {
+        const form = document.querySelector('.availability-form');
+        const formData = new FormData(form);
+
+        showLoading('Saving your availability...');
+
+        // Submit via AJAX
+        fetch(form.action || window.location.pathname, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show different messages based on results
+                    if (data.cancelled > 0 || data.reassigned > 0 || data.newly_assigned > 0) {
+                        showLoading('Updating your meetings...');
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 1000);
+                    } else {
+                        showLoading('Redirecting to your matches...');
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 800);
+                    }
+                } else {
+                    hideLoading();
+                    alert('Error updating availability. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                hideLoading();
+                alert('An error occurred. Please try again.');
+            });
+    }
+
+    // Check if user has matches on page load
+    function checkForMatches() {
+        fetch(`/event/${eventId}/availability/check-matches`)
+            .then(response => response.json())
+            .then(data => {
+                userHasMatches = data.has_matches;
+            })
+            .catch(error => {
+                console.error('Error checking for matches:', error);
+            });
+    }
+
     // Initialize card states on page load
     document.addEventListener('DOMContentLoaded', function () {
+        // Check for existing matches
+        checkForMatches();
+
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             if (checkbox.checked) {
                 checkbox.closest('.session-card').classList.add('selected');
@@ -276,6 +516,20 @@
             });
         });
 
+        // Intercept form submission
+        const form = document.querySelector('.availability-form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                if (userHasMatches) {
+                    showConfirmationModal();
+                } else {
+                    submitForm();
+                }
+            });
+        }
+
         // Request notification permission after a short delay
         setTimeout(() => {
             if (typeof showNotificationPermissionModal !== 'undefined') {
@@ -283,5 +537,6 @@
             }
         }, 1000);
     });
+
 </script>
 {% endblock %}

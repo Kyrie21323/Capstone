@@ -2,7 +2,7 @@
 Scheduling routes for Prophere.
 Handles session management, locations, availability, and allocation.
 """
-from flask import render_template, request, flash, redirect, url_for, current_app
+from flask import render_template, request, flash, redirect, url_for, current_app, jsonify
 from flask_login import login_required, current_user
 from models import db, Event, EventSession, MeetingPoint, SessionLocation, ParticipantAvailability, Membership, Match
 from datetime import datetime
@@ -209,6 +209,21 @@ def manage_meeting_points(event_id):
     locations = MeetingPoint.query.filter_by(event_id=event_id).all()
     return render_template('admin/manage_meeting_points.html', event=event, locations=locations, session_locations=session_locations)
 
+@scheduling_bp.route('/<int:event_id>/availability/check-matches', methods=['GET'])
+@login_required
+def check_availability_matches(event_id):
+    """API endpoint to check if user has matches (for pre-submission confirmation)"""
+    if current_user.is_admin:
+        return jsonify({'has_matches': False})
+    
+    try:
+        from utils.session_validation import check_user_has_matches
+        has_matches = check_user_has_matches(current_user.id, event_id)
+        return jsonify({'has_matches': has_matches})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @scheduling_bp.route('/<int:event_id>/availability', methods=['GET', 'POST'])
 @login_required
 def manage_availability(event_id):
@@ -232,6 +247,9 @@ def manage_availability(event_id):
     ).order_by(EventSession.day_number, EventSession.start_time).all()
     
     if request.method == 'POST':
+        # Check if this is an AJAX request
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        
         # Get all session IDs from the form
         # The form will send 'session_X' = 'on' if checked
         
@@ -254,8 +272,51 @@ def manage_availability(event_id):
                 db.session.add(availability)
         
         db.session.commit()
-        flash('Availability updated successfully!', 'success')
-        return redirect(url_for('user.dashboard'))
+        
+        # Validate and reassign meetings
+        try:
+            from utils.session_validation import reassign_invalid_meetings, assign_new_meetings
+            
+            print(f"🔍 Starting validation for user {current_user.id} in event {event_id}")
+            
+            # Reassign invalid meetings
+            reassignment_results = reassign_invalid_meetings(current_user.id, event_id, event)
+            print(f"📊 Reassignment results: {reassignment_results}")
+            
+            # Try to assign new meetings
+            new_assignment_results = assign_new_meetings(current_user.id, event_id, event)
+            print(f"📊 New assignment results: {new_assignment_results}")
+            
+            # Prepare response
+            results = {
+                'success': True,
+                'cancelled': reassignment_results['cancelled'],
+                'reassigned': reassignment_results['reassigned'],
+                'failed_reassignment': reassignment_results['failed'],
+                'newly_assigned': new_assignment_results['newly_assigned'],
+                'failed_assignment': new_assignment_results['assignment_failed'],
+                'redirect_url': url_for('matching.event_matches', event_id=event_id)
+            }
+            
+            print(f"✅ Validation complete. Results: {results}")
+            
+            if is_ajax:
+                return jsonify(results)
+            else:
+                flash('Availability updated successfully!', 'success')
+                return redirect(url_for('matching.event_matches', event_id=event_id))
+                
+        except Exception as e:
+            print(f"Error during validation/reassignment: {str(e)}")
+            if is_ajax:
+                return jsonify({
+                    'success': True,  # Availability was saved
+                    'validation_error': str(e),
+                    'redirect_url': url_for('matching.event_matches', event_id=event_id)
+                })
+            else:
+                flash('Availability updated, but there was an error validating meetings.', 'warning')
+                return redirect(url_for('matching.event_matches', event_id=event_id))
         
     # Get current availability
     current_availability = ParticipantAvailability.query.filter_by(
