@@ -10,6 +10,21 @@ import os
 from . import admin_bp
 from .utils import admin_required, cleanup_orphaned_files
 
+DEV_GRAPH_DATASETS = {
+    'small': {
+        'display_name': 'Small Dataset',
+        'description': 'Small synthetic dataset (~20 nodes) for quick sanity checks.'
+    },
+    'medium': {
+        'display_name': 'Medium Dataset',
+        'description': 'Medium synthetic dataset (~100 nodes) to validate performance.'
+    },
+    'large': {
+        'display_name': 'Large Dataset',
+        'description': 'Large synthetic dataset (~300 nodes) for stress testing.'
+    }
+}
+
 @admin_bp.route('/')
 @login_required
 @admin_required
@@ -264,18 +279,13 @@ def admin_cleanup_files():
 
 @admin_bp.route('/graph/dev/<size>', methods=['GET'])
 @login_required
+@admin_required
 def dev_graph_page(size):
-    """
-    Admin-only page for visualizing synthetic graph datasets.
-    """
-    # Note: Using explicit check instead of admin_required decorator for variety/legacy match,
-    # but could use decorator. Sticking to original logic structure but with redirect fix.
-    if not current_user.is_admin:
-        flash('Admin access required to view the dev graph visualizer.', 'error')
-        return redirect(url_for('user.dashboard'))
-    
-    if size not in ['small', 'medium', 'large']:
-        flash('Invalid dataset size. Use: small, medium, or large.', 'error')
-        return redirect(url_for('admin.admin_events'))
-    
-    return render_template('dev_graph.html', size=size)
+    """Admin-only page for visualizing synthetic graph datasets."""
+    dataset_meta = DEV_GRAPH_DATASETS.get(size)
+    if not dataset_meta:
+        allowed_sizes = ', '.join(DEV_GRAPH_DATASETS.keys())
+        flash(f'Invalid dataset size. Use: {allowed_sizes}.', 'error')
+        return redirect(url_for('admin.dev_graph_page', size='small'))
+
+    return render_template('dev_graph.html', size=size, dataset_meta=dataset_meta)

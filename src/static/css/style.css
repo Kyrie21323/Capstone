@@ -769,38 +769,72 @@ h4 {
     color: #0c5460;
     border: 1px solid #bee5eb;
 }
+
 /* ==================== MOBILE RESPONSIVENESS ==================== */
 @media (max-width: 768px) {
+    body {
+        padding: 0 !important;
+        /* Eliminate body padding on mobile */
+    }
+
     .container {
-        padding: 20px;
-        margin: 20px auto;
+        padding: 15px !important;
+        /* Minimal container padding */
+        margin: 0 !important;
+        /* Edge-to-edge container */
+        border-radius: 0 !important;
+        /* No rounded corners on mobile */
+        box-shadow: none !important;
+        /* Remove shadow for cleaner look */
     }
 
     .header {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
+        margin-bottom: 20px !important;
+        padding-bottom: 15px !important;
     }
 
     .header h1 {
-        font-size: 1.8rem;
+        font-size: 1.5rem !important;
     }
 
     .form-row {
-        grid-template-columns: 1fr !important; /* Stack columns on mobile */
+        grid-template-columns: 1fr !important;
         gap: 15px;
     }
-    
+
     .form-row .form-group {
         min-width: 100%;
     }
 
     .locations-grid {
-        grid-template-columns: 1fr; /* Single column for cards */
+        grid-template-columns: 1fr;
+        gap: 15px !important;
     }
-    
-    .join-event-btn, .btn-lg {
-        width: 100%; /* Full width buttons on mobile */
+
+    .location-card,
+    .event-card {
+        padding: 15px !important;
+    }
+
+    .join-event-btn,
+    .btn-lg {
+        width: 100%;
+    }
+
+    /* Optimize form cards and sections */
+    .form-card,
+    .info-section,
+    .intro-section {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* Reduce section margins */
+    .section {
+        margin-bottom: 20px !important;
     }
 }
 
