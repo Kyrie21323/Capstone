@@ -23,6 +23,60 @@ from models import User
 from werkzeug.security import generate_password_hash
 
 
+def create_admin_user(email: str, password: str, name: str = None) -> User:
+    """
+    Create an admin user with the specified credentials.
+    
+    This function is designed to be called from other modules (e.g., main.py)
+    and requires an active Flask application context.
+    
+    Args:
+        email: Admin email address
+        password: Admin password (will be hashed)
+        name: Admin display name (defaults to "Admin" if not provided)
+    
+    Returns:
+        User: The created or existing User instance
+    
+    Raises:
+        ValueError: If email or password is missing
+        RuntimeError: If called outside Flask application context
+    """
+    if not email:
+        raise ValueError("Email is required")
+    if not password:
+        raise ValueError("Password is required")
+    
+    # Default name if not provided
+    if not name:
+        name = "Admin"
+    
+    # Check if user already exists
+    user = User.query.filter_by(email=email).first()
+    
+    if user:
+        # User exists, update if needed
+        if not user.is_admin:
+            user.is_admin = True
+        if user.name != name:
+            user.name = name
+        # Update password
+        user.password_hash = generate_password_hash(password)
+        db.session.commit()
+        return user
+    
+    # Create new admin user
+    user = User(
+        name=name,
+        email=email,
+        password_hash=generate_password_hash(password),
+        is_admin=True
+    )
+    db.session.add(user)
+    db.session.commit()
+    return user
+
+
 def create_or_update_user(email: str, password: str, name: str, is_admin: bool, force_password_reset: bool = False):
     """
     Create a new user or update an existing one.
@@ -116,13 +170,14 @@ def list_users(show_admins: bool = True, show_attendees: bool = True):
 def create_default_admin():
     """Create the default super admin account."""
     print_section("Creating Default Admin", "🚀")
-    return create_or_update_user(
-        email='admin@nfcnetworking.com',
-        password='admin123',
-        name='Super Admin',
-        is_admin=True,
-        force_password_reset=True
-    )
+    with app.app_context():
+        user = create_admin_user(
+            email='admin@nfcnetworking.com',
+            password='admin123',
+            name='Super Admin'
+        )
+        print_success(f"Default admin created: {user.email}")
+        return True
 
 
 def main():
