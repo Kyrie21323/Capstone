@@ -45,6 +45,10 @@
 
             <div class="event-actions">
                 <div class="matching-buttons">
+                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
+                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
+                        Select Sessions
+                    </a>
                     <a href="{{ url_for('matching.event_matching', event_id=membership.event.id) }}"
                         class="matching-btn">
                         Start Smart Matching
@@ -89,6 +93,10 @@
                         data-resume-name="{{ user_resume.original_name }}">Delete Document</button>
                 </div>
                 <div class="matching-buttons">
+                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
+                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
+                        Select Sessions
+                    </a>
                     <a href="{{ url_for('matching.matching_loading', event_id=membership.event.id) }}"
                         class="matching-btn">Start
                         Smart Matching</a>
@@ -107,6 +115,10 @@
                 <a href="{{ url_for('user.upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload
                     Document</a>
                 <div class="matching-buttons">
+                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
+                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
+                        Select Sessions
+                    </a>
                     <a href="{{ url_for('matching.matching_loading', event_id=membership.event.id) }}"
                         class="matching-btn">Start
                         Smart Matching</a>
