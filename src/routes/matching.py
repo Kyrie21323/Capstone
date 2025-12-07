@@ -4,7 +4,7 @@ Handles event matching, likes, passes, matches, and graph processing.
 """
 from flask import render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
-from models import db, Event, Membership, Resume, UserInteraction, Match
+from models import db, Event, Membership, Resume, UserInteraction, Match, ParticipantAvailability
 from . import matching_bp
 import os
 
@@ -61,13 +61,43 @@ def event_matching(event_id):
         Membership.user_id != current_user.id
     ).all()
     
+    # Check if user wants to see cross-session matches
+    show_cross_session = request.args.get('cross_session', 'false').lower() == 'true'
+    
+    # Get current user's session availability
+    user_sessions = ParticipantAvailability.query.filter_by(
+        user_id=current_user.id,
+        event_id=event_id,
+        is_available=True
+    ).all()
+    user_session_ids = {avail.session_id for avail in user_sessions}
+    
+    # Filter by shared sessions unless cross_session is enabled
+    if not show_cross_session and user_session_ids:
+        # Get users who share at least one session with current user
+        shared_session_user_ids = set()
+        shared_availabilities = ParticipantAvailability.query.filter(
+            ParticipantAvailability.event_id == event_id,
+            ParticipantAvailability.session_id.in_(user_session_ids),
+            ParticipantAvailability.is_available == True,
+            ParticipantAvailability.user_id != current_user.id
+        ).all()
+        
+        for avail in shared_availabilities:
+            shared_session_user_ids.add(avail.user_id)
+        
+        # Filter memberships to only shared session users
+        other_memberships = [mem for mem in other_memberships if mem.user_id in shared_session_user_ids]
+    
     if not other_memberships:
         # No other members to match with
+        no_matches_reason = 'no_shared_sessions' if not show_cross_session else 'no_attendees'
         return render_template('event_matching.html', 
                              event=event, 
                              membership=membership,
                              potential_matches=[],
-                             no_matches_reason='no_attendees')
+                             no_matches_reason=no_matches_reason,
+                             show_cross_session=show_cross_session)
     
     # Filter out users that current user has already interacted with
     interacted_user_ids = set()
@@ -141,11 +171,13 @@ def event_matching(event_id):
         print(f"\n=== MATCHING SCORES DEBUG ===")
         print(f"Current User: {current_user.name} (ID: {current_user.id})")
         print(f"Event: {event.name}")
+        print(f"Session Filtering: {'Disabled (showing all)' if show_cross_session else 'Enabled (same-session only)'}")
+        print(f"User's Sessions: {list(user_session_ids)}")
         print(f"Total potential matches: {len(best_matches)}")
         print("-" * 50)
         
         for i, (match_data, score) in enumerate(best_matches, 1):
-            print(f"{i:2d}. {match_data['name']:\u003c20} Score: {score:.4f} ({score*100:.1f}%)")
+            print(f"{i:2d}. {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)")
         
         print("=" * 50)
         
@@ -158,7 +190,8 @@ def event_matching(event_id):
                              event=event, 
                              membership=membership,
                              potential_matches=potential_matches,
-                             no_matches_reason=no_matches_reason)
+                             no_matches_reason=no_matches_reason,
+                             show_cross_session=show_cross_session)
         
     except ImportError as e:
         # Fallback to simple matching if engine fails
@@ -182,7 +215,8 @@ def event_matching(event_id):
                              event=event, 
                              membership=membership,
                              potential_matches=potential_matches,
-                             no_matches_reason=None)
+                             no_matches_reason=None,
+                             show_cross_session=show_cross_session)
 
 @matching_bp.route('/<int:event_id>/like/<int:target_user_id>', methods=['POST'])
 @login_required

@@ -350,9 +350,26 @@
     </button>
 
     <div class="header">
-        <h1 class="event-title">{{ event.name }}</h1>
-        <p class="event-subtitle">Smart Matching</p>
+        <div class="event-title">{{ event.name }}</div>
+        <div class="event-subtitle">Smart Matching</div>
     </div>
+
+    <!-- Filter Status Banner -->
+    {% if not show_cross_session %}
+    <div
+        style="background: rgba(255, 255, 255, 0.95); border-radius: 12px; padding: 15px 20px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="color: #57068c; font-weight: 600; margin-bottom: 8px;">📅 Showing attendees from your sessions</div>
+        <a href="?cross_session=true"
+            style="color: #0066cc; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Show all attendees →</a>
+    </div>
+    {% else %}
+    <div
+        style="background: rgba(255, 255, 255, 0.95); border-radius: 12px; padding: 15px 20px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="color: #2c3e50; font-weight: 600; margin-bottom: 8px;">🌐 Showing all event attendees</div>
+        <a href="?" style="color: #0066cc; text-decoration: none; font-weight: 500; font-size: 0.9rem;">← Show only my
+            sessions</a>
+    </div>
+    {% endif %}
 
     <div class="card-container" id="cardContainer">
         {% if potential_matches %}
@@ -387,14 +404,20 @@
         <div class="no-more-cards">
             {% if no_matches_reason == 'no_attendees' %}
             <h3>No matches available</h3>
-            <p>There are no other members in this event yet. Check back later as more people join!</p>
+            <p>No other attendees have joined this event yet. Check back later!</p>
+            {% elif no_matches_reason == 'no_shared_sessions' %}
+            <h3>No attendees found</h3>
+            <p>No attendees found in your selected sessions.</p>
+            <p style="margin-top: 15px; font-weight: 500;">Try selecting more sessions in your availability, or</p>
+            <a href="?cross_session=true"
+                style="display: inline-block; margin-top: 10px; padding: 12px 24px; background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">Show
+                all attendees</a>
             {% elif no_matches_reason == 'no_similar_interests' %}
             <h3>No similar matches found</h3>
-            <p>Currently, there are not available attendees that match your interests. Try updating your keywords or
-                check back as more people join!</p>
+            <p>No more matches at this time. Check back later for new attendees!</p>
             {% else %}
-            <h3>No matches available</h3>
-            <p>There are no other members in this event yet. Check back later as more people join!</p>
+            <h3>That's all for now!</h3>
+            <p>You've seen all available matches for this event. Check back later for new connections!</p>
             {% endif %}
         </div>
         {% endif %}
@@ -502,7 +525,8 @@
         card.classList.add('card-swipe-left');
 
         const currentUser = cards[currentCardIndex];
-        const eventId = {{ event.id }};
+        const eventId = {{ event.id }
+    };
 
     // Send pass to server
     fetch(`/event/${eventId}/pass/${currentUser.user_id}`, {
@@ -537,7 +561,8 @@
         card.classList.add('card-swipe-right');
 
         const currentUser = cards[currentCardIndex];
-        const eventId = {{ event.id }};
+        const eventId = {{ event.id }
+    };
 
     // Send like to server
     fetch(`/event/${eventId}/like/${currentUser.user_id}`, {
