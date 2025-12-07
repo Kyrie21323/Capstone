@@ -1,264 +1,280 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Availability - {{ event.name }}{% endblock %}
+{% block title %}Select Your Sessions - {{ event.name }}{% endblock %}
 
 {% block styles %}
 <style>
-body {
-padding: 20px;
-}
+    body {
+        padding: 20px;
+    }
 
-.container {
-background: white;
-padding: 40px;
-border-radius: 20px;
-box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-max-width: 800px;
-margin: 0 auto;
-}
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
-.header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 40px;
-padding-bottom: 20px;
-border-bottom: 2px solid #e9ecef;
-}
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-border: 2px solid #e9ecef;
+    }
 
-.header h1 {
-font-size: 2rem;
-font-weight: 700;
-color: #2c3e50;
-margin: 0;
-}
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
 
-.back-btn {
-background: #6c757d;
-color: white;
-padding: 10px 20px;
-border-radius: 8px;
-text-decoration: none;
-font-weight: 600;
-transition: all 0.3s ease;
-}
+    .back-btn {
+        background: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
 
-.back-btn:hover {
-background: #5a6268;
-transform: translateY(-2px);
-}
+    .back-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
 
-.section {
-margin-bottom: 40px;
-}
+    .intro-text {
+        background: #f0f7ff;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 4px solid #57068c;
+        margin-bottom: 30px;
+    }
 
-.availability-form {
-background: #f8f9fa;
-padding: 30px;
-border-radius: 15px;
-border: 1px solid #e9ecef;
-}
+    .intro-text p {
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 500;
+    }
 
-.session-item {
-background: white;
-padding: 20px;
-border-radius: 10px;
-border: 1px solid #e9ecef;
-margin-bottom: 15px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-transition: all 0.3s ease;
-}
+    .availability-form {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid #e9ecef;
+    }
 
-.session-item:hover {
-box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-transform: translateY(-2px);
-}
+    .session-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
 
-.session-info {
-flex: 1;
-}
+    .session-card:hover {
+        border-color: #57068c;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
 
-.session-info h3 {
-margin: 0 0 5px 0;
-color: #2c3e50;
-}
+    .session-card.selected {
+        border-color: #28a745;
+        background: #f0fff4;
+    }
 
-.session-time {
-color: #6c757d;
-font-size: 0.9rem;
-}
+    .session-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 12px;
+    }
 
-.session-location {
-color: #17a2b8;
-font-size: 0.9rem;
-margin-top: 5px;
-}
+    .session-day {
+        display: inline-block;
+        background: #57068c;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
 
-.toggle-switch {
-position: relative;
-display: inline-block;
-width: 60px;
-height: 34px;
-}
+    .session-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0 0 8px 0;
+    }
 
-.toggle-switch input {
-opacity: 0;
-width: 0;
-height: 0;
-}
+    .session-details {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
 
-.slider {
-position: absolute;
-cursor: pointer;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background-color: #ccc;
-transition: .4s;
-border-radius: 34px;
-}
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-.slider:before {
-position: absolute;
-content: "";
-height: 26px;
-width: 26px;
-left: 4px;
-bottom: 4px;
-background-color: white;
-transition: .4s;
-border-radius: 50%;
-}
+    .checkbox-wrapper input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        accent-color: #28a745;
+    }
 
-input:checked + .slider {
-background-color: #28a745;
-}
+    .checkbox-label {
+        font-weight: 600;
+        color: #6c757d;
+        cursor: pointer;
+    }
 
-input:focus + .slider {
-box-shadow: 0 0 1px #28a745;
-}
+    .checkbox-wrapper input:checked~.checkbox-label {
+        color: #28a745;
+    }
 
-input:checked + .slider:before {
-transform: translateX(26px);
-}
+    .submit-btn {
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
+        color: white;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 25px;
+        transition: all 0.3s ease;
+    }
 
-.status-label {
-margin-right: 15px;
-font-weight: 600;
-color: #6c757d;
-}
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
+    }
 
-input:checked ~ .status-label {
-color: #28a745;
-}
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
 
-.submit-btn {
-background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
-color: white;
-padding: 15px 30px;
-border: none;
-border-radius: 10px;
-cursor: pointer;
-font-size: 1.1rem;
-font-weight: 600;
-width: 100%;
-margin-top: 20px;
-transition: all 0.3s ease;
-}
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
 
-.submit-btn:hover {
-transform: translateY(-2px);
-box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
-}
+    .info-badge {
+        display: inline-block;
+        background: #e7f3ff;
+        color: #0066cc;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="header">
-        <h1>Manage Availability</h1>
-        <a href="{{ url_for('user.dashboard') }}" class="back-btn">Back to Dashboard</a>
+        <h1>📅 Select Your Sessions</h1>
+        <a href="{{ url_for('user.dashboard') }}" class="back-btn">← Back to Dashboard</a>
     </div>
 
-    <div class="section">
-        <p style="color: #6c757d; margin-bottom: 20px;">
-            Please indicate which sessions you are available to attend. We will schedule your meetings during these
-            times.
-        </p>
+    <div class="intro-text">
+        <p>✓ Select which sessions you'll attend to find and match with other attendees</p>
+    </div>
 
-        <form method="POST" class="availability-form">
-            {% if sessions %}
+    <form method="POST" class="availability-form">
+        {% if sessions %}
+        <div>
             {% for session in sessions %}
-            <div class="session-item">
-                <div class="session-info">
-                    <h3>{{ session.name }}</h3>
-                    <div class="session-time">
-                        {{ session.start_time.strftime('%Y-%m-%d %H:%M') }} - {{ session.end_time.strftime('%H:%M') }}
+            <label class="session-card" onclick="toggleCard(this)" style="display: block;">
+                <div class="session-day">Day {{ session.day_number }}</div>
+                <div class="session-header">
+                    <div style="flex: 1;">
+                        <h3 class="session-title">{{ session.name }}</h3>
+                        <div class="session-details">
+                            <div>🕐 {{ session.start_time.strftime('%I:%M %p') }} - {{ session.end_time.strftime('%I:%M
+                                %p') }}</div>
+                            {% if session.session_location %}
+                            <div>📍 {{ session.session_location.name }}</div>
+                            {% endif %}
+                        </div>
                     </div>
-                    {% if session.location_description %}
-                    <div class="session-location">📍 {{ session.location_description }}</div>
-                    {% endif %}
-                </div>
-                <div style="display: flex; align-items: center;">
-                    <span class="status-label" id="label-{{ session.id }}">
-                        {% if session.id in available_session_ids %}Available{% else %}Unavailable{% endif %}
-                    </span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" name="session_{{ session.id }}" {% if session.id in available_session_ids
-                            %}checked{% endif %} onchange="updateLabel(this, 'label-{{ session.id }}')">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            {% endfor %}
-            <button type="submit" class="submit-btn">Save Availability</button>
-            {% else %}
-            <p style="text-align: center; color: #6c757d; font-style: italic;">
-                No sessions have been scheduled for this event yet.
-            </p>
-            {% endif %}
-        </form>
-    </div>
-    <div class="section">
-        <h2>Your Scheduled Meetings</h2>
-        {% if meetings %}
-        <div class="session-list">
-            {% for meeting in meetings %}
-            <div class="session-item" style="border-left: 5px solid #28a745;">
-                <div class="session-info">
-                    <h3>Meeting with {{ meeting.match.get_other_user(current_user.id).name }}</h3>
-                    <div class="session-time">
-                        🕒 {{ meeting.start_time.strftime('%Y-%m-%d %H:%M') }} - {{ meeting.end_time.strftime('%H:%M')
-                        }}
-                    </div>
-                    <div class="session-location">
-                        📍 {{ meeting.location.name }}
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" name="session_{{ session.id }}" id="session_{{ session.id }}" {% if
+                            session.id in available_session_ids %}checked{% endif %} onclick="event.stopPropagation();">
+                        <span class="checkbox-label">
+                            {% if session.id in available_session_ids %}Attending{% else %}Not Attending{% endif %}
+                        </span>
                     </div>
                 </div>
-            </div>
+            </label>
             {% endfor %}
         </div>
+        <button type="submit" class="submit-btn">💾 Save Session Selection</button>
         {% else %}
-        <p style="text-align: center; color: #6c757d; font-style: italic;">
-            No meetings scheduled yet. Please ensure you have marked your availability.
-        </p>
+        <div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <h3 style="color: #2c3e50;">No Sessions Available Yet</h3>
+            <p>The event organizer hasn't enabled matching for any sessions yet.</p>
+            <p style="font-weight: 500; margin-top: 15px;">Check back later or contact the organizer.</p>
+        </div>
         {% endif %}
-    </div>
+    </form>
 </div>
 
 <script>
-    function updateLabel(checkbox, labelId) {
-        const label = document.getElementById(labelId);
+    function toggleCard(card) {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        const label = card.querySelector('.checkbox-label');
+
         if (checkbox.checked) {
-            label.textContent = 'Available';
-            label.style.color = '#28a745';
+            checkbox.checked = false;
+            card.classList.remove('selected');
+            label.textContent = 'Not Attending';
         } else {
-            label.textContent = 'Unavailable';
-            label.style.color = '#6c757d';
+            checkbox.checked = true;
+            card.classList.add('selected');
+            label.textContent = 'Attending';
         }
     }
+
+    // Initialize card states on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            if (checkbox.checked) {
+                checkbox.closest('.session-card').classList.add('selected');
+            }
+        });
+
+        // Update checkbox labels on change
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const label = this.parentElement.querySelector('.checkbox-label');
+                const card = this.closest('.session-card');
+
+                if (this.checked) {
+                    label.textContent = 'Attending';
+                    card.classList.add('selected');
+                } else {
+                    label.textContent = 'Not Attending';
+                    card.classList.remove('selected');
+                }
+            });
+        });
+    });
 </script>
 {% endblock %}
