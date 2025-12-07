@@ -198,8 +198,9 @@
 {% block content %}
 <div class="container">
     <div class="header">
-        <h1>📍 Session Locations</h1>
-        <a href="{{ url_for('admin.admin_events') }}" class="back-btn">← Back to Events</a>
+        <h1><i data-lucide="building" style="width: 24px; height: 24px;"></i> Session Locations</h1>
+        <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="back-btn">← Back to
+            Workflow</a>
     </div>
 
     <!-- Add New Location Form -->
@@ -222,7 +223,8 @@
                     <div class="helper-text">Additional details to help attendees find the location</div>
                 </div>
 
-                <button type="submit" class="submit-btn">➕ Add Session Location</button>
+                <button type="submit" class="submit-btn"><i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                    Add Session Location</button>
             </form>
         </div>
     </div>
@@ -262,7 +264,8 @@
                         style="display: inline;">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="location_id" value="{{ location.id }}">
-                        <button type="submit" class="delete-btn">🗑️ Delete</button>
+                        <button type="submit" class="delete-btn"><i data-lucide="trash-2"
+                                style="width: 14px; height: 14px;"></i> Delete</button>
                     </form>
                 </div>
             </div>
@@ -277,6 +280,14 @@
                 sessions will take place.</p>
         </div>
         {% endif %}
+    </div>
+
+    <!-- Navigation Footer -->
+    <div style="margin-top: 40px; text-align: right; padding-top: 20px; border-top: 2px solid #e9ecef;">
+        <a href="{{ url_for('scheduling.manage_sessions', event_id=event.id) }}" class="submit-btn"
+            style="display: inline-block; width: auto; text-decoration: none;">
+            Next Step: Create Sessions →
+        </a>
     </div>
 </div>
 {% endblock %}

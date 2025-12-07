@@ -211,14 +211,14 @@
 {% block content %}
 <div class="container">
     <div class="header">
-        <h1>📍 Meeting Points</h1>
+        <h1><i data-lucide="map-pin" style="width: 24px; height: 24px;"></i> Meeting Points</h1>
         <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="back-btn">← Back to
             Workflow</a>
     </div>
 
     {% if not session_locations %}
     <div class="warning-box">
-        <strong>⚠️ No Session Locations</strong>
+        <strong><i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> No Session Locations</strong>
         <p>You need to create session locations first before adding meeting points. <a
                 href="{{ url_for('scheduling.manage_session_locations', event_id=event.id) }}"
                 style="color: #856404; text-decoration: underline;">Create Session Locations</a></p>
@@ -257,7 +257,8 @@
                     <div class="helper-text">Which session location contains this meeting point</div>
                 </div>
 
-                <button type="submit" class="submit-btn">➕ Add Meeting Point</button>
+                <button type="submit" class="submit-btn"><i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                    Add Meeting Point</button>
             </form>
         </div>
     </div>
@@ -281,7 +282,8 @@
                 <form method="POST" onsubmit="return confirm('Delete this meeting point?');">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="location_id" value="{{ location.id }}">
-                    <button type="submit" class="delete-btn">🗑️ Delete</button>
+                    <button type="submit" class="delete-btn"><i data-lucide="trash-2"
+                            style="width: 14px; height: 14px;"></i> Delete</button>
                 </form>
             </div>
             {% endfor %}
@@ -294,6 +296,14 @@
             <p class="helper-text">Meeting points are specific locations where matched attendees will meet.</p>
         </div>
         {% endif %}
+    </div>
+
+    <!-- Navigation Footer -->
+    <div style="margin-top: 40px; text-align: right; padding-top: 20px; border-top: 2px solid #e9ecef;">
+        <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="submit-btn"
+            style="display: inline-block; width: auto; text-decoration: none;">
+            <i data-lucide="check" style="width: 16px; height: 16px;"></i> Finish Workflow
+        </a>
     </div>
 </div>
 {% endblock %}

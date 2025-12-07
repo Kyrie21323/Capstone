@@ -342,16 +342,20 @@
 
             <div class="event-actions">
                 <a href="{{ url_for('admin.admin_edit_event', event_id=event.id) }}"
-                    class="btn btn-success btn-small">✏️ Edit
+                    class="btn btn-success btn-small"><i data-lucide="settings" style="width: 14px; height: 14px;"></i>
+                    Edit
                     Event</a>
                 <form method="POST" action="{{ url_for('admin.admin_delete_event', event_id=event.id) }}"
                     style="display: inline;" onsubmit="return showDeleteEventConfirmation(event, '{{ event.name }}')">
-                    <button type="submit" class="btn btn-danger btn-small">🗑️ Delete Event</button>
+                    <button type="submit" class="btn btn-danger btn-small"><i data-lucide="trash-2"
+                            style="width: 14px; height: 14px;"></i> Delete Event</button>
                 </form>
                 <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}"
-                    class="btn btn-primary btn-small">📅 Set up Event Sessions</a>
+                    class="btn btn-primary btn-small"><i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+                    Event Sessions</a>
                 <a href="{{ url_for('scheduling.attendee_matching_workflow', event_id=event.id) }}"
-                    class="btn btn-secondary btn-small">🎯 Attendee Matching</a>
+                    class="btn btn-secondary btn-small"><i data-lucide="users" style="width: 14px; height: 14px;"></i>
+                    Attendee Matching</a>
             </div>
         </div>
         {% endfor %}

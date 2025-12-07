@@ -7,16 +7,16 @@
     body {
         padding: 20px;
     }
-    
+
     .container {
         background: white;
         padding: 40px;
         border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         max-width: 1400px;
         margin: 0 auto;
     }
-    
+
     .header {
         display: flex;
         justify-content: space-between;
@@ -25,19 +25,19 @@
         padding-bottom: 20px;
         border-bottom: 2px solid #f1f3f4;
     }
-    
+
     .header-left h1 {
         font-size: 2.5rem;
         color: #2c3e50;
         margin-bottom: 0.5rem;
     }
-    
+
     .event-subtitle {
         font-size: 1.1rem;
         color: #7f8c8d;
         margin: 0;
     }
-    
+
     .admin-badge {
         display: inline-block;
         margin-top: 6px;
@@ -51,13 +51,13 @@
         border-radius: 999px;
         border: 1px solid #c3c7ff;
     }
-    
+
     .header-right {
         display: flex;
         align-items: center;
         gap: 10px;
     }
-    
+
     .btn {
         padding: 12px 24px;
         font-size: 1rem;
@@ -69,32 +69,32 @@
         cursor: pointer;
         display: inline-block;
     }
-    
+
     .btn-primary {
         background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
         color: white;
         box-shadow: 0 4px 15px rgba(87, 6, 140, 0.2);
     }
-    
+
     .btn-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(87, 6, 140, 0.3);
         text-decoration: none;
         color: white;
     }
-    
+
     .btn-secondary {
         background: #6c757d;
         color: white;
     }
-    
+
     .btn-secondary:hover {
         background: #5a6268;
         transform: translateY(-2px);
         text-decoration: none;
         color: white;
     }
-    
+
     .graph-container {
         margin-top: 20px;
         border: 2px solid #e9ecef;
@@ -102,20 +102,20 @@
         overflow: hidden;
         background: #f8f9fa;
     }
-    
+
     #cy {
         width: 100%;
         height: 600px;
         min-height: 400px;
     }
-    
+
     .loading-message {
         text-align: center;
         padding: 40px;
         color: #7f8c8d;
         font-size: 1.1rem;
     }
-    
+
     .error-message {
         text-align: center;
         padding: 40px;
@@ -125,7 +125,7 @@
         border-radius: 8px;
         margin-top: 20px;
     }
-    
+
     .graph-info {
         margin-top: 15px;
         padding: 15px;
@@ -134,11 +134,11 @@
         color: #004085;
         font-size: 0.9rem;
     }
-    
+
     .graph-info strong {
         color: #002752;
     }
-    
+
     .graph-legend {
         margin-top: 10px;
         margin-bottom: 15px;
@@ -150,27 +150,27 @@
         font-size: 0.9rem;
         line-height: 1.5;
     }
-    
+
     .graph-legend strong {
         color: #495057;
         font-weight: 600;
     }
-    
+
     @media (max-width: 768px) {
         .container {
             padding: 20px;
         }
-        
+
         .header {
             flex-direction: column;
             align-items: flex-start;
             gap: 15px;
         }
-        
+
         .header-left h1 {
             font-size: 2rem;
         }
-        
+
         #cy {
             height: 400px;
         }
@@ -194,7 +194,8 @@
     </div>
 
     <div class="graph-legend">
-        <strong>Legend:</strong> Each circle represents an attendee. Each line represents a confirmed mutual match between two attendees at this event.
+        <strong>Legend:</strong> Each circle represents an attendee. Each line represents a confirmed mutual match
+        between two attendees at this event.
     </div>
 
     <div class="graph-container">
@@ -204,9 +205,10 @@
         </div>
         <div id="errorMessage" class="error-message" style="display: none;"></div>
     </div>
-    
+
     <div id="graphInfo" class="graph-info" style="display: none;">
-        <strong>Graph Statistics:</strong> <span id="nodeCount">0</span> nodes, <span id="edgeCount">0</span> connections
+        <strong>Graph Statistics:</strong> <span id="nodeCount">0</span> nodes, <span id="edgeCount">0</span>
+        connections
     </div>
 </div>
 <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
@@ -214,17 +216,18 @@
 
 {% block scripts %}
 {{ super() }}
-    document.addEventListener('DOMContentLoaded', function() {
-        const eventId = {{ event_id }};
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const eventId = "{{ event_id }}";
         const loadingMessage = document.getElementById('loadingMessage');
         const errorMessage = document.getElementById('errorMessage');
         const graphInfo = document.getElementById('graphInfo');
         const nodeCountSpan = document.getElementById('nodeCount');
         const edgeCountSpan = document.getElementById('edgeCount');
-        
+
         // Show loading message
         loadingMessage.style.display = 'block';
-        
+
         // Fetch graph data from API
         fetch(`/api/event/${eventId}/graph`)
             .then(response => {
@@ -238,14 +241,14 @@
             .then(data => {
                 // Hide loading message
                 loadingMessage.style.display = 'none';
-                
+
                 // Check if we have data
                 if (!data.nodes || data.nodes.length === 0) {
                     errorMessage.textContent = 'No network data available for this event. Start matching to build connections!';
                     errorMessage.style.display = 'block';
                     return;
                 }
-                
+
                 // Transform data to Cytoscape format
                 const nodes = data.nodes.map(node => ({
                     data: {
@@ -253,19 +256,19 @@
                         label: node.label
                     }
                 }));
-                
+
                 const edges = data.edges.map(edge => ({
                     data: {
                         source: edge.source.toString(),
                         target: edge.target.toString()
                     }
                 }));
-                
+
                 // Update statistics
                 nodeCountSpan.textContent = nodes.length;
                 edgeCountSpan.textContent = edges.length;
                 graphInfo.style.display = 'block';
-                
+
                 // Initialize Cytoscape
                 const cy = cytoscape({
                     container: document.getElementById('cy'),
@@ -334,60 +337,60 @@
                     userZoomingEnabled: true,
                     boxSelectionEnabled: true
                 });
-                
+
                 // Add some interactivity
-                cy.on('tap', 'node', function(evt) {
+                cy.on('tap', 'node', function (evt) {
                     const node = evt.target;
                     console.log('Node clicked:', node.data('label'));
                 });
-                
+
                 // Fit the graph to the viewport after layout and set up floating animation
-                cy.ready(function() {
+                cy.ready(function () {
                     cy.fit();
-                    
+
                     // Store base positions for all nodes after layout completes
                     const nodes = cy.nodes();
-                    nodes.forEach(function(node, index) {
+                    nodes.forEach(function (node, index) {
                         const pos = node.position();
                         node.data('basePos', { x: pos.x, y: pos.y });
                         node.data('nodeIndex', index);
                     });
-                    
+
                     // Completely disable node dragging
-                    cy.nodes().forEach(function(n) {
+                    cy.nodes().forEach(function (n) {
                         n.ungrabify(); // disable mouse-drag interaction
                     });
-                    
+
                     // Floating animation: gently move nodes around their base positions
                     let animationTime = 0;
-                    const floatInterval = setInterval(function() {
+                    const floatInterval = setInterval(function () {
                         animationTime += 0.2;
                         const nodes = cy.nodes();
-                        
-                        nodes.forEach(function(node) {
-                            
+
+                        nodes.forEach(function (node) {
+
                             // Get base position
                             const basePos = node.data('basePos');
                             if (!basePos) {
                                 return;
                             }
-                            
+
                             // Get node index for unique animation pattern
                             const nodeIndex = node.data('nodeIndex') || 0;
-                            
+
                             // Calculate floating offset using sine/cosine for smooth circular motion
                             // Each node has a different phase based on its index
                             const phaseX = animationTime + nodeIndex * 0.5;
                             const phaseY = animationTime + nodeIndex * 0.5 + Math.PI / 3;
-                            
+
                             // Increased offset (±25 pixels) for more visible movement
                             const offsetX = Math.sin(phaseX) * 25;
                             const offsetY = Math.cos(phaseY) * 25;
-                            
+
                             // Calculate new position relative to base
                             const newX = basePos.x + offsetX;
                             const newY = basePos.y + offsetY;
-                            
+
                             // Animate to new position smoothly
                             node.animate({
                                 position: { x: newX, y: newY }
@@ -397,7 +400,7 @@
                             });
                         });
                     }, 1800); // Update every 1.8 seconds
-                    
+
                     // Store interval ID so it can be cleared if needed
                     cy.data('floatInterval', floatInterval);
                 });
@@ -409,5 +412,5 @@
                 errorMessage.style.display = 'block';
             });
     });
+</script>
 {% endblock %}
-

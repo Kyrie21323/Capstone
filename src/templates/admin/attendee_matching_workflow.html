@@ -147,7 +147,7 @@
 {% block content %}
 <div class="container">
     <div class="header">
-        <h1>🎯 Attendee Matching</h1>
+        <h1><i data-lucide="users" style="width: 24px; height: 24px;"></i> Attendee Matching</h1>
         <a href="{{ url_for('admin.admin_events') }}" class="back-btn">← Back to Events</a>
     </div>
 
@@ -185,12 +185,12 @@
             </li>
         </ul>
         <a href="{{ url_for('matching.event_graph_page', event_id=event.id) }}" class="action-button">
-            📊 View Network Graph
+            <i data-lucide="network" style="width: 16px; height: 16px;"></i> View Network Graph
         </a>
     </div>
 
     <div class="info-section">
-        <h3>⚙️ Requirements</h3>
+        <h3><i data-lucide="settings" style="width: 18px; height: 18px;"></i> Requirements</h3>
         <p>For matching to work, ensure the following are set up:</p>
         <ul>
             <li>✓ Attendees must be registered for the event ({{ total_members }} currently registered)</li>

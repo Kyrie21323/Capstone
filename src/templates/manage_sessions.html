@@ -280,14 +280,14 @@
 {% block content %}
 <div class="container">
     <div class="header">
-        <h1>📅 Event Sessions</h1>
+        <h1><i data-lucide="calendar" style="width: 24px; height: 24px;"></i> Event Sessions</h1>
         <a href="{{ url_for('scheduling.event_sessions_workflow', event_id=event.id) }}" class="back-btn">← Back to
             Workflow</a>
     </div>
 
     {% if not session_locations %}
     <div class="warning-box">
-        <strong>⚠️ No Session Locations</strong>
+        <strong><i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> No Session Locations</strong>
         <p>You need to create session locations first before adding sessions. <a
                 href="{{ url_for('scheduling.manage_session_locations', event_id=event.id) }}"
                 style="color: #856404; text-decoration: underline;">Create Session Locations</a></p>
@@ -356,7 +356,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">➕ Add Session</button>
+                <button type="submit" class="submit-btn"><i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                    Add Session</button>
             </form>
         </div>
     </div>
@@ -392,14 +393,18 @@
                         <input type="hidden" name="session_id" value="{{ session.id }}">
                         <button type="submit"
                             class="toggle-btn {% if session.matching_enabled %}enabled{% else %}disabled{% endif %}">
-                            {% if session.matching_enabled %}🎯 Disable Matching{% else %}🎯 Enable Matching{% endif %}
+                            {% if session.matching_enabled %}<i data-lucide="user-x"
+                                style="width: 14px; height: 14px;"></i> Disable Matching{% else %}<i
+                                data-lucide="user-check" style="width: 14px; height: 14px;"></i> Enable Matching{% endif
+                            %}
                         </button>
                     </form>
 
                     <form method="POST" onsubmit="return confirm('Delete this session?');" style="display: inline;">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="session_id" value="{{ session.id }}">
-                        <button type="submit" class="delete-btn">🗑️ Delete</button>
+                        <button type="submit" class="delete-btn"><i data-lucide="trash-2"
+                                style="width: 14px; height: 14px;"></i> Delete</button>
                     </form>
                 </div>
             </div>
@@ -413,6 +418,14 @@
             <p class="helper-text">Sessions define when your event activities take place.</p>
         </div>
         {% endif %}
+    </div>
+
+    <!-- Navigation Footer -->
+    <div style="margin-top: 40px; text-align: right; padding-top: 20px; border-top: 2px solid #e9ecef;">
+        <a href="{{ url_for('scheduling.manage_locations', event_id=event.id) }}" class="submit-btn"
+            style="display: inline-block; width: auto; text-decoration: none;">
+            Next Step: Add Meeting Points →
+        </a>
     </div>
 </div>
 {% endblock %}

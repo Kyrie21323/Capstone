@@ -149,6 +149,8 @@
         display: inline-flex;
         align-items: center;
         gap: 5px;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .status-complete {
@@ -185,7 +187,7 @@
 {% block content %}
 <div class="container">
     <div class="header">
-        <h1>📅 Event Sessions Setup</h1>
+        <h1><i data-lucide="calendar" style="width: 24px; height: 24px;"></i> Event Sessions Setup</h1>
         <a href="{{ url_for('admin.admin_events') }}" class="back-btn">← Back to Events</a>
     </div>
 
@@ -219,7 +221,7 @@
                     </div>
                     <a href="{{ url_for('scheduling.manage_session_locations', event_id=event.id) }}"
                         class="step-action">
-                        📍 Manage Session Locations
+                        <i data-lucide="building" style="width: 16px; height: 16px;"></i> Manage Session Locations
                     </a>
                 </div>
             </div>
@@ -247,7 +249,7 @@
                         {% endif %}
                     </div>
                     <a href="{{ url_for('scheduling.manage_sessions', event_id=event.id) }}" class="step-action">
-                        📅 Manage Sessions
+                        <i data-lucide="calendar" style="width: 16px; height: 16px;"></i> Manage Sessions
                     </a>
                 </div>
             </div>
@@ -275,7 +277,7 @@
                         {% endif %}
                     </div>
                     <a href="{{ url_for('scheduling.manage_locations', event_id=event.id) }}" class="step-action">
-                        📍 Manage Meeting Points
+                        <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i> Manage Meeting Points
                     </a>
                 </div>
             </div>
