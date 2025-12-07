@@ -168,6 +168,13 @@ POST /event/<event_id>/availability
 
 **Returns**: HTML availability page or redirect
 
+### Check Availability Matches
+```
+GET /event/<event_id>/availability/check-matches
+```
+**Description**: Check if user has active matches (used for confirmation dialogs)  
+**Returns**: JSON `{ "has_matches": boolean }`
+
 ### Uploaded Files
 ```
 GET /uploads/<filename>
