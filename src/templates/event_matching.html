@@ -575,9 +575,20 @@
         .then(data => {
             if (data.success) {
                 if (data.is_match) {
-                    setTimeout(() => {
-                        showMatchAnimation(currentUser);
-                    }, 500);
+                    // It's a match!
+                    const matchedUser = cards[currentCardIndex];
+                    showMatchAnimation(matchedUser);
+
+                    // Show web notification if available
+                    if (data.notification_data && typeof notificationManager !== 'undefined') {
+                        notificationManager.showMatchNotification({
+                            matchName: data.notification_data.match_name,
+                            eventName: data.notification_data.event_name,
+                            meetingTime: data.notification_data.meeting_time,
+                            meetingLocation: data.notification_data.meeting_location,
+                            eventId: data.notification_data.event_id
+                        });
+                    }
                 } else {
                     setTimeout(() => {
                         showNextCard();

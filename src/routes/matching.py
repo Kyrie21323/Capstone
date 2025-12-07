@@ -302,10 +302,32 @@ def like_user(event_id, target_user_id):
                     if success:
                         print(f"✅ Auto-assigned meeting for match {match.id}: {message}")
                         print(f"   Meeting: {meeting.start_time} at {meeting.location.name}")
+                        
+                        # Send email notifications to both users
+                        try:
+                            from utils.email_notifications import send_match_notifications_to_both
+                            email_success, email_total, email_msgs = send_match_notifications_to_both(
+                                match, event, meeting
+                            )
+                            print(f"📧 Email notifications: {email_success}/{email_total} sent successfully")
+                            for msg in email_msgs:
+                                print(f"   {msg}")
+                        except Exception as email_err:
+                            print(f"⚠️ Email notification failed: {str(email_err)}")
                     else:
                         print(f"⚠️ Could not auto-assign meeting for match {match.id}: {message}")
                         match.assignment_attempted = True
                         match.assignment_failed_reason = message
+                        
+                        # Still send email notifying about match (without meeting details)
+                        try:
+                            from utils.email_notifications import send_match_notifications_to_both
+                            email_success, email_total, email_msgs = send_match_notifications_to_both(
+                                match, event, None  # No meeting
+                            )
+                            print(f"📧 Email notifications (no meeting): {email_success}/{email_total} sent")
+                        except Exception as email_err:
+                            print(f"⚠️ Email notification failed: {str(email_err)}")
                         
                 except Exception as e:
                     print(f"❌ Error during auto-assignment: {str(e)}")
@@ -314,11 +336,21 @@ def like_user(event_id, target_user_id):
                 
                 db.session.commit()
                 
+                # Prepare notification data for web notifications
+                notification_data = {
+                    'match_name': User.query.get(user2_id if current_user.id == user1_id else user1_id).name,
+                    'event_name': event.name,
+                    'meeting_time': meeting.start_time.strftime('%A, %B %d at %I:%M %p') if meeting else None,
+                    'meeting_location': meeting.location.name if meeting else None,
+                    'event_id': event_id
+                }
+                
                 return {
                     'success': True,
                     'message': 'It\'s a match!',
                     'is_match': True,
-                    'match_id': match.id
+                    'match_id': match.id,
+                    'notification_data': notification_data  # For web notifications
                 }, 200
         
         db.session.commit()

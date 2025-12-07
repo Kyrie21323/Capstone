@@ -275,6 +275,13 @@
                 }
             });
         });
+
+        // Request notification permission after a short delay
+        setTimeout(() => {
+            if (typeof showNotificationPermissionModal !== 'undefined') {
+                showNotificationPermissionModal();
+            }
+        }, 1000);
     });
 </script>
 {% endblock %}
