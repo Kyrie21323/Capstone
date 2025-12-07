@@ -1,8 +1,8 @@
-"""Add event publishing and day-based sessions
+"""Initial migration with all models
 
-Revision ID: b9fa725c8783
+Revision ID: 87a68521f99f
 Revises: 
-Create Date: 2025-12-07 09:18:50.021895
+Create Date: 2025-12-07 11:44:51.412333
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b9fa725c8783'
+revision = '87a68521f99f'
 down_revision = None
 branch_labels = None
 depends_on = None
