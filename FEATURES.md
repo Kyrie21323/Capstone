@@ -21,8 +21,9 @@ Prophere provides a comprehensive suite of features for professional networking 
 
 ### Advanced Features
 - ✅ **Network Visualization**: Interactive graph visualizer showing event attendee connections and mutual matches
-  - Event Network Graph: Admin-only visualization of attendee networks with force-directed layout
-  - Dev Graph Visualizer: Synthetic dataset testing tool for stress testing graph visualizations
+  - **Event Network Graph**: Admin-only visualization of attendee networks using Cytoscape.js
+  - **Interactive Elements**: Zoom, pan, and click nodes to see details
+  - **Statistics**: Real-time stats on connected components and density
 - ✅ **Admin Panel**: Complete event and user management system with analytics
 - ✅ **Cross-device Sync**: Database and file synchronization between devices via export/import
 
@@ -30,7 +31,6 @@ Prophere provides a comprehensive suite of features for professional networking 
 - 🔜 **NFC Integration**: Tap-to-connect functionality for seamless contact exchange
 - 🔜 **Mobile Apps**: iOS and Android native applications
 - 🔜 **Real-time Messaging**: Direct messages between matched users
-- 🔜 **Calendar Integration**: Export meeting schedules to Google/iCal
 - 🔜 **Post-Event Analytics**: Insights on networking effectiveness and follow-up opportunities
 
 ---
@@ -195,6 +195,11 @@ This hierarchy provides clear organization and flexible meeting allocation.
 - **Draft Mode**: Create events without dates (not publicly visible)
 - **Publish**: Requires start/end dates, enables attendee registration
 - **Flexible Setup**: Set up sessions and locations before publishing
+
+### Notifications
+- **Dual System**: Real-time Web Push notifications + Email notifications
+- **Calendar Integration**: Automated .ics calendar invites sent via email on match
+- **Web Alerts**: Interactive toast notifications for instant feedback
 
 ---
 

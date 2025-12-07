@@ -262,6 +262,33 @@ POST /event/<event_id>/sessions
 
 **Returns**: HTML sessions management page
 
+### Manage Session Locations
+```
+GET /event/<event_id>/session-locations
+POST /event/<event_id>/session-locations
+```
+**Description**: Manage physical venues for sessions  
+**Parameters (POST)**:
+- `action` (string) - 'add' or 'delete'
+- `name` (string) - Location name
+- `description` (string) - Optional description
+
+**Returns**: HTML session locations page
+
+### Event Sessions Workflow
+```
+GET /event/<event_id>/event-sessions-workflow
+```
+**Description**: Guided dashboard for setting up event sessions  
+**Returns**: HTML workflow dashboard
+
+### Attendee Matching Workflow
+```
+GET /event/<event_id>/attendee-matching-workflow
+```
+**Description**: Guided dashboard for matching configuration  
+**Returns**: HTML workflow dashboard
+
 ### Manage Locations
 ```
 GET /event/<event_id>/locations

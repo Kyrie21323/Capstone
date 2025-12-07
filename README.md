@@ -2,7 +2,7 @@
 
 A Flask-based networking platform for events with intelligent matching, meeting scheduling, and location management capabilities.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8+-green.svg)
 ![License](https://img.shields.io/badge/license-Academic-orange.svg)
 
@@ -34,17 +34,16 @@ At large events, attendees struggle to track connections and coordinate meetings
 ✅ Select which sessions to attend  
 ✅ Tinder-style matching interface with session filtering  
 ✅ View confirmed matches with auto-assigned meetings  
-✅ Download calendar invites (coming soon)  
+✅ Real-time web notifications for matches
+✅ Automatic email calendar invites  
 
 ### For Event Managers
-✅ Create and manage events with publishing workflow  
-✅ Define session locations and event sessions  
-✅ Day-based session creation (Day 1, Day 2, etc.)  
-✅ Enable matching per session  
-✅ Create meeting points for auto-assignment  
-✅ Automated meeting allocation on match  
-✅ Analytics dashboard  
-✅ Export/import database  
+✅ Create and manage events with publishing workflow 
+✅ Define session locations and event sessions 
+✅ Enable matching per session and create meeting points for auto-assignment 
+✅ Analytics dashboard 
+✅ Export/import database 
+✅ Dual Notification System (Email + Web Push)
 
 📖 **Full feature documentation**: [FEATURES.md](FEATURES.md)
 
