@@ -26,6 +26,16 @@ At large events, attendees struggle to track connections and coordinate meetings
 - **Educational Institutions**: Universities hosting career fairs and networking events
 - **Corporate Events**: Company networking sessions, industry meetups, trade shows
 
+### Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[SETUP.md](SETUP.md)** | Installation, configuration, and troubleshooting |
+| **[FEATURES.md](FEATURES.md)** | Detailed feature descriptions and usage |
+| **[DATABASE.md](DATABASE.md)** | Database models, operations, and management |
+| **[API.md](API.md)** | Complete API routes reference |
+| **[DEVELOPMENT.md](DEVELOPMENT.md)** | Technical architecture and developer guide |
+
 ## Key Features
 
 ### For Attendees
@@ -33,18 +43,18 @@ At large events, attendees struggle to track connections and coordinate meetings
 ✅ Upload resumes for intelligent matching  
 ✅ Select which sessions to attend  
 ✅ Tinder-style matching interface with session filtering  
-✅ Instant Meeting Assignment: Matches are automatically scheduled in real-time
-✅ Smart Availability Management: Automatic meeting validation and reassignment
-✅ Real-time web and browser notifications for matches
+✅ Instant Meeting Assignment: Matches are automatically scheduled in real-time  
+✅ Smart Availability Management: Automatic meeting validation and reassignment  
+✅ Real-time web and browser notifications for matches  
 ✅ Automatic email calendar invites  
 
 ### For Event Managers
-✅ Create and manage events with publishing workflow 
-✅ Define event locations and sessions 
-✅ Enable matching per session and configure meeting points 
-✅ Analytics dashboard 
-✅ Export/import database 
-✅ Dual Notification System (Email + Web Push)
+✅ Create and manage events with publishing workflow  
+✅ Define event locations and sessions  
+✅ Enable matching per session and configure meeting points  
+✅ Analytics dashboard  
+✅ Export/import database  
+✅ Dual Notification System (Email + Web Push)  
 
 📖 **Full feature documentation**: [FEATURES.md](FEATURES.md)
 
@@ -77,20 +87,6 @@ Capstone/
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed architecture.
 
----
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| **[SETUP.md](SETUP.md)** | Installation, configuration, and troubleshooting |
-| **[FEATURES.md](FEATURES.md)** | Detailed feature descriptions and usage |
-| **[DATABASE.md](DATABASE.md)** | Database models, operations, and management |
-| **[API.md](API.md)** | Complete API routes reference |
-| **[DEVELOPMENT.md](DEVELOPMENT.md)** | Technical architecture and developer guide |
-
----
-
 ## Quick Start
 
 ```bash
@@ -115,8 +111,6 @@ Access at http://127.0.0.1:5000
 > **Note**: The app can also auto-create an admin user on startup if `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables are set. See [Deployment & Production Setup](#-deployment--production-setup) for details.
 
 📖 **Full installation guide**: [SETUP.md](SETUP.md)
-
----
 
 ## Common Tasks
 
@@ -228,8 +222,6 @@ For production deployment on Render:
 | `SECRET_KEY` | Flask session secret | Recommended | Use a strong random key in production |
 | `FLASK_ENV` | Environment mode | Optional | `production` for production |
 
----
-
 ## Advanced Development
 
 For detailed technical architecture, database migrations, advanced configuration, and development workflows, see [DEVELOPMENT.md](DEVELOPMENT.md).
@@ -243,7 +235,5 @@ For issues or questions:
 2. Review [DATABASE.md](DATABASE.md) for troubleshooting
 3. See [SETUP.md](SETUP.md) for installation issues
 4. Create GitHub issue with detailed information
-
----
 
 **Built with ❤️ at NYU Abu Dhabi**
