@@ -4,268 +4,291 @@
 
 {% block styles %}
 <style>
-        body {
-            padding: 20px;
-        }
-        
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e9ecef;
-        }
-        
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin: 0;
-        }
-        
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-        
-        .stat-card {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            border-left: 5px solid #57068c;
-            transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
-        .stat-label {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-        
-        
-        .section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            border: 2px solid #e9ecef;
-        }
-        
-        .section h2 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .list-item:last-child {
-            border-bottom: none;
-        }
-        
-        .item-info {
-            flex: 1;
-        }
-        
-        .item-name {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        
-        .item-meta {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-        
-        .admin-badge {
-            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .flash-messages {
-            margin-bottom: 30px;
-        }
-        
-        .flash {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        
-        .flash.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .flash.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .nav-link {
-            background: #e9ecef;
-            color: #495057;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            background: #57068c;
-            color: white;
-        }
+    body {
+        padding: 20px;
+    }
+
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(87, 6, 140, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
+    }
+
+    .stat-card {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        border-left: 5px solid #57068c;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+
+    .section {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        border: 2px solid #e9ecef;
+    }
+
+    .section h2 {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .list-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .item-meta {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+
+    .admin-badge {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .flash-messages {
+        margin-bottom: 30px;
+    }
+
+    .flash {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .flash.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .flash.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .nav-link {
+        background: #e9ecef;
+        color: #495057;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        background: #57068c;
+        color: white;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="header">
-            <h1>Admin Dashboard</h1>
-            <div class="header-actions">
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Logout</a>
-            </div>
+<div class="container">
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+        <div class="header-actions">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Logout</a>
         </div>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-        
-        <div class="nav-links">
-            <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link active">Dashboard</a>
-            <a href="{{ url_for('admin.admin_events') }}" class="nav-link">Manage Events</a>
-            <a href="{{ url_for('admin.admin_users') }}" class="nav-link">Manage Users</a>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">{{ total_users }}</div>
-                <div class="stat-label">Regular Users</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ total_events }}</div>
-                <div class="stat-label">Total Events</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ total_memberships }}</div>
-                <div class="stat-label">Event Memberships</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ total_resumes }}</div>
-                <div class="stat-label">Documents Uploaded</div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2 style="text-align: center;">Platform Analytics</h2>
-            <div class="analytics-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #57068c;">{{ total_events }}</div>
-                    <div style="color: #7f8c8d; font-size: 0.9rem;">Active Events</div>
-                </div>
-                <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #28a745;">{{ total_memberships }}</div>
-                    <div style="color: #7f8c8d; font-size: 0.9rem;">Total Memberships</div>
-                </div>
-            </div>
-            <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                <div style="font-weight: 600; color: #2c3e50; margin-bottom: 8px;">Document Uploads</div>
-                <div style="font-size: 1.2rem; color: #17a2b8;">{{ total_resumes }} files uploaded</div>
-            </div>
-            <div style="background: white; padding: 15px; border-radius: 10px;">
-                <div style="font-weight: 600; color: #2c3e50; margin-bottom: 8px;">User Engagement</div>
-                <div style="font-size: 1.2rem; color: #ffc107;">{{ total_users }} regular users</div>
-            </div>
-        </div>
-        
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="nav-links">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link active">Dashboard</a>
+        <a href="{{ url_for('admin.admin_events') }}" class="nav-link">Manage Events</a>
+        <a href="{{ url_for('admin.admin_users') }}" class="nav-link">Manage Users</a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">Regular Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_events }}</div>
+            <div class="stat-label">Total Events</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_memberships }}</div>
+            <div class="stat-label">Event Memberships</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_resumes }}</div>
+            <div class="stat-label">Documents Uploaded</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 style="text-align: center;">Platform Analytics</h2>
+        <div class="analytics-grid"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #57068c;">{{ total_events }}</div>
+                <div style="color: #7f8c8d; font-size: 0.9rem;">Active Events</div>
+            </div>
+            <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #28a745;">{{ total_memberships }}</div>
+                <div style="color: #7f8c8d; font-size: 0.9rem;">Total Memberships</div>
+            </div>
+        </div>
+        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 8px;">Document Uploads</div>
+            <div style="font-size: 1.2rem; color: #17a2b8;">{{ total_resumes }} files uploaded</div>
+        </div>
+        <div style="background: white; padding: 15px; border-radius: 10px;">
+            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 8px;">User Engagement</div>
+            <div style="font-size: 1.2rem; color: #ffc107;">{{ total_users }} regular users</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check if user just logged in and show browser notification
+        const flashMessages = document.querySelectorAll('.flash-messages .flash.success');
+        flashMessages.forEach(function (flash) {
+            const message = flash.textContent.trim();
+            if (message.includes('Login successful') && typeof notificationManager !== 'undefined') {
+                // Show browser notification if permission granted
+                if (notificationManager.permissionGranted) {
+                    notificationManager.showNotification('Login Successful', {
+                        body: message,
+                        icon: '/static/images/logo.png'
+                    });
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

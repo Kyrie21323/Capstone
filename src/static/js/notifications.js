@@ -131,7 +131,62 @@ class NotificationManager {
 const notificationManager = new NotificationManager();
 
 /**
+ * In-App Notification System (Toast Messages)
+ * Handles in-app toast notifications separate from browser notifications
+ */
+class NotificationSystem {
+    /**
+     * Show an in-app toast notification
+     * @param {string} message - The message to display
+     * @param {string} type - Type of notification: 'success', 'error', 'warning', 'info'
+     * @param {string} title - Optional title for the notification
+     */
+    show(message, type = 'info', title = null) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+
+        // Add title if provided
+        if (title) {
+            const titleEl = document.createElement('div');
+            titleEl.style.fontWeight = '600';
+            titleEl.style.marginBottom = '4px';
+            titleEl.textContent = title;
+            toast.appendChild(titleEl);
+        }
+
+        const messageEl = document.createElement('div');
+        messageEl.textContent = message;
+        toast.appendChild(messageEl);
+
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#17a2b8'};
+            color: ${type === 'warning' ? '#000' : 'white'};
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 10000;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out;
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+}
+
+// Create global notification system instance
+const notificationSystem = new NotificationSystem();
+
+/**
  * Show permission request modal for attendees
+ * Will show on every page load until permission is granted
  */
 function showNotificationPermissionModal() {
     // Check if already granted
@@ -139,10 +194,7 @@ function showNotificationPermissionModal() {
         return;
     }
 
-    // Check if dismissed this session
-    if (sessionStorage.getItem('notification-modal-dismissed') === 'true') {
-        return;
-    }
+    // Removed session check - modal will show on every page load until granted
 
     // Create modal
     const modal = document.createElement('div');
@@ -186,8 +238,7 @@ async function handleNotificationAllow() {
  */
 function handleNotificationSkip() {
     closeNotificationModal();
-    // Store preference to not ask again this session
-    sessionStorage.setItem('notification-modal-dismissed', 'true');
+    // Modal will appear again on next page load
 }
 
 /**
@@ -350,5 +401,5 @@ document.head.appendChild(style);
 
 // Export for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { notificationManager, showNotificationPermissionModal };
+    module.exports = { notificationManager, notificationSystem, showNotificationPermissionModal };
 }
