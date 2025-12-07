@@ -143,13 +143,10 @@
             <h2>Join New Event</h2>
             <p>Enter an event code and your areas of interest to join a new event:</p>
             <form method="POST" action="{{ url_for('user.join_event') }}" class="join-form" id="joinEventForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="event_code">Event Code</label>
-                        <input type="text" id="event_code" name="event_code"
-                            placeholder="Enter event code (e.g., NYUAD2025)">
-                    </div>
-                    <button type="submit" class="join-event-btn">Join Event</button>
+                <div class="form-group">
+                    <label for="event_code">Event Code</label>
+                    <input type="text" id="event_code" name="event_code"
+                        placeholder="Enter event code (e.g., NYUAD2025)">
                 </div>
                 <div class="form-group">
                     <label for="keywords">Areas of Interest (at least 2 keywords)</label>
@@ -162,6 +159,7 @@
                         Type keywords and press Enter to create tags. Minimum 2 keywords required.
                     </small>
                 </div>
+                <button type="submit" class="join-event-btn">Join Event</button>
             </form>
         </div>
     </div>

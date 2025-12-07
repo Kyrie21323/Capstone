@@ -242,22 +242,19 @@
                     <div class="form-group">
                         <label for="capacity">Capacity (Pairs per slot)</label>
                         <input type="number" id="capacity" name="capacity" value="1" min="1" required>
-                        <small style="color: #7f8c8d; display: block; margin-top: 5px;">Number of concurrent meetings
-                            this
-                            location can host (e.g. 1 pair = 2 people)</small>
-                        <div class="helper-text">Usually 2 for 1-on-1</div>
+                        <div class="helper-text"># of concurrent meetings it can host</div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="session_location_id">Located In *</label>
+                    <label for="session_location_id">Located Around *</label>
                     <select id="session_location_id" name="session_location_id" required>
-                        <option value="">Select Session Location</option>
+                        <option value="">Select Event Location</option>
                         {% for location in session_locations %}
                         <option value="{{ location.id }}">{{ location.name }}</option>
                         {% endfor %}
                     </select>
-                    <div class="helper-text">Which session location contains this meeting point</div>
+                    <div class="helper-text">Which event location contains this meeting point</div>
                 </div>
 
                 <button type="submit" class="submit-btn"><i data-lucide="plus" style="width: 16px; height: 16px;"></i>

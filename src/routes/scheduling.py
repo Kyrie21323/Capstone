@@ -31,7 +31,7 @@ def manage_event_locations(event_id):
                 )
                 db.session.add(session_location)
                 db.session.commit()
-                flash(f'Session location "{name}" added successfully!', 'success')
+                flash(f'Event location "{name}" added successfully!', 'success')
             else:
                flash('Location name is required.', 'error')
                 
@@ -48,7 +48,7 @@ def manage_event_locations(event_id):
                 else:
                     db.session.delete(session_location)
                     db.session.commit()
-                    flash(f'Session location "{session_location.name}" deleted successfully!', 'success')
+                    flash(f'Event location "{session_location.name}" deleted successfully!', 'success')
                     
     session_locations = SessionLocation.query.filter_by(event_id=event_id).all()
     return render_template('admin/manage_session_locations.html', event=event, session_locations=session_locations)

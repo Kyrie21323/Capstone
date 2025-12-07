@@ -175,7 +175,7 @@ class MeetingPoint(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     session_location_id = db.Column(db.Integer, db.ForeignKey('session_location.id'), nullable=True)
     name = db.Column(db.String(100), nullable=False)  # e.g., "Hall 1 Table 11"
-    capacity = db.Column(db.Integer, default=2)  # Usually 2 for 1-on-1
+    capacity = db.Column(db.Integer, default=1)  # Number of concurrent meetings (pairs)
     
     # Relationships
     event = db.relationship('Event', backref='meeting_points')
