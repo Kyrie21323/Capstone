@@ -2,418 +2,114 @@
 
 {% block title %}Your Matches - {{ event.name }}{% endblock %}
 
+{% block body_class %}matches-page{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="header">
-        <div class="header-left">
-            <h1>Your Matches</h1>
-            <p class="event-subtitle">{{ event.name }}</p>
+<div class="matches-page-container">
+    <div class="page-header">
+        <div>
+            <p class="page-subtitle">{{ event.name }}</p>
+            <h1 class="page-title">Your Matches</h1>
         </div>
-        <div class="header-right">
+        <div class="header-actions">
             {% if current_user.is_administrator() %}
             <a href="{{ url_for('matching.event_graph_page', event_id=event.id) }}" class="btn btn-secondary">
                 View Event Network
             </a>
             {% endif %}
-            <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary">
-                Back to Dashboard
-            </a>
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
         </div>
     </div>
 
-    <div class="section">
-        {% if matches %}
-        <div class="matches-grid">
-            {% for match_data in matches %}
-            <div class="match-card">
-                <div class="match-card-header">
-                    <h3>{{ match_data.other_user.name }}</h3>
-                    <span class="match-date">Matched {{ match_data.matched_at.strftime('%B %d, %Y') }}</span>
+    {% if matches %}
+    <div class="matches-grid">
+        {% for match_data in matches %}
+        <article class="match-card">
+            <div class="match-card-header">
+                <h3>{{ match_data.other_user.name }}</h3>
+                <span class="match-date">Matched {{ match_data.matched_at.strftime('%B %d, %Y') }}</span>
+            </div>
+            <div class="match-card-body">
+                <div class="match-meta">
+                    <div class="match-meta-item">
+                        <strong>Email</strong>
+                        <span>{{ match_data.other_user.email }}</span>
+                    </div>
+                    <div class="match-meta-item">
+                        <strong>Member since</strong>
+                        <span>{{ match_data.other_user.created_at.strftime('%B %Y') }}</span>
+                    </div>
                 </div>
 
-                <div class="match-card-content">
-                    <div class="user-info">
-                        <div class="info-item">
-                            <strong>Email:</strong> {{ match_data.other_user.email }}
-                        </div>
-                        <div class="info-item">
-                            <strong>Member since:</strong> {{ match_data.other_user.created_at.strftime('%B %Y') }}
-                        </div>
+                {% if match_data.has_meeting %}
+                <div class="meeting-panel success">
+                    <span class="status-chip success">✓ Scheduled</span>
+                    <div class="info-row">
+                        <span>📅</span>
+                        <strong>{{ match_data.meeting.start_time.strftime('%A, %B %d at %I:%M %p') }}</strong>
                     </div>
-
-                    {% if match_data.has_meeting %}
-                    <!-- Meeting details -->
-                    <div class="meeting-details">
-                        <div class="meeting-header">
-                            <span class="status-badge status-scheduled">✓ Scheduled</span>
-                        </div>
-                        <div class="meeting-info">
-                            <div class="info-row">
-                                <span class="icon">📅</span>
-                                <strong>When:</strong> {{ match_data.meeting.start_time.strftime('%A, %B %d at %I:%M
-                                %p') }}
-                            </div>
-                            <div class="info-row">
-                                <span class="icon">📍</span>
-                                <strong>Where:</strong> {{ match_data.meeting.location }}
-                            </div>
-                            <div class="info-row">
-                                <span class="icon">🏗️</span>
-                                <strong>Session:</strong> {{ match_data.meeting.session_name }}
-                            </div>
-                        </div>
+                    <div class="info-row">
+                        <span>📍</span>
+                        <span>{{ match_data.meeting.location }}</span>
                     </div>
-                    {% elif match_data.assignment_failed %}
-                    <!-- Assignment failed -->
-                    <div class="meeting-details">
-                        <div class="meeting-header">
-                            <span class="status-badge status-failed">⚠️ Pending</span>
-                        </div>
-                        <div class="meeting-info-alert">
-                            <p><strong>Could not auto-assign meeting:</strong></p>
-                            <p class="failure-reason">{{ match_data.failure_reason }}</p>
-                            <p class="next-steps">
-                                <strong>Next steps:</strong><br>
-                                • Check your session availability<br>
-                                • Contact the event organizer<br>
-                                • You can still connect via email!
-                            </p>
-                        </div>
-                    </div>
-                    {% elif match_data.assignment_pending %}
-                    <!-- Assignment pending -->
-                    <div class="meeting-details">
-                        <div class="meeting-header">
-                            <span class="status-badge status-pending">⏳ Processing...</span>
-                        </div>
-                        <div class="meeting-info-alert">
-                            <p>Meeting assignment in progress. Please check back soon!</p>
-                        </div>
-                    </div>
-                    {% else %}
-                    <!-- No assignment info -->
-                    <div class="meeting-details">
-                        <p class="no-meeting">No meeting scheduled yet.</p>
-                    </div>
-                    {% endif %}
-
-                    <div class="match-actions">
-                        <button class="btn btn-primary" onclick="sendMessage('{{ match_data.other_user.email }}')">
-                            Send Message
-                        </button>
-                        <button class="btn btn-secondary" onclick="viewProfile('{{ match_data.other_user.id }}')">
-                            View Profile
-                        </button>
+                    <div class="info-row">
+                        <span>🏗️</span>
+                        <span>{{ match_data.meeting.session_name }}</span>
                     </div>
                 </div>
+                {% elif match_data.assignment_failed %}
+                <div class="meeting-panel alert">
+                    <span class="status-chip warning">⚠️ Needs attention</span>
+                    <p><strong>Could not auto-assign meeting.</strong></p>
+                    <p class="failure-reason">{{ match_data.failure_reason }}</p>
+                    <p class="next-steps">
+                        Try updating availability, contact the organizer, or connect directly via email.
+                    </p>
+                </div>
+                {% elif match_data.assignment_pending %}
+                <div class="meeting-panel pending">
+                    <span class="status-chip info">⏳ Scheduling</span>
+                    <p>We are still assigning a meeting slot for this match. Check back soon!</p>
+                </div>
+                {% else %}
+                <div class="meeting-panel">
+                    <p>No meeting scheduled yet. You can still reach out directly.</p>
+                </div>
+                {% endif %}
+
+                <div class="match-actions">
+                    <button class="btn btn-primary" onclick="sendMessage('{{ match_data.other_user.email }}')">
+                        Send Message
+                    </button>
+                    <button class="btn btn-secondary" onclick="viewProfile('{{ match_data.other_user.id }}')">
+                        View Profile
+                    </button>
+                </div>
             </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class=" no-matches">
-            <div class="no-matches-content">
-                <h3>No matches yet</h3>
-                <p>Keep swiping to find your professional connections!</p>
-                <a href="{{ url_for('matching.event_matching', event_id=event.id) }}" class="btn btn-primary">
-                    Start Matching
-                </a>
-            </div>
-        </div>
-        {% endif %}
+        </article>
+        {% endfor %}
     </div>
+    {% else %}
+    <div class="matches-empty">
+        <h3>No matches yet</h3>
+        <p>When you find matches they will appear here.</p>
+        <a href="{{ url_for('matching.event_matching', event_id=event.id) }}" class="btn btn-primary">Start Matching</a>
+    </div>
+    {% endif %}
 </div>
+{% endblock %}
 
-<style>
-    body {
-        padding: 20px;
-    }
+.no-matches-content .btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
+}
 
-    .container {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f1f3f4;
-    }
-
-    .header-left h1 {
-        font-size: 2.5rem;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-    }
-
-    .event-subtitle {
-        font-size: 1.1rem;
-        color: #7f8c8d;
-        margin: 0;
-    }
-
-    .header-right {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .header-right .btn {
-        padding: 12px 24px;
-        font-size: 1rem;
-        font-weight: 600;
-        border-radius: 10px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(78, 205, 196, 0.2);
-    }
-
-    .header-right .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
-    }
-
-    .section {
-        margin-top: 20px;
-    }
-
-    .matches-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 20px;
-    }
-
-    .match-card {
-        background: #f8f9fa;
-        border-radius: 12px;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        border: 1px solid #e9ecef;
-    }
-
-    .match-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .match-card-header {
-        background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);
-        color: white;
-        padding: 20px;
-        text-align: center;
-    }
-
-    .match-card-header h3 {
-        margin: 0 0 8px 0;
-        font-size: 1.3rem;
-        font-weight: 600;
-    }
-
-    .match-date {
-        font-size: 0.9rem;
-        opacity: 0.9;
-    }
-
-    .match-card-content {
-        padding: 20px;
-    }
-
-    .user-info {
-        margin-bottom: 20px;
-    }
-
-    .info-item {
-        margin-bottom: 12px;
-        padding: 8px 0;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .info-item:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-    }
-
-    .info-item strong {
-        color: #2c3e50;
-        display: inline-block;
-        width: 100px;
-        font-size: 0.9rem;
-    }
-
-    .match-actions {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-    }
-
-    .match-actions .btn {
-        flex: 1;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 0.9rem;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-        color: white;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
-    }
-
-    .btn-secondary {
-        background: #6c757d;
-        color: white;
-    }
-
-    .btn-secondary:hover {
-        background: #5a6268;
-        transform: translateY(-1px);
-    }
-
-    .meeting-details {
-        margin: 20px 0;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        border-left: 4px solid #57068c;
-    }
-
-    .meeting-header {
-        margin-bottom: 12px;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .status-scheduled {
-        background: #e8f5e9;
-        color: #2e7d32;
-    }
-
-    .status-failed {
-        background: #fff3e0;
-        color: #e65100;
-    }
-
-    .status-pending {
-        background: #e3f2fd;
-        color: #1976d2;
-    }
-
-    .meeting-info {
-        margin-top: 10px;
-    }
-
-    .info-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin: 8px 0;
-        padding: 8px;
-        background: white;
-        border-radius: 6px;
-        font-size: 0.9rem;
-    }
-
-    .info-row .icon {
-        font-size: 1.1rem;
-    }
-
-    .meeting-info-alert {
-        padding: 10px;
-        background: white;
-        border-radius: 6px;
-        margin-top: 10px;
-    }
-
-    .meeting-info-alert p {
-        margin: 8px 0;
-        font-size: 0.9rem;
-        color: #424242;
-    }
-
-    .failure-reason {
-        background: #ffebee;
-        padding: 8px;
-        border-radius: 4px;
-        border-left: 3px solid #e53935;
-        margin: 10px 0;
-    }
-
-    .next-steps {
-        background: #e3f2fd;
-        padding: 10px;
-        border-radius: 4px;
-        margin-top: 10px;
-        font-size: 0.85rem !important;
-        line-height: 1.6;
-    }
-
-    .no-matches {
-        display: flex;
-        justify-content: center;
-        text-align: center;
-        padding: 50px;
-        color: #95a5a6;
-    }
-
-    .no-matches h3 {
-        color: #2c3e50;
-        margin-bottom: 20px;
-        font-size: 2rem;
-        font-weight: 600;
-    }
-
-    .no-matches-content p {
-        color: #7f8c8d;
-        margin-bottom: 30px;
-        font-size: 1.1rem;
-        line-height: 1.6;
-    }
-
-    .no-matches-content .btn {
-        padding: 15px 30px;
-        font-size: 1rem;
-        font-weight: 600;
-        border-radius: 10px;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(78, 205, 196, 0.2);
-    }
-
-    .no-matches-content .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
-    }
-
-    .no-meeting {
-        color: #9e9e9e;
-        font-style: italic;
-        text-align: center;
-        margin: 10px 0;
-    }
+.no-meeting {
+color: #9e9e9e;
+font-style: italic;
+text-align: center;
+margin: 10px 0;
+}
 </style>
 
 <script>
@@ -429,4 +125,3 @@
         alert('Profile view feature coming soon!');
     }
 </script>
-{% endblock %}

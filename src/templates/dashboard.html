@@ -6,6 +6,17 @@
 {% endblock %}
 
 {% block content %}
+{% macro render_matching_buttons(event_id) %}
+<div class="matching-buttons">
+    <a href="{{ url_for('scheduling.manage_availability', event_id=event_id) }}" class="matching-btn"
+        style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
+        Select Sessions
+    </a>
+    <a href="{{ url_for('matching.matching_loading', event_id=event_id) }}" class="matching-btn">Match & Meet</a>
+    <a href="{{ url_for('matching.event_matches', event_id=event_id) }}" class="matches-btn">View Matches</a>
+</div>
+{% endmacro %}
+
 <div class="container">
     <div class="header">
         <h1>Dashboard</h1>
@@ -43,22 +54,6 @@
             <div class="event-description">{{ membership.event.description }}</div>
             {% endif %}
 
-            <div class="event-actions">
-                <div class="matching-buttons">
-                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
-                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
-                        Select Sessions
-                    </a>
-                    <a href="{{ url_for('matching.event_matching', event_id=membership.event.id) }}"
-                        class="matching-btn">
-                        Start Smart Matching
-                    </a>
-                    <a href="{{ url_for('matching.event_matches', event_id=membership.event.id) }}" class="matches-btn">
-                        View Matches
-                    </a>
-                </div>
-            </div>
-
             {% if membership.keywords %}
             <div class="event-keywords">
                 <strong>Your Interests:</strong>
@@ -92,18 +87,7 @@
                     <button type="button" class="delete-resume-btn" data-resume-id="{{ user_resume.id }}"
                         data-resume-name="{{ user_resume.original_name }}">Delete Document</button>
                 </div>
-                <div class="matching-buttons">
-                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
-                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
-                        Select Sessions
-                    </a>
-                    <a href="{{ url_for('matching.matching_loading', event_id=membership.event.id) }}"
-                        class="matching-btn">Start
-                        Smart Matching</a>
-                    <a href="{{ url_for('matching.event_matches', event_id=membership.event.id) }}"
-                        class="matches-btn">View
-                        Matches</a>
-                </div>
+                {{ render_matching_buttons(membership.event.id) }}
             </div>
             {% else %}
             <div class="resume-status resume-missing">
@@ -114,18 +98,7 @@
             <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
                 <a href="{{ url_for('user.upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload
                     Document</a>
-                <div class="matching-buttons">
-                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
-                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
-                        Select Sessions
-                    </a>
-                    <a href="{{ url_for('matching.matching_loading', event_id=membership.event.id) }}"
-                        class="matching-btn">Start
-                        Smart Matching</a>
-                    <a href="{{ url_for('matching.event_matches', event_id=membership.event.id) }}"
-                        class="matches-btn">View
-                        Matches</a>
-                </div>
+                {{ render_matching_buttons(membership.event.id) }}
             </div>
             {% endif %}
         </div>
