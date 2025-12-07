@@ -52,7 +52,7 @@ At large events, attendees struggle to track connections and coordinate meetings
 
 ## Technology Stack
 
-- **Backend**: Flask 2.3.3, SQLAlchemy, Flask-Login
+- **Backend**: Flask 3.1.2, SQLAlchemy, Flask-Login
 - **Database**: SQLite (development), PostgreSQL-ready
 - **NLP**: Sentence Transformers for semantic matching
 - **Frontend**: HTML5, CSS3, JavaScript, Jinja2
@@ -110,7 +110,9 @@ python main.py
 
 Access at http://127.0.0.1:5000
 
-**Login**: `admin@nfcnetworking.com` / `admin123`
+**Default Login** (after running setup script): `admin@nfcnetworking.com` / `admin123`
+
+> **Note**: The app can also auto-create an admin user on startup if `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables are set. See [Deployment & Production Setup](#-deployment--production-setup) for details.
 
 📖 **Full installation guide**: [SETUP.md](SETUP.md)
 
@@ -144,9 +146,93 @@ python scripts/setup_database.py --fix
 
 ---
 
-## Development & Deployment
+## 🚀 Deployment & Production Setup
 
-For local development, production deployment, database migrations, and advanced configuration, see [DEVELOPMENT.md](DEVELOPMENT.md).
+Prophere includes automatic initialization features that make deployment to platforms like Render seamless, even without shell access. The app automatically handles database setup and admin user creation on first startup.
+
+### 1. Deploying to Render
+
+Deploy Prophere as a **Python 3 Web Service** on Render:
+
+1. **Connect your GitHub repository** to Render
+2. **Configure the service**:
+   - **Build Command**: `pip install -r requirements.txt` (default)
+   - **Start Command**: `python main.py`
+3. **Set environment variables** (see Environment Variables section below)
+4. **Deploy**: On first deployment, the service will automatically:
+   - Create the SQLite database and all tables
+   - Create the default admin user (if `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set)
+
+> **Note**: This automation is especially important because Render's Free tier doesn't provide shell access, so all initialization must happen from within the app code.
+
+### 2. Automatic Database Initialization
+
+On startup, `main.py` automatically initializes the database if needed:
+
+- The app inspects `SQLALCHEMY_DATABASE_URI` from the configuration
+- If it points to a SQLite database file that **does not exist** (e.g., `instance/nfc_networking.db`), the app:
+  - Enters a Flask application context
+  - Calls `db.create_all()` to create all tables from SQLAlchemy models
+  - Logs success and continues startup
+
+**What this means**:
+- ✅ No manual `flask db upgrade` needed in production
+- ✅ No need to run `python scripts/setup_database.py` on Render
+- ✅ New environments are self-bootstrapping
+- ✅ Existing databases are never modified or reset
+
+### 3. Automatic Admin Creation
+
+After database initialization, the app automatically creates a default admin user if needed:
+
+- **Checks for existing admin**: Queries for any `User` with `is_admin=True`
+- **If admin exists**: Logs a message and skips creation (safe for subsequent deploys)
+- **If NO admin exists**: Reads environment variables:
+  - `ADMIN_EMAIL` - Email for the admin account
+  - `ADMIN_PASSWORD` - Password for the admin account
+- **If both env vars are set**: 
+  - Creates a new `User` with `is_admin=True`
+  - Securely hashes the password using Werkzeug
+  - Commits the user to the database
+  - Logs success message
+- **If env vars are missing**: Logs a warning and continues (app starts normally)
+
+This allows provisioning a default admin on Render without shell access. Once the first admin is created, subsequent deploys will **not** overwrite or recreate it.
+
+### 4. Environment Variables (Local vs Production)
+
+#### Local Development
+
+For local development, you have flexibility:
+
+- **Database**: Typically uses a local SQLite file (e.g., `instance/nfc_networking.db`)
+- **Manual setup** (optional): Run `python scripts/setup_database.py --yes` and `python scripts/manage_users.py --admin` for manual control
+- **Auto-admin** (optional): Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in a `.env` file to use the same auto-admin behavior locally
+
+#### Render / Production
+
+For production deployment on Render:
+
+- **Database URI**: Configure `SQLALCHEMY_DATABASE_URI` via Render's Environment tab (typically a SQLite file in `instance/` for now; can be swapped to PostgreSQL later)
+- **Admin credentials**: Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in Render's Environment tab to auto-create the first admin
+- **Security**: Use different admin credentials than local dev for security
+- **One-time creation**: Once the first admin is created, subsequent deploys will NOT overwrite or recreate it
+
+#### Key Environment Variables
+
+| Variable | Purpose | Required | Notes |
+|----------|---------|----------|-------|
+| `SQLALCHEMY_DATABASE_URI` | Database location | Yes | SQLite for now; PostgreSQL-ready |
+| `ADMIN_EMAIL` | Initial admin login email | Production only | Set in Render Environment tab |
+| `ADMIN_PASSWORD` | Initial admin password | Production only | Set in Render Environment tab |
+| `SECRET_KEY` | Flask session secret | Recommended | Use a strong random key in production |
+| `FLASK_ENV` | Environment mode | Optional | `production` for production |
+
+---
+
+## Advanced Development
+
+For detailed technical architecture, database migrations, advanced configuration, and development workflows, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ---
 
