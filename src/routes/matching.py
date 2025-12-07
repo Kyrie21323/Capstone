@@ -36,8 +36,13 @@ def matching_loading(event_id):
 @matching_bp.route('/<int:event_id>')
 @login_required
 def event_matching(event_id):
+    # Debug: Confirm route is being called
+    print(f"\n🔍 MATCHING ROUTE CALLED: /event/{event_id}", flush=True)
+    print(f"   User: {current_user.name} (ID: {current_user.id}, Admin: {current_user.is_admin})", flush=True)
+    
     # Prevent super admin from accessing matching
     if current_user.is_admin:
+        print("   ❌ Blocked: User is admin", flush=True)
         flash('Super admin accounts cannot access matching!', 'error')
         return redirect(url_for('user.dashboard'))
     
@@ -92,6 +97,7 @@ def event_matching(event_id):
     if not other_memberships:
         # No other members to match with
         no_matches_reason = 'no_shared_sessions' if not show_cross_session else 'no_attendees'
+        print(f"   ⚠️ No other memberships found (reason: {no_matches_reason})", flush=True)
         return render_template('event_matching.html', 
                              event=event, 
                              membership=membership,
@@ -112,15 +118,19 @@ def event_matching(event_id):
     available_memberships = [mem for mem in other_memberships if mem.user_id not in interacted_user_ids]
     
     if not available_memberships:
+        print("   ⚠️ No available memberships (all already interacted)", flush=True)
         return render_template('event_matching.html', 
                              event=event, 
                              membership=membership,
                              potential_matches=[],
                              no_matches_reason='no_similar_interests')
     
+    print(f"   ✅ Found {len(available_memberships)} available memberships", flush=True)
+    
     # Import matching engine
     try:
         from matching_engine import matching_engine
+        print("   ✅ Matching engine imported successfully", flush=True)
         
         # Prepare current user data for matching
         current_user_resume = Resume.query.filter_by(user_id=current_user.id, event_id=event_id).first()
@@ -161,25 +171,50 @@ def event_matching(event_id):
             }
             all_users_data.append(user_data)
         
-        # Find best matches using intelligent algorithm
+        # Calculate scores for ALL users (for debugging)
+        all_scores = []
+        for user_data in all_users_data:
+            score = matching_engine.calculate_match_score(current_user_data, user_data)
+            all_scores.append((user_data, score))
+        
+        # Sort all scores by value (highest first)
+        all_scores.sort(key=lambda x: x[1], reverse=True)
+        
+        # Find best matches using intelligent algorithm (filtered by threshold)
         best_matches = matching_engine.find_best_matches(current_user_data, all_users_data, top_k=20)
         
         # Extract just the user data (without scores) for the template
         potential_matches = [match_data for match_data, score in best_matches]
         
-        # Debug: Print matching scores to terminal
-        print(f"\n=== MATCHING SCORES DEBUG ===")
-        print(f"Current User: {current_user.name} (ID: {current_user.id})")
-        print(f"Event: {event.name}")
-        print(f"Session Filtering: {'Disabled (showing all)' if show_cross_session else 'Enabled (same-session only)'}")
-        print(f"User's Sessions: {list(user_session_ids)}")
-        print(f"Total potential matches: {len(best_matches)}")
-        print("-" * 50)
+        # Debug: Print matching scores to terminal (with immediate flush)
+        MATCH_THRESHOLD = 0.26  # Matching threshold from matching_engine
+        print(f"\n=== MATCHING SCORES DEBUG ===", flush=True)
+        print(f"Current User: {current_user.name} (ID: {current_user.id})", flush=True)
+        print(f"Event: {event.name}", flush=True)
+        print(f"Session Filtering: {'Disabled (showing all)' if show_cross_session else 'Enabled (same-session only)'}", flush=True)
+        print(f"User's Sessions: {list(user_session_ids)}", flush=True)
+        print(f"Match Threshold: {MATCH_THRESHOLD:.4f} ({MATCH_THRESHOLD*100:.1f}%)", flush=True)
+        print(f"Total users evaluated: {len(all_scores)}", flush=True)
+        print(f"Matches above threshold: {len(best_matches)}", flush=True)
+        print("-" * 50, flush=True)
+        print("ALL USERS AND THEIR SCORES:", flush=True)
+        print("-" * 50, flush=True)
         
-        for i, (match_data, score) in enumerate(best_matches, 1):
-            print(f"{i:2d}. {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)")
+        for i, (match_data, score) in enumerate(all_scores, 1):
+            threshold_indicator = "✅" if score > MATCH_THRESHOLD else "❌"
+            print(f"{i:2d}. {threshold_indicator} {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)", flush=True)
         
-        print("=" * 50)
+        print("-" * 50, flush=True)
+        print(f"MATCHES ABOVE THRESHOLD ({MATCH_THRESHOLD*100:.1f}%):", flush=True)
+        print("-" * 50, flush=True)
+        
+        if best_matches:
+            for i, (match_data, score) in enumerate(best_matches, 1):
+                print(f"{i:2d}. {match_data['name']:<20} Score: {score:.4f} ({score*100:.1f}%)", flush=True)
+        else:
+            print("  No matches above threshold.", flush=True)
+        
+        print("=" * 50, flush=True)
         
         # Determine the reason for no matches
         no_matches_reason = None
@@ -195,6 +230,8 @@ def event_matching(event_id):
         
     except ImportError as e:
         # Fallback to simple matching if engine fails
+        print(f"   ❌ ImportError: {str(e)}", flush=True)
+        print("   ⚠️ Falling back to simple matching (no scores)", flush=True)
         potential_matches = []
         for mem in available_memberships:
             user = mem.user
