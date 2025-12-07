@@ -41,79 +41,7 @@
     }
 
     /* Mobile Optimizations */
-    @media (max-width: 768px) {
-        body {
-            padding: 0 !important;
-        }
 
-        .container {
-            padding: 15px !important;
-            margin: 0 !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-        }
-
-        .header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 20px !important;
-            padding-bottom: 15px !important;
-        }
-
-        .header h1 {
-            font-size: 1.5rem !important;
-        }
-
-        .header-actions {
-            width: 100%;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .header-actions .btn {
-            width: 100%;
-            text-align: center;
-        }
-
-        .stats-grid {
-            grid-template-columns: 1fr !important;
-            gap: 15px !important;
-            margin-bottom: 25px !important;
-        }
-
-        .stat-card {
-            padding: 20px !important;
-        }
-
-        .section {
-            padding: 15px !important;
-            margin-bottom: 20px;
-        }
-
-        .section h2 {
-            font-size: 1.2rem !important;
-        }
-
-        .list-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 12px 0;
-        }
-
-        .action-buttons {
-            width: 100%;
-            justify-content: flex-start;
-        }
-
-        .action-buttons .btn {
-            flex: 1;
-            min-width: 0;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-        }
-    }
 
     .btn {
         padding: 12px 24px;
@@ -281,24 +209,6 @@
         grid-template-columns: 1fr 1fr;
         gap: 15px;
         margin-bottom: 20px;
-    }
-
-    @media (max-width: 768px) {
-        .nav-links {
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .nav-link {
-            width: 100%;
-            text-align: center;
-        }
-
-        .analytics-grid {
-            grid-template-columns: 1fr !important;
-            gap: 10px !important;
-        }
     }
 </style>
 {% endblock %}

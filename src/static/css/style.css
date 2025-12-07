@@ -771,27 +771,28 @@ h4 {
 }
 
 /* ==================== MOBILE RESPONSIVENESS ==================== */
+/* Comprehensive mobile optimization for all pages */
 @media (max-width: 768px) {
+
+    /* Remove all outer spacing on mobile */
     body {
         padding: 0 !important;
-        /* Eliminate body padding on mobile */
     }
 
+    /* Edge-to-edge containers */
     .container {
         padding: 15px !important;
-        /* Minimal container padding */
         margin: 0 !important;
-        /* Edge-to-edge container */
         border-radius: 0 !important;
-        /* No rounded corners on mobile */
         box-shadow: none !important;
-        /* Remove shadow for cleaner look */
+        max-width: 100% !important;
     }
 
+    /* Stack flex headers */
     .header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 15px !important;
         margin-bottom: 20px !important;
         padding-bottom: 15px !important;
     }
@@ -800,43 +801,123 @@ h4 {
         font-size: 1.5rem !important;
     }
 
+    /* Full-width header actions and navigation */
+    .header-actions,
+    .nav-links,
+    .nav-left,
+    .nav-right {
+        flex-direction: column !important;
+        width: 100%;
+        gap: 10px !important;
+        margin-bottom: 20px;
+    }
+
+    /* Stack all button groups vertically */
+    .event-actions,
+    .button-group,
+    .matching-buttons,
+    .action-buttons {
+        flex-direction: column !important;
+        width: 100%;
+        gap: 8px !important;
+    }
+
+    /* Full-width buttons in groups */
+    .event-actions .btn,
+    .button-group .btn,
+    .action-buttons .btn {
+        width: 100% !important;
+        justify-content: center;
+        display: flex !important;
+        align-items: center;
+    }
+
+    /* Full-width navigation and header buttons */
+    .nav-link,
+    .header-actions .btn {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    /* Single-column grids */
+    .stats-grid,
+    .events-grid,
+    .locations-grid,
+    .analytics-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        margin-bottom: 25px;
+    }
+
+    /* Reduced padding for cards and sections */
+    .event-card,
+    .location-card,
+    .stat-card,
+    .form-card,
+    .info-section,
+    .intro-section,
+    .section {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* Stack form rows */
     .form-row {
         grid-template-columns: 1fr !important;
-        gap: 15px;
+        gap: 15px !important;
     }
 
     .form-row .form-group {
         min-width: 100%;
     }
 
-    .locations-grid {
-        grid-template-columns: 1fr;
+    /* Workflow step flex utility */
+    .step-content-flex {
+        flex-direction: column !important;
         gap: 15px !important;
     }
 
-    .location-card,
-    .event-card {
-        padding: 15px !important;
+    .step-status {
+        align-self: flex-start !important;
     }
 
+    /* List items stack */
+    .list-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding: 12px 0;
+    }
+
+    /* Full-width large buttons */
     .join-event-btn,
-    .btn-lg {
-        width: 100%;
+    .btn-lg,
+    .action-button {
+        width: 100% !important;
     }
 
-    /* Optimize form cards and sections */
-    .form-card,
-    .info-section,
-    .intro-section {
-        padding: 15px !important;
-        margin-bottom: 15px !important;
+    /* Reduce font sizes */
+    h1 {
+        font-size: 1.75rem !important;
     }
 
-    /* Reduce section margins */
-    .section {
-        margin-bottom: 20px !important;
+    h2 {
+        font-size: 1.3rem !important;
+    }
+
+    .section h2,
+    .info-section h3 {
+        font-size: 1.2rem !important;
+    }
+
+    /* Helper notes and alerts */
+    .helper-note,
+    .warning-box {
+        padding: 12px !important;
+        margin: 15px 0 !important;
     }
 }
+
 
 /* Layout */
 .d-flex {
