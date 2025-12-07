@@ -1,0 +1,3 @@
+# This file ensures the instance/ directory is tracked by Git
+# Flask needs this directory to exist for SQLite database storage
+# The actual database file (nfc_networking.db) will be created at runtime

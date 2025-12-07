@@ -1,31 +1,9 @@
-#!/usr/bin/env python3
-"""
-Prophere - Main Entry Point
-"""
-
-import sys
 import os
+import sys
 
-# Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-# Import and run the Flask app
-from app import app, db
-from models import User
+from app import app
 
-def check_and_init_db():
-    """Check if database needs initialization"""
-    with app.app_context():
-        try:
-            # Try to query the database
-            User.query.count()
-            print("✅ Database is ready!")
-        except Exception:
-            print("⚠️  Database not initialized. Running initialization...")
-            # Import and run the init script
-            from init_db import init_database
-            init_database()
-
-if __name__ == '__main__':
-    check_and_init_db()
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

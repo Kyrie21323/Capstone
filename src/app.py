@@ -24,7 +24,9 @@ def create_app(config_name=None):
     app.config.from_object(config_class)
     
     # Override database path to use PROJECT_ROOT
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(PROJECT_ROOT, "instance", "nfc_networking.db")}'
+    instance_dir = os.path.join(PROJECT_ROOT, 'instance')
+    os.makedirs(instance_dir, exist_ok=True)  # Ensure instance/ folder exists
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "nfc_networking.db")}'
     app.config['UPLOAD_FOLDER'] = os.path.join(PROJECT_ROOT, 'uploads')
     
     # Initialize extensions
