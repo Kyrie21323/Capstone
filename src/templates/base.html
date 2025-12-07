@@ -25,8 +25,27 @@
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+
+        // Convert flash messages to toast notifications
+        document.addEventListener('DOMContentLoaded', function () {
+            const flashMessages = document.querySelectorAll('.flash-messages .flash');
+            flashMessages.forEach(function (flash) {
+                const category = flash.classList.contains('success') ? 'success' :
+                    flash.classList.contains('error') ? 'error' :
+                        flash.classList.contains('warning') ? 'warning' : 'info';
+                const message = flash.textContent.trim();
+
+                // Show as toast
+                if (typeof notificationSystem !== 'undefined') {
+                    notificationSystem.show(message, category);
+                }
+
+                // Hide the original flash message
+                flash.style.display = 'none';
+            });
+        });
     </script>
-    
+
     {% block scripts %} {% endblock %}
 </body>
 

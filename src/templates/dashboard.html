@@ -45,6 +45,10 @@
 
             <div class="event-actions">
                 <div class="matching-buttons">
+                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
+                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
+                        Select Sessions
+                    </a>
                     <a href="{{ url_for('matching.event_matching', event_id=membership.event.id) }}"
                         class="matching-btn">
                         Start Smart Matching
@@ -89,6 +93,10 @@
                         data-resume-name="{{ user_resume.original_name }}">Delete Document</button>
                 </div>
                 <div class="matching-buttons">
+                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
+                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
+                        Select Sessions
+                    </a>
                     <a href="{{ url_for('matching.matching_loading', event_id=membership.event.id) }}"
                         class="matching-btn">Start
                         Smart Matching</a>
@@ -107,6 +115,10 @@
                 <a href="{{ url_for('user.upload_resume', event_id=membership.event.id) }}" class="upload-link">Upload
                     Document</a>
                 <div class="matching-buttons">
+                    <a href="{{ url_for('scheduling.manage_availability', event_id=membership.event.id) }}"
+                        class="matching-btn" style="background: linear-gradient(135deg, #57068c 0%, #ab82c5 100%);">
+                        Select Sessions
+                    </a>
                     <a href="{{ url_for('matching.matching_loading', event_id=membership.event.id) }}"
                         class="matching-btn">Start
                         Smart Matching</a>
@@ -157,6 +169,26 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Request notification permission on dashboard load
+        if (typeof showNotificationPermissionModal !== 'undefined') {
+            showNotificationPermissionModal();
+        }
+
+        // Check if user just logged in (flash message exists) and show browser notification
+        const flashMessages = document.querySelectorAll('.flash-messages .flash.success');
+        flashMessages.forEach(function (flash) {
+            const message = flash.textContent.trim();
+            if (message.includes('Login successful') && typeof notificationManager !== 'undefined') {
+                // Show browser notification if permission granted
+                if (notificationManager.permissionGranted) {
+                    notificationManager.showNotification('Login Successful', {
+                        body: message,
+                        icon: '/static/images/logo.png'
+                    });
+                }
+            }
+        });
+
         // Add event listeners to all leave event buttons
         document.querySelectorAll('.leave-event-btn').forEach(button => {
             button.addEventListener('click', function () {
