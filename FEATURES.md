@@ -132,6 +132,26 @@ The platform uses advanced NLP (Natural Language Processing) to match users base
 - **No Duplicates**: Each user appears only once in your matching queue
 - **Privacy**: Your interactions are private (not visible to other users)
 
+### Match Outcomes & Meeting Assignment (New)
+
+#### Real-Time Assignment
+- **Immediate Feedback**: When a match occurs, the system instantly attempts to schedule a meeting
+- **Status Display**:
+  - **✅ Scheduled**: Meeting successfully assigned with time and location
+  - **⚠️ Pending**: Meeting could not be auto-assigned (e.g., no overlapping availability)
+  - **⏳ Processing**: Assignment calculation in progress
+
+#### Match Modal
+- **Smart Notifications**: Shows meeting details immediately upon matching
+- **Next Steps Guidelines**: Provides actionable advice if meeting assignment fails
+- **Browser Notifications**: Desktop alerts for successful assignments (even if tab is backgrounded)
+
+#### Matches Page
+- **Comprehensive View**: See all matches with their assignment status
+- **Status Badges**: Color-coded indicators for quick status checks
+- **Failure Reasons**: Explicit explanation why a meeting wasn't assigned (e.g., "No common free slots")
+- **Manual Resolution**: Guidance on how to resolve scheduling conflicts manually
+
 ---
 
 ## Meeting Scheduling
@@ -200,6 +220,7 @@ This hierarchy provides clear organization and flexible meeting allocation.
 - **Dual System**: Real-time Web Push notifications + Email notifications
 - **Calendar Integration**: Automated .ics calendar invites sent via email on match
 - **Web Alerts**: Interactive toast notifications for instant feedback
+- **Smart Triggers**: Browser notifications specific to successful meeting assignments
 
 ---
 

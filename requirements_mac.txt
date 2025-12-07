@@ -1,15 +1,15 @@
 # Core dependencies
-Flask==2.3.3
-Flask-SQLAlchemy==3.0.5
+Flask==3.1.2
+Flask-SQLAlchemy==3.1.1
 Flask-Login==0.6.3
-Flask-WTF==1.1.1
-Flask-Migrate==4.0.5
-WTForms==3.0.1
-Werkzeug==2.3.7
-python-dotenv==1.0.0
-bcrypt==4.0.1
+Flask-WTF==1.2.2
+Flask-Migrate==4.1.0
+WTForms==3.2.1
+Werkzeug==3.1.4
+python-dotenv==1.2.1
+bcrypt==5.0.0
 Pillow==12.0.0
-python-magic==0.4.27
+python-magic==0.4.27  # Mac specific (replaces python-magic-bin)
 
 # NLP and matching libraries
 sentence-transformers==5.1.2
@@ -20,5 +20,5 @@ python-docx==1.2.0
 huggingface-hub==0.36.0
 
 # Email and calendar libraries
-flask-mail==0.9.1
-icalendar==5.0.11
+flask-mail==0.10.0
+icalendar==6.3.2

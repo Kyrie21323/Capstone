@@ -373,22 +373,36 @@ def like_user(event_id, target_user_id):
                 
                 db.session.commit()
                 
-                # Prepare notification data for web notifications
-                notification_data = {
-                    'match_name': User.query.get(user2_id if current_user.id == user1_id else user1_id).name,
-                    'event_name': event.name,
-                    'meeting_time': meeting.start_time.strftime('%A, %B %d at %I:%M %p') if meeting else None,
-                    'meeting_location': meeting.location.name if meeting else None,
-                    'event_id': event_id
-                }
+                # Prepare detailed response with assignment status
+                other_user = User.query.get(user2_id if current_user.id == user1_id else user1_id)
                 
-                return {
+                response_data = {
                     'success': True,
                     'message': 'It\'s a match!',
                     'is_match': True,
                     'match_id': match.id,
-                    'notification_data': notification_data  # For web notifications
-                }, 200
+                    'match_name': other_user.name,
+                    'event_name': event.name,
+                    'event_id': event_id,
+                    'assignment_status': 'success' if success else 'failed',
+                    'assignment_message': message
+                }
+                
+                if success and meeting:
+                    # Include meeting details
+                    response_data['meeting'] = {
+                        'id': meeting.id,
+                        'start_time': meeting.start_time.strftime('%A, %B %d at %I:%M %p'),
+                        'end_time': meeting.end_time.strftime('%I:%M %p'),
+                        'location': meeting.location.name,
+                        'session_name': meeting.session.name if meeting.session else 'TBA'
+                    }
+                else:
+                    # No meeting assigned
+                    response_data['meeting'] = None
+                    response_data['failure_reason'] = match.assignment_failed_reason or "Unknown reason"
+                
+                return response_data, 200
         
         db.session.commit()
         
@@ -442,6 +456,62 @@ def pass_user(event_id, target_user_id):
         db.session.rollback()
         return {'success': False, 'message': str(e)}, 500
 
+@matching_bp.route('/<int:event_id>/match/<int:match_id>/assignment-status', methods=['GET'])
+@login_required
+def get_match_assignment_status(event_id, match_id):
+    """Get the current assignment status for a match"""
+    try:
+        # Get the match
+        match = Match.query.get(match_id)
+        
+        if not match:
+            return {'success': False, 'message': 'Match not found'}, 404
+        
+        # Verify user is part of this match
+        if match.user1_id != current_user.id and match.user2_id != current_user.id:
+            return {'success': False, 'message': 'Unauthorized'}, 403
+        
+        # Verify match belongs to this event
+        if match.event_id != event_id:
+            return {'success': False, 'message': 'Match does not belong to this event'}, 400
+        
+        # Check if assignment was attempted
+        if not match.assignment_attempted:
+            return {
+                'success': True,
+                'status': 'pending',
+                'message': 'Assignment in progress...'
+            }, 200
+        
+        # Get meeting if assigned
+        meeting = Meeting.query.filter_by(match_id=match_id).first()
+        
+        if meeting:
+            # Successfully assigned
+            return {
+                'success': True,
+                'status': 'assigned',
+                'message': 'Meeting assigned successfully',
+                'meeting': {
+                    'id': meeting.id,
+                    'start_time': meeting.start_time.strftime('%A, %B %d at %I:%M %p'),
+                    'end_time': meeting.end_time.strftime('%I:%M %p'),
+                    'location': meeting.location.name,
+                    'session_name': meeting.session.name if meeting.session else 'TBA'
+                }
+            }, 200
+        else:
+            # Assignment failed
+            return {
+                'success': True,
+                'status': 'failed',
+                'message': 'Could not assign meeting',
+                'failure_reason': match.assignment_failed_reason or 'Unknown reason'
+            }, 200
+            
+    except Exception as e:
+        return {'success': False, 'message': str(e)}, 500
+
 @matching_bp.route('/<int:event_id>/matches')
 @login_required
 def event_matches(event_id):
@@ -470,20 +540,45 @@ def event_matches(event_id):
         Match.is_active == True
     ).all()
     
-    # Prepare match data for template
+    # Prepare match data for template with meeting information
     match_data = []
     for match in matches:
         other_user = match.get_other_user(current_user.id)
         if other_user:
-            match_data.append({
+            # Get meeting for this match
+            meeting = Meeting.query.filter_by(match_id=match.id).first()
+            
+            match_info = {
                 'match': match,
                 'other_user': other_user,
-                'matched_at': match.matched_at
-            })
+                'matched_at': match.matched_at,
+                'has_meeting': meeting is not None,
+                'assignment_attempted': match.assignment_attempted
+            }
+            
+            if meeting:
+                # Include meeting details
+                match_info['meeting'] = {
+                    'start_time': meeting.start_time,
+                    'end_time': meeting.end_time,
+                    'location': meeting.location.name,
+                    'session_name': meeting.session.name if meeting.session else 'TBA',
+                    'status': meeting.status
+                }
+            elif match.assignment_attempted:
+                # Assignment was attempted but failed
+                match_info['assignment_failed'] = True
+                match_info['failure_reason'] = match.assignment_failed_reason or 'Unknown reason'
+            else:
+                # Assignment pending
+                match_info['assignment_pending'] = True
+            
+            match_data.append(match_info)
     
     return render_template('event_matches.html', 
                          event=event, 
                          matches=match_data)
+
 
 @matching_bp.route('/<int:event_id>/graph', methods=['GET'])
 @login_required

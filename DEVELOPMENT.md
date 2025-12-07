@@ -106,7 +106,10 @@ Defines and registers all blueprints:
 - `routes/admin.py` - 305 lines
 - `routes/matching.py` - 355 lines
 - `routes/scheduling.py` - 165 lines
+- `routes/matching.py` - 355 lines
+- `routes/scheduling.py` - 165 lines
 - `routes/api.py` - 55 lines
+
 
 ### Configuration Management
 
@@ -206,6 +209,10 @@ class MatchingEngine:
         # - Document similarity (40%)
 ```
 
+**Match Assignment Status**
+- `GET /event/<event_id>/match/<match_id>/assignment-status`
+- Returns: `{ success: bool, status: 'pending'|'assigned'|'failed', meeting: {...} }`
+
 Uses **Sentence Transformers** for semantic embeddings.
 
 ### Allocation Engine
@@ -304,7 +311,7 @@ Flask-Migrate==4.0.4
 
 ### NLP & ML
 ```
-sentence-transformers==2.2.2
+sentence-transformers>=3.0.0
 torch>=1.6.0
 ```
 

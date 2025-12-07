@@ -33,8 +33,8 @@ At large events, attendees struggle to track connections and coordinate meetings
 ✅ Upload resumes for intelligent matching  
 ✅ Select which sessions to attend  
 ✅ Tinder-style matching interface with session filtering  
-✅ View confirmed matches with auto-assigned meetings  
-✅ Real-time web notifications for matches
+✅ Instant Meeting Assignment: Matches are automatically scheduled in real-time
+✅ Real-time web and browser notifications for matches
 ✅ Automatic email calendar invites  
 
 ### For Event Managers

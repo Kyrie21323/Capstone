@@ -525,7 +525,8 @@
         card.classList.add('card-swipe-left');
 
         const currentUser = cards[currentCardIndex];
-        const eventId = {{ event.id }};
+        const eventId = {{ event.id }
+    };
 
     // Send pass to server
     fetch(`/event/${eventId}/pass/${currentUser.user_id}`, {
@@ -560,7 +561,8 @@
         card.classList.add('card-swipe-right');
 
         const currentUser = cards[currentCardIndex];
-        const eventId = {{ event.id }};
+        const eventId = {{ event.id }
+    };
 
     // Send like to server
     fetch(`/event/${eventId}/like/${currentUser.user_id}`, {
@@ -574,17 +576,16 @@
             if (data.success) {
                 if (data.is_match) {
                     // It's a match!
-                    const matchedUser = cards[currentCardIndex];
-                    showMatchAnimation(matchedUser);
+                    showMatchAnimation(data);
 
-                    // Show web notification if available
-                    if (data.notification_data && typeof notificationManager !== 'undefined') {
+                    // Show web notification if available and meeting was assigned
+                    if (data.meeting && typeof notificationManager !== 'undefined') {
                         notificationManager.showMatchNotification({
-                            matchName: data.notification_data.match_name,
-                            eventName: data.notification_data.event_name,
-                            meetingTime: data.notification_data.meeting_time,
-                            meetingLocation: data.notification_data.meeting_location,
-                            eventId: data.notification_data.event_id
+                            matchName: data.match_name,
+                            eventName: data.event_name,
+                            meetingTime: data.meeting.start_time,
+                            meetingLocation: data.meeting.location,
+                            eventId: data.event_id
                         });
                     }
                 } else {
@@ -607,22 +608,56 @@
         });
         }
 
-    function showMatchAnimation(matchedUser) {
+    function showMatchAnimation(data) {
         const matchAnimation = document.getElementById('matchAnimation');
         const matchMessage = matchAnimation.querySelector('.match-message');
 
-        matchMessage.innerHTML = `
-                <div class="match-celebration">
-                    <h2>🎉 It's a Match!</h2>
-                    <p>You and <strong>${matchedUser.name}</strong> have both shown interest in each other!</p>
-                    <p>This could be the start of a great professional connection.</p>
-                    <div class="match-actions">
-                        <button onclick="continueMatching()" class="btn btn-secondary">Continue Matching</button>
-                        <button onclick="viewMatches()" class="btn btn-primary">View All Matches</button>
+        let contentHTML = `
+            <div class="match-celebration">
+                <h2>🎉 It's a Match!</h2>
+                <p>You and <strong>${data.match_name}</strong> have both shown interest in each other!</p>
+        `;
+
+        if (data.assignment_status === 'success' && data.meeting) {
+            // Meeting successfully assigned
+            contentHTML += `
+                <div style="background: #e8f5e9; border-radius: 10px; padding: 15px; margin: 15px 0;">
+                    <div style="color: #2e7d32; font-weight: 600; margin-bottom: 8px;">✅ Meeting Scheduled!</div>
+                    <div style="color: #424242;">
+                        <div><strong>When:</strong> ${data.meeting.start_time}</div>
+                        <div><strong>Where:</strong> ${data.meeting.location}</div>
+                        <div><strong>Session:</strong> ${data.meeting.session_name}</div>
                     </div>
                 </div>
+                <p style="color: #5a6c7d; font-size: 0.95rem;">📧 Check your email for calendar invite and details!</p>
             `;
+        } else if (data.assignment_status === 'failed') {
+            // Assignment failed
+            contentHTML += `
+                <div style="background: #fff3e0; border-radius: 10px; padding: 15px; margin: 15px 0;">
+                    <div style="color: #e65100; font-weight: 600; margin-bottom: 8px;">⏳ Meeting Pending</div>
+                    <div style="color: #424242; font-size: 0.9rem;">
+                        <strong>Reason:</strong> ${data.failure_reason}
+                    </div>
+                </div>
+                <p style="color: #5a6c7d; font-size: 0.9rem;">
+                    <strong>Next Steps:</strong><br>
+                    • Check your session availability<br>
+                    • Contact the event organizer if needed<br>
+                    • You can still connect via email!
+                </p>
+            `;
+        }
 
+        contentHTML += `
+                <div class="match-actions">
+                    <button onclick="continueMatching()" class="btn btn-secondary">Continue Matching</button>
+                    <button onclick="viewMatches()" class="btn btn-primary">View All Matches</button>
+                </div>
+            </div>
+        `;
+
+        matchMessage.innerHTML = contentHTML;
         matchAnimation.style.display = 'flex';
     }
 
