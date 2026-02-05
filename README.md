@@ -46,7 +46,7 @@ At large events, attendees struggle to track connections and coordinate meetings
 ✅ Export/import database 
 ✅ Dual Notification System (Email + Web Push)
 
-📖 **Full feature documentation**: [FEATURES.md](FEATURES.md)
+📖 **Technical documentation**: [AGENTS.md](AGENTS.md) | [DATABASE.md](DATABASE.md) | [API.md](API.md)
 
 ---
 
@@ -75,7 +75,7 @@ Capstone/
 └── main.py            # Entry point
 ```
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed architecture.
+See [AGENTS.md](AGENTS.md) for detailed structure and navigation guide.
 
 ---
 
@@ -83,11 +83,12 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed architecture.
 
 | Document | Description |
 |----------|-------------|
+| **[AGENTS.md](AGENTS.md)** | AI navigation guide - project structure and quick reference |
 | **[SETUP.md](SETUP.md)** | Installation, configuration, and troubleshooting |
-| **[FEATURES.md](FEATURES.md)** | Detailed feature descriptions and usage |
 | **[DATABASE.md](DATABASE.md)** | Database models, operations, and management |
 | **[API.md](API.md)** | Complete API routes reference |
-| **[DEVELOPMENT.md](DEVELOPMENT.md)** | Technical architecture and developer guide |
+| **[STRATEGY.md](STRATEGY.md)** | Competitive positioning and market strategy |
+| **[ROADMAP.md](ROADMAP.md)** | 12-week development roadmap and feature priorities |
 
 ---
 
@@ -230,9 +231,14 @@ For production deployment on Render:
 
 ---
 
-## Advanced Development
+## Strategic Planning
 
-For detailed technical architecture, database migrations, advanced configuration, and development workflows, see [DEVELOPMENT.md](DEVELOPMENT.md).
+**New to the project?** Start with:
+1. [AGENTS.md](AGENTS.md) - Project structure and code navigation
+2. [STRATEGY.md](STRATEGY.md) - Competitive positioning and market analysis
+3. [ROADMAP.md](ROADMAP.md) - 12-week development plan and priorities
+
+**Technical references:** [DATABASE.md](DATABASE.md) | [API.md](API.md)
 
 ---
 
