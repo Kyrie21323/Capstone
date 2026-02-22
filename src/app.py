@@ -92,13 +92,15 @@ def create_app(config_name=None):
 def register_blueprints(app):
     """Register all blueprints"""
     from routes import auth_bp, user_bp, admin_bp, matching_bp, scheduling_bp, api_bp
-    
+    from routes.showcase import showcase_bp
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(admin_bp)  # Has prefix '/admin' in __init__
     app.register_blueprint(matching_bp, url_prefix='/event')
     app.register_blueprint(scheduling_bp, url_prefix='/event')
     app.register_blueprint(api_bp)  # Has prefix '/api' in __init__
+    app.register_blueprint(showcase_bp)  # Isolated showcase mode at /showcase
 
 def register_error_handlers(app):
     """Register error handlers"""

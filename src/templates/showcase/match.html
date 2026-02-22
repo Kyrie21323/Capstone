@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>You've Been Matched — Prophere</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/showcase.css') }}" />
+</head>
+<body class="showcase-body">
+
+  <!-- Embed profile data for JS — no extra fetch needed -->
+  <script>
+    window.SHOWCASE = {
+      profile1: {{ profile1 | tojson }},
+      profile2: {{ profile2 | tojson }},
+      generateUrl: "{{ url_for('showcase.generate_question_route') }}"
+    };
+  </script>
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="sc-header">
+    <div class="sc-wordmark">PROPHERE</div>
+    <div class="sc-tagline">Interactive Media Showcase · NFC Networking Demo</div>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────────── -->
+  <main class="sc-main" id="sc-match-main">
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  Phase 1 — Match reveal              ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div id="phase-match" class="sc-phase">
+
+      <!-- Announce block: hidden until reveal ─────────────── -->
+      <div id="sc-announce" class="sc-match-announce">
+        <div class="sc-match-burst">🎉</div>
+        <h1 class="sc-title sc-title-match">You've Been Matched!</h1>
+        <p class="sc-subtitle">Two creators. One connection.</p>
+      </div>
+
+      <!-- Profiles + animated connector ──────────────────── -->
+      <div class="sc-profiles-pair">
+
+        <!-- Profile 1 -->
+        <div class="sc-profile-card sc-card-searching" id="card1"
+             style="--profile-color: {{ profile1.color }}">
+          <div class="sc-profile-emoji">{{ profile1.emoji }}</div>
+          <div class="sc-profile-name">{{ profile1.name }}</div>
+          <div class="sc-profile-interests">
+            {% for interest in profile1.interests %}
+              <span class="sc-tag">{{ interest }}</span>
+            {% endfor %}
+          </div>
+          <p class="sc-profile-bio">{{ profile1.bio }}</p>
+        </div>
+
+        <!-- Connector ────────────────────────────────────── -->
+        <div class="sc-connector" id="sc-connector">
+          <div id="sc-searching" class="sc-searching-center">
+            <div class="sc-searching-text">
+              <span class="sc-search-label">Searching</span><span
+                class="sc-ellipsis" aria-hidden="true"></span>
+            </div>
+            <div class="sc-search-track" aria-hidden="true">
+              <div class="sc-search-bar"></div>
+            </div>
+          </div>
+          <svg id="sc-svg-line" class="connection-svg"
+               viewBox="0 0 160 24" preserveAspectRatio="none" aria-hidden="true">
+            <line class="connection-line" x1="4" y1="12" x2="156" y2="12" />
+            <circle class="connection-node" cx="80" cy="12" r="4" />
+          </svg>
+          <div id="sc-hex" class="sc-connector-node sc-hex-hidden">⬡</div>
+        </div>
+
+        <!-- Profile 2 -->
+        <div class="sc-profile-card sc-card-searching" id="card2"
+             style="--profile-color: {{ profile2.color }}">
+          <div class="sc-profile-emoji">{{ profile2.emoji }}</div>
+          <div class="sc-profile-name">{{ profile2.name }}</div>
+          <div class="sc-profile-interests">
+            {% for interest in profile2.interests %}
+              <span class="sc-tag">{{ interest }}</span>
+            {% endfor %}
+          </div>
+          <p class="sc-profile-bio">{{ profile2.bio }}</p>
+        </div>
+
+      </div>
+
+      <!-- Reveal group: shared interests + directional ask buttons ── -->
+      <div id="sc-reveal-group" class="sc-reveal-group">
+
+        {% if shared_interests %}
+        <div class="sc-shared-badge">
+          <span class="sc-shared-label">
+            Shared interest{{ 's' if shared_interests | length > 1 else '' }}
+          </span>
+          {% for s in shared_interests %}
+            <span class="sc-tag sc-tag-shared">{{ s }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <p class="sc-ask-prompt">Who asks first?</p>
+
+        <div class="sc-ask-buttons">
+          <button class="sc-btn sc-btn-profile sc-btn-lg"
+                  style="--profile-color: {{ profile1.color }}"
+                  onclick="startConversation({{ profile1.id }}, {{ profile2.id }})">
+            <span class="sc-btn-icon">{{ profile1.emoji }}</span>
+            Ask as {{ profile1.name }}
+          </button>
+          <button class="sc-btn sc-btn-profile sc-btn-lg"
+                  style="--profile-color: {{ profile2.color }}"
+                  onclick="startConversation({{ profile2.id }}, {{ profile1.id }})">
+            <span class="sc-btn-icon">{{ profile2.emoji }}</span>
+            Ask as {{ profile2.name }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  Phase 2 — Conversation engine       ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <div id="phase-question" class="sc-phase sc-phase-hidden">
+
+      <!-- Compact speaker bar showing direction ──────────── -->
+      <div class="sc-speaker-bar">
+        <div class="sc-speaker-chip sc-speaker-from" id="chip-from">
+          <span class="sc-chip-emoji" id="chip-from-emoji"></span>
+          <span class="sc-chip-name"  id="chip-from-name"></span>
+          <span class="sc-chip-role">asking</span>
+        </div>
+        <div class="sc-speaker-arrow" aria-hidden="true">→</div>
+        <div class="sc-speaker-chip sc-speaker-to" id="chip-to">
+          <span class="sc-chip-emoji" id="chip-to-emoji"></span>
+          <span class="sc-chip-name"  id="chip-to-name"></span>
+        </div>
+      </div>
+
+      <!-- Question display ──────────────────────────────── -->
+      <div class="sc-question-screen">
+        <div class="sc-question-label" id="q-from-label"></div>
+        <blockquote class="sc-question-text" id="q-text"></blockquote>
+      </div>
+
+      <!-- Conversation action buttons ─────────────────── -->
+      <div class="sc-conv-actions">
+        <button class="sc-btn sc-btn-secondary sc-btn-lg" id="btn-ask-another"
+                onclick="askAnother()">
+          Ask Another
+        </button>
+        <button class="sc-btn sc-btn-ghost sc-btn-lg" id="btn-switch"
+                onclick="switchRoles()">
+          ⇄ Switch Roles
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer class="sc-footer">
+    <form action="{{ url_for('showcase.reset') }}" method="POST">
+      <button type="submit" class="sc-btn sc-btn-ghost sc-btn-sm">↺ Reset Showcase</button>
+    </form>
+  </footer>
+
+  <script>
+    // ── State ─────────────────────────────────────────────────
+    var currentFromId = null;
+    var currentToId   = null;
+
+    // ── Searching ellipsis (Phase 1 reveal) ──────────────────
+    var ellipsisEl   = document.querySelector('.sc-ellipsis');
+    var dotFrames    = ['\u00a0', '.\u00a0\u00a0', '..\u00a0', '...'];
+    var dotIdx       = 0;
+    var ellipsisTick = setInterval(function () {
+      dotIdx = (dotIdx + 1) % dotFrames.length;
+      ellipsisEl.textContent = dotFrames[dotIdx];
+    }, 400);
+
+    // ── Phase 1 reveal sequence ───────────────────────────────
+    function revealMatch() {
+      clearInterval(ellipsisTick);
+
+      var searching = document.getElementById('sc-searching');
+      searching.classList.add('sc-fade-out');
+
+      setTimeout(function () {
+        searching.style.visibility = 'hidden';
+
+        var svg = document.getElementById('sc-svg-line');
+        svg.classList.add('sc-svg-visible');
+        svg.offsetHeight;
+        svg.querySelector('.connection-line').classList.add('active');
+
+        setTimeout(function () {
+          svg.querySelector('.connection-node').classList.add('active');
+        }, 500);
+
+        document.getElementById('card1').classList.remove('sc-card-searching');
+        document.getElementById('card2').classList.remove('sc-card-searching');
+        document.getElementById('sc-hex').classList.remove('sc-hex-hidden');
+
+        setTimeout(function () {
+          showBlock('sc-announce',     'flex');
+          showBlock('sc-reveal-group', 'flex');
+        }, 350);
+
+      }, 300);
+    }
+
+    function showBlock(id, displayValue) {
+      var el = document.getElementById(id);
+      el.style.display = displayValue;
+      el.offsetHeight;
+      el.classList.add('sc-block-revealed');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(revealMatch, 800);
+    });
+
+    // ── Conversation engine ───────────────────────────────────
+
+    /**
+     * Called when a directional "Ask as X" button is pressed.
+     * Transitions from Phase 1 → Phase 2 and loads the first question.
+     */
+    function startConversation(fromId, toId) {
+      currentFromId = fromId;
+      currentToId   = toId;
+
+      // Disable both ask buttons to prevent double-tap
+      document.querySelectorAll('.sc-ask-buttons .sc-btn').forEach(function (b) {
+        b.disabled = true;
+      });
+
+      fetchQuestion(fromId, toId, function (data) {
+        populateQuestion(data);
+
+        // Slide Phase 1 out, Phase 2 in
+        var phaseMatch = document.getElementById('phase-match');
+        phaseMatch.classList.add('sc-phase-out');
+        setTimeout(function () {
+          phaseMatch.classList.add('sc-phase-hidden');
+
+          var phaseQ = document.getElementById('phase-question');
+          phaseQ.classList.remove('sc-phase-hidden');
+          phaseQ.classList.add('sc-phase-enter');
+        }, 380);
+      });
+    }
+
+    /**
+     * Regenerate a question in the same direction.
+     */
+    function askAnother() {
+      setConvBusy(true);
+      fetchQuestion(currentFromId, currentToId, function (data) {
+        cycleQuestion(data);
+        setConvBusy(false);
+      });
+    }
+
+    /**
+     * Reverse direction and ask a new question.
+     */
+    function switchRoles() {
+      setConvBusy(true);
+      var tmp      = currentFromId;
+      currentFromId = currentToId;
+      currentToId   = tmp;
+
+      fetchQuestion(currentFromId, currentToId, function (data) {
+        cycleQuestion(data);
+        setConvBusy(false);
+      });
+    }
+
+    // ── Helpers ───────────────────────────────────────────────
+
+    function fetchQuestion(fromId, toId, callback) {
+      fetch(window.SHOWCASE.generateUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from_id: fromId, to_id: toId })
+      })
+      .then(function (r) { return r.json(); })
+      .then(callback)
+      .catch(function (err) {
+        console.error('generate_question failed:', err);
+        setConvBusy(false);
+      });
+    }
+
+    /** Populate all question-screen elements from API response data. */
+    function populateQuestion(data) {
+      // Speaker chips
+      document.getElementById('chip-from-emoji').textContent = data.from_emoji;
+      document.getElementById('chip-from-name').textContent  = data.from_name;
+      document.getElementById('chip-to-emoji').textContent   = data.to_emoji;
+      document.getElementById('chip-to-name').textContent    = data.to_name;
+
+      // Chip border color driven by CSS custom property
+      var chipFrom = document.getElementById('chip-from');
+      chipFrom.style.setProperty('--chip-color', data.from_color);
+
+      var chipTo = document.getElementById('chip-to');
+      chipTo.style.setProperty('--chip-color', data.to_color);
+
+      // Header label
+      document.getElementById('q-from-label').textContent =
+        data.from_emoji + '\u00a0' + data.from_name + ' asks:';
+
+      // Question text
+      document.getElementById('q-text').textContent = data.question;
+    }
+
+    /** Fade out current question, swap content, fade back in. */
+    function cycleQuestion(data) {
+      var screen = document.querySelector('.sc-question-screen');
+      screen.classList.add('sc-q-exit');
+
+      setTimeout(function () {
+        populateQuestion(data);
+        screen.classList.remove('sc-q-exit');
+        screen.classList.add('sc-q-enter');
+
+        // Remove animation class after it fires so it can be re-triggered
+        setTimeout(function () {
+          screen.classList.remove('sc-q-enter');
+        }, 500);
+      }, 250);
+    }
+
+    /** Disable/enable the Ask Another and Switch Roles buttons. */
+    function setConvBusy(busy) {
+      ['btn-ask-another', 'btn-switch'].forEach(function (id) {
+        document.getElementById(id).disabled = busy;
+      });
+    }
+  </script>
+
+</body>
+</html>

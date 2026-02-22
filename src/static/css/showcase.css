@@ -1,0 +1,836 @@
+/* =============================================================
+   Prophere — Showcase Mode
+   iPad-landscape-first, dark, minimal, no navbar.
+   ============================================================= */
+
+/* ── Reset & base ──────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:          #0a0a0f;
+  --surface:     #13131a;
+  --surface-2:   #1c1c28;
+  --border:      rgba(255,255,255,0.08);
+  --text:        #f0f0f5;
+  --text-muted:  #6b7080;
+  --accent:      #7C3AED;
+  --accent-glow: rgba(124,58,237,0.35);
+  --success:     #10B981;
+  --radius-sm:   10px;
+  --radius-md:   18px;
+  --radius-lg:   28px;
+  --font:        'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  --transition:  0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Body ──────────────────────────────────────────────────── */
+.showcase-body {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.sc-header {
+  width: 100%;
+  padding: 24px 48px 0;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sc-wordmark {
+  font-size: clamp(13px, 1.6vw, 16px);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.sc-tagline {
+  font-size: clamp(11px, 1.3vw, 13px);
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+/* ── Main area ─────────────────────────────────────────────── */
+.sc-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1100px;
+  padding: 32px 32px 16px;
+}
+
+/* ── Hero (landing / single tap state) ─────────────────────── */
+.sc-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  text-align: center;
+  width: 100%;
+}
+
+/* ── NFC pulse ring ─────────────────────────────────────────── */
+.sc-nfc-icon {
+  font-size: 72px;
+  line-height: 1;
+  filter: drop-shadow(0 0 24px var(--accent-glow));
+  position: relative;
+  z-index: 1;
+}
+
+.sc-pulse-ring {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  animation: pulse-ring 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.6); opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Wrap icon + ring together */
+.sc-hero > .sc-pulse-ring {
+  position: relative;
+  margin-bottom: -144px;
+}
+
+/* ── Typography ─────────────────────────────────────────────── */
+.sc-title {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.sc-title-match {
+  background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sc-subtitle {
+  font-size: clamp(15px, 2vw, 19px);
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 540px;
+}
+
+.sc-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.sc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sc-btn:active {
+  transform: scale(0.96);
+}
+
+/* Primary */
+.sc-btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 32px var(--accent-glow);
+}
+
+.sc-btn-primary:hover {
+  background: #6d28d9;
+  box-shadow: 0 0 48px var(--accent-glow);
+}
+
+/* Ghost */
+.sc-btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.sc-btn-ghost:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* Sizes */
+.sc-btn-xl {
+  font-size: clamp(16px, 2.2vw, 22px);
+  padding: 20px 48px;
+  border-radius: var(--radius-lg);
+  letter-spacing: 0.01em;
+}
+
+.sc-btn-sm {
+  font-size: 13px;
+  padding: 10px 22px;
+}
+
+.sc-btn-icon {
+  font-size: 1.2em;
+}
+
+/* ── Profile cards ──────────────────────────────────────────── */
+.sc-profile-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  min-width: 240px;
+  max-width: 340px;
+  transition: opacity 0.55s ease, box-shadow 0.55s ease;
+}
+
+.sc-profile-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--profile-color, var(--accent)) 0%, transparent 60%);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.sc-profile-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--profile-color, var(--accent));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.sc-profile-solo {
+  max-width: 420px;
+}
+
+.sc-profile-emoji {
+  font-size: 52px;
+  line-height: 1;
+  filter: drop-shadow(0 0 12px currentColor);
+}
+
+.sc-profile-name {
+  font-size: clamp(18px, 2.5vw, 24px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--profile-color, var(--text));
+}
+
+.sc-profile-bio {
+  font-size: clamp(12px, 1.4vw, 14px);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ── Interest tags ──────────────────────────────────────────── */
+.sc-profile-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.sc-tag {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.03em;
+}
+
+.sc-tag-shared {
+  background: rgba(16,185,129,0.12);
+  border-color: rgba(16,185,129,0.3);
+  color: var(--success);
+}
+
+/* ── Waiting animation (index page) ────────────────────────── */
+.sc-waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.sc-waiting-label {
+  font-size: 14px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.sc-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.sc-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: dot-bounce 1.4s ease-in-out infinite both;
+}
+
+.sc-dots span:nth-child(1) { animation-delay: 0s; }
+.sc-dots span:nth-child(2) { animation-delay: 0.16s; }
+.sc-dots span:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%           { transform: scale(1.2); opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MATCH PAGE — theatrical reveal
+   ───────────────────────────────────────────────────────────── */
+
+/* ── Phase wrappers ─────────────────────────────────────────── */
+.sc-phase {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.sc-phase-hidden {
+  display: none !important;
+}
+
+.sc-phase-out {
+  animation: phase-out 0.4s forwards;
+}
+
+@keyframes phase-out {
+  to { opacity: 0; transform: scale(0.97); }
+}
+
+/* ── Match announce (burst + title + subtitle) ──────────────── */
+/*    Starts hidden (display:none). JS sets display:flex then   */
+/*    adds .sc-block-revealed to trigger the fade-up keyframe.  */
+.sc-match-announce {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.sc-match-burst {
+  font-size: 64px;
+}
+
+/* Applied by JS to any block that should animate in */
+.sc-block-revealed {
+  animation: fade-up 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ── Cards: dimmed searching state ─────────────────────────── */
+.sc-card-searching {
+  opacity: 0.45;
+  animation: card-search-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes card-search-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px rgba(124, 58, 237, 0.18),
+      0 0 24px rgba(124, 58, 237, 0.07);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(124, 58, 237, 0.55),
+      0 0 40px rgba(124, 58, 237, 0.22);
+  }
+}
+
+/* ── Profiles pair layout ───────────────────────────────────── */
+.sc-profiles-pair {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Connector column (between the two cards) ───────────────── */
+.sc-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 148px;
+}
+
+/* ── Searching state (visible on page load) ─────────────────── */
+.sc-searching-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.3s ease;
+}
+
+.sc-searching-center.sc-fade-out {
+  opacity: 0;
+}
+
+.sc-searching-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Fixed-width so the text doesn't jump as dots change */
+.sc-ellipsis {
+  display: inline-block;
+  width: 2.4ch;
+  text-align: left;
+}
+
+/* Indeterminate progress bar */
+.sc-search-track {
+  width: 72px;
+  height: 2px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sc-search-bar {
+  height: 100%;
+  width: 38%;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: search-slide 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes search-slide {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(380%); }
+}
+
+/* ── SVG connection line ────────────────────────────────────── */
+.connection-svg {
+  width: 100%;
+  height: 24px;
+  overflow: visible;
+  opacity: 0;
+  visibility: hidden;
+  display: block;
+  transition: opacity 0.4s ease;
+}
+
+.connection-svg.sc-svg-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* The animated stroke that draws left → right */
+.connection-line {
+  stroke: var(--success);
+  stroke-width: 1.5;
+  stroke-dasharray: 152;   /* matches x2 - x1 in the SVG viewBox */
+  stroke-dashoffset: 152;
+  fill: none;
+  transition: stroke-dashoffset 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.connection-line.active {
+  stroke-dashoffset: 0;
+}
+
+/* Centre dot: appears after the line finishes drawing */
+.connection-node {
+  fill: var(--success);
+  opacity: 0;
+  transition: opacity 0.3s ease 0.5s;
+}
+
+.connection-node.active {
+  opacity: 1;
+}
+
+/* ── Hex node (shown on reveal) ─────────────────────────────── */
+.sc-connector-node {
+  font-size: 28px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 12px var(--accent-glow));
+  animation: spin-slow 8s linear infinite;
+  transition: opacity 0.45s ease;
+}
+
+.sc-hex-hidden {
+  opacity: 0;
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Reveal group (shared badge + CTA) ──────────────────────── */
+/*    Same pattern as sc-match-announce: display:none → JS.     */
+.sc-reveal-group {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+/* ── Shared interests badge ─────────────────────────────────── */
+.sc-shared-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: rgba(16,185,129,0.06);
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+}
+
+.sc-shared-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--success);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── "Who asks first?" prompt + directional buttons ────────── */
+.sc-ask-prompt {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sc-ask-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Profile-coloured outlined button */
+.sc-btn-profile {
+  background: var(--surface-2);
+  border: 1.5px solid var(--profile-color, var(--accent));
+  color: var(--text);
+  box-shadow: 0 0 18px rgba(0,0,0,0);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+}
+
+.sc-btn-profile:hover:not(:disabled) {
+  background: var(--surface);
+  box-shadow: 0 0 28px var(--accent-glow);
+}
+
+.sc-btn-profile:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Large button size (used for ask + conv buttons) */
+.sc-btn-lg {
+  font-size: clamp(14px, 1.9vw, 18px);
+  padding: 16px 36px;
+  border-radius: var(--radius-md);
+}
+
+/* Secondary button (Ask Another) */
+.sc-btn-secondary {
+  background: rgba(124,58,237,0.12);
+  border: 1px solid rgba(124,58,237,0.35);
+  color: var(--text);
+}
+
+.sc-btn-secondary:hover:not(:disabled) {
+  background: rgba(124,58,237,0.22);
+  border-color: rgba(124,58,237,0.6);
+}
+
+.sc-btn-secondary:disabled,
+.sc-btn-ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Speaker bar (Phase 2 top row) ──────────────────────────── */
+.sc-speaker-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sc-speaker-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1.5px solid var(--chip-color, var(--accent));
+  border-radius: 100px;
+  padding: 10px 18px;
+  transition: border-color 0.3s ease, opacity 0.3s ease;
+}
+
+.sc-speaker-from {
+  /* Active / asking chip — full opacity, accent glow */
+  box-shadow: 0 0 16px rgba(124,58,237,0.2);
+}
+
+.sc-speaker-to {
+  /* Passive / being-asked chip — slightly dimmed */
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.sc-chip-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.sc-chip-name {
+  font-size: clamp(13px, 1.6vw, 15px);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sc-chip-role {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--chip-color, var(--accent));
+  background: rgba(124,58,237,0.12);
+  padding: 2px 7px;
+  border-radius: 100px;
+}
+
+.sc-speaker-arrow {
+  font-size: 18px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Conversation action buttons ────────────────────────────── */
+.sc-conv-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── Question cycle transitions ─────────────────────────────── */
+.sc-q-exit {
+  animation: q-fade-out 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.sc-q-enter {
+  animation: q-fade-in 0.45s cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes q-fade-out {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+
+@keyframes q-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Phase 2 entrance */
+.sc-phase-enter {
+  animation: fade-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ── Question screen ────────────────────────────────────────── */
+.sc-question-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  padding: 8px 16px;
+  max-width: 780px;
+  width: 100%;
+}
+
+.sc-question-label {
+  font-size: clamp(14px, 1.8vw, 17px);
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.sc-question-text {
+  font-size: clamp(22px, 3.5vw, 40px);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  border: none;
+  quotes: "\201C""\201D";
+  padding: 0 16px;
+}
+
+.sc-question-text::before {
+  content: open-quote;
+  color: var(--accent);
+}
+
+.sc-question-text::after {
+  content: close-quote;
+  color: var(--accent);
+}
+
+.sc-question-profiles {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: clamp(14px, 1.8vw, 18px);
+  font-weight: 600;
+}
+
+.sc-amp {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* ── Single profile (index state 1) ────────────────────────── */
+.sc-single-profile {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.sc-footer {
+  width: 100%;
+  padding: 16px 32px 28px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Shared animations ──────────────────────────────────────── */
+.fade-in {
+  animation: fade-up 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── iPad landscape tweaks ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .sc-header {
+    padding: 18px 24px 0;
+  }
+
+  .sc-main {
+    padding: 24px 16px 12px;
+  }
+
+  .sc-profiles-pair {
+    flex-direction: column;
+  }
+
+  /* On mobile/portrait the connector becomes a horizontal strip */
+  .sc-connector {
+    flex-direction: row;
+    min-width: unset;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* SVG line is still horizontal but narrower */
+  .connection-svg {
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  .sc-btn-xl {
+    padding: 18px 36px;
+  }
+
+  .sc-ask-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sc-conv-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sc-speaker-bar {
+    gap: 10px;
+  }
+}
+
+/* Prevent text selection on interactive elements (better touch UX) */
+.sc-btn, .sc-profile-card, .sc-match-burst {
+  user-select: none;
+  -webkit-user-select: none;
+}

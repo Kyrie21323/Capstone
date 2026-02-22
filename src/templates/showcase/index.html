@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Prophere — Showcase Mode</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/showcase.css') }}" />
+</head>
+<body class="showcase-body">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="sc-header">
+    <div class="sc-wordmark">PROPHERE</div>
+    <div class="sc-tagline">Interactive Media Showcase · NFC Networking Demo</div>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────────── -->
+  <main class="sc-main">
+
+    {% if matched %}
+      <!-- Already matched — redirect to match page instead of showing tap -->
+      <script>window.location.href = "{{ url_for('showcase.match') }}";</script>
+
+    {% elif scanned | length == 0 %}
+      <!-- ── State 0: No taps yet ──────────────────────────── -->
+      <div class="sc-hero fade-in">
+        <div class="sc-pulse-ring"></div>
+        <div class="sc-nfc-icon">⬡</div>
+        <h1 class="sc-title">Tap to Connect</h1>
+        <p class="sc-subtitle">
+          Hold your badge to the reader — or press the button below<br>
+          to simulate an NFC tap and discover who you might meet.
+        </p>
+
+        <form action="{{ url_for('showcase.tap') }}" method="POST">
+          <button type="submit" class="sc-btn sc-btn-primary sc-btn-xl">
+            <span class="sc-btn-icon">📲</span>
+            Simulate NFC Tap
+          </button>
+        </form>
+
+        <p class="sc-hint">{{ remaining }} profiles available</p>
+      </div>
+
+    {% elif scanned | length == 1 %}
+      <!-- ── State 1: One tap complete ─────────────────────── -->
+      {% set p = scanned[0] %}
+      <div class="sc-hero fade-in">
+        <div class="sc-single-profile">
+          <div class="sc-profile-card sc-profile-solo" style="--profile-color: {{ p.color }}">
+            <div class="sc-profile-emoji">{{ p.emoji }}</div>
+            <div class="sc-profile-name">{{ p.name }}</div>
+            <div class="sc-profile-interests">
+              {% for interest in p.interests %}
+                <span class="sc-tag">{{ interest }}</span>
+              {% endfor %}
+            </div>
+            <p class="sc-profile-bio">{{ p.bio }}</p>
+          </div>
+        </div>
+
+        <div class="sc-waiting">
+          <div class="sc-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <p class="sc-waiting-label">Waiting for a second tap…</p>
+        </div>
+
+        <form action="{{ url_for('showcase.tap') }}" method="POST">
+          <button type="submit" class="sc-btn sc-btn-primary sc-btn-xl">
+            <span class="sc-btn-icon">📲</span>
+            Simulate Second NFC Tap
+          </button>
+        </form>
+
+        <p class="sc-hint">{{ remaining }} profiles remaining</p>
+      </div>
+    {% endif %}
+
+  </main>
+
+  <!-- ── Reset footer ───────────────────────────────────────── -->
+  {% if scanned | length > 0 %}
+  <footer class="sc-footer">
+    <form action="{{ url_for('showcase.reset') }}" method="POST">
+      <button type="submit" class="sc-btn sc-btn-ghost sc-btn-sm">↺ Reset Showcase</button>
+    </form>
+  </footer>
+  {% endif %}
+
+</body>
+</html>
