@@ -10,11 +10,15 @@ MEMORY OPTIMIZATIONS:
 """
 from flask import render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
-from models import db, Event, Membership, Resume, UserInteraction, Match, ParticipantAvailability, Meeting
+from models import db, Event, Membership, Resume, UserInteraction, Match, ParticipantAvailability, Meeting, User
 from . import matching_bp
 import os
 import json
+import logging
+import threading
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 @matching_bp.route('/<int:event_id>/loading')
 @login_required
@@ -405,12 +409,15 @@ def like_user(event_id, target_user_id):
                 )
                 db.session.add(match)
                 db.session.flush()  # Get the match ID
-                
-                # Try to auto-assign meeting
+
+                success = False
+                message = ""
+                meeting = None
+                event = Event.query.get(event_id)
+
+                # Try to auto-assign meeting (before commit)
                 try:
                     from utils.auto_assign import auto_assign_meeting
-                    event = Event.query.get(event_id)
-                    
                     success, message, meeting = auto_assign_meeting(
                         match.id,
                         user1_id,
@@ -418,43 +425,35 @@ def like_user(event_id, target_user_id):
                         event_id,
                         event
                     )
-                    
                     if success:
-                        print(f"✅ Auto-assigned meeting for match {match.id}: {message}")
-                        print(f"   Meeting: {meeting.start_time} at {meeting.location.name}")
-                        
-                        # Send email notifications to both users
-                        try:
-                            from utils.email_notifications import send_match_notifications_to_both
-                            email_success, email_total, email_msgs = send_match_notifications_to_both(
-                                match, event, meeting
-                            )
-                            print(f"📧 Email notifications: {email_success}/{email_total} sent successfully")
-                            for msg in email_msgs:
-                                print(f"   {msg}")
-                        except Exception as email_err:
-                            print(f"⚠️ Email notification failed: {str(email_err)}")
+                        logger.info("Auto-assigned meeting for match %s: %s", match.id, message)
                     else:
-                        print(f"⚠️ Could not auto-assign meeting for match {match.id}: {message}")
                         match.assignment_attempted = True
                         match.assignment_failed_reason = message
-                        
-                        # Still send email notifying about match (without meeting details)
-                        try:
-                            from utils.email_notifications import send_match_notifications_to_both
-                            email_success, email_total, email_msgs = send_match_notifications_to_both(
-                                match, event, None  # No meeting
-                            )
-                            print(f"📧 Email notifications (no meeting): {email_success}/{email_total} sent")
-                        except Exception as email_err:
-                            print(f"⚠️ Email notification failed: {str(email_err)}")
-                        
                 except Exception as e:
-                    print(f"❌ Error during auto-assignment: {str(e)}")
+                    logger.exception("Error during auto-assignment: %s", e)
                     match.assignment_attempted = True
                     match.assignment_failed_reason = f"System error: {str(e)}"
-                
+
+                # Commit first so emails are only sent after match is persisted
                 db.session.commit()
+
+                # Trigger idempotent email handler in background (sends only if email_sent_at is None)
+                match_id = match.id
+                app = current_app._get_current_object()
+                print("🚀 Starting email thread for match %s" % match_id)
+
+                def run_handle_match_created():
+                    with app.app_context():
+                        try:
+                            from services.email_service import handle_match_created
+                            handle_match_created(match_id)
+                        except Exception as e:
+                            print("❌ handle_match_created failed for match_id=%s: %s" % (match_id, e))
+                            logger.exception("handle_match_created failed for match_id=%s: %s", match_id, e)
+
+                t = threading.Thread(target=run_handle_match_created, daemon=True)
+                t.start()
                 
                 # Prepare detailed response with assignment status
                 other_user = User.query.get(user2_id if current_user.id == user1_id else user1_id)

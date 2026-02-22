@@ -97,6 +97,8 @@ class Match(db.Model):
     assignment_attempted = db.Column(db.Boolean, default=False)
     assignment_failed_reason = db.Column(db.String(200), nullable=True)
     assigned_at = db.Column(db.DateTime, nullable=True)
+    # Email tracking: set only after both match notification emails sent successfully
+    email_sent_at = db.Column(db.DateTime, nullable=True)
     
     # Relationships
     user1 = db.relationship('User', foreign_keys=[user1_id], backref='matches_as_user1')

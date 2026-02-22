@@ -1,8 +1,8 @@
 """Initial migration with all models
 
-Revision ID: 35fcd60627fd
+Revision ID: 825bee241126
 Revises: 
-Create Date: 2025-12-08 01:31:59.089707
+Create Date: 2026-02-22 19:00:10.705938
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '35fcd60627fd'
+revision = '825bee241126'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,6 +41,7 @@ def upgrade():
     sa.Column('assignment_attempted', sa.Boolean(), nullable=True),
     sa.Column('assignment_failed_reason', sa.String(length=200), nullable=True),
     sa.Column('assigned_at', sa.DateTime(), nullable=True),
+    sa.Column('email_sent_at', sa.DateTime(), nullable=True),
     sa.CheckConstraint('user1_id != user2_id', name='no_self_match'),
     sa.ForeignKeyConstraint(['assigned_meeting_id'], ['meeting.id'], ),
     sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
@@ -66,7 +67,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
-    sa.Column('password_hash', sa.String(length=128), nullable=False),
+    sa.Column('password_hash', sa.String(length=255), nullable=False),
     sa.Column('is_admin', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
@@ -92,6 +93,8 @@ def upgrade():
     sa.Column('mime_type', sa.String(length=100), nullable=False),
     sa.Column('file_size', sa.Integer(), nullable=False),
     sa.Column('uploaded_at', sa.DateTime(), nullable=True),
+    sa.Column('extracted_text', sa.Text(), nullable=True),
+    sa.Column('embedding', sa.Text(), nullable=True),
     sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),

@@ -1,6 +1,13 @@
 import os
 import sys
 
+# Load .env before app so MAIL_* and other env vars are available to config
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from app import app
@@ -142,6 +149,16 @@ def ensure_admin_user():
 
 
 if __name__ == "__main__":
+    # Diagnostic: print mail config at startup (ensure .env was loaded before app creation)
+    print("--- Mail config (diagnostic) ---")
+    print("MAIL_SERVER:", app.config.get("MAIL_SERVER"))
+    print("MAIL_PORT:", app.config.get("MAIL_PORT"))
+    print("MAIL_USERNAME:", app.config.get("MAIL_USERNAME"))
+    print("MAIL_PASSWORD:", "(set)" if app.config.get("MAIL_PASSWORD") else "(missing)")
+    print("MAIL_USE_TLS:", app.config.get("MAIL_USE_TLS"))
+    print("MAIL_SUPPRESS_SEND:", app.config.get("MAIL_SUPPRESS_SEND"))
+    print("--------------------------------")
+
     # Auto-initialize database if it doesn't exist
     initialize_database()
     

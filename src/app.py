@@ -2,8 +2,9 @@
 Prophere - Main Application Factory
 """
 from flask import Flask, render_template
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required
 from flask_migrate import Migrate
+from flask_mail import Mail
 from werkzeug.security import generate_password_hash
 from models import db, User, Event
 from config import get_config
@@ -53,6 +54,7 @@ def create_app(config_name=None):
     # Initialize extensions
     db.init_app(app)
     migrate = Migrate(app, db, directory=os.path.join(PROJECT_ROOT, 'migrations'))
+    Mail(app)  # Email service uses current_app; init here so config is validated at startup
     
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -67,7 +69,24 @@ def create_app(config_name=None):
     
     # Register error handlers
     register_error_handlers(app)
-    
+
+    # Temporary diagnostic route: GET /test_email (login required) sends one test email to current user
+    @app.route("/test_email")
+    @login_required
+    def test_email():
+        from flask import current_app
+        from flask_login import current_user
+        from flask_mail import Mail, Message
+        mail = Mail(current_app)
+        msg = Message(
+            subject="Prophere SMTP Test",
+            sender=current_app.config.get("MAIL_DEFAULT_SENDER", "noreply@prophere.com"),
+            recipients=[current_user.email],
+            body="If you see this, SMTP works.",
+        )
+        mail.send(msg)
+        return "Email test triggered — check inbox for " + current_user.email
+
     return app
 
 def register_blueprints(app):

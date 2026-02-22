@@ -20,7 +20,8 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@prophere.com')
-    MAIL_SUPPRESS_SEND = os.environ.get('MAIL_SUPPRESS_SEND', 'false').lower() in ['true', 'on', '1']  # Set to true to disable emails in dev)
+    MAIL_SUPPRESS_SEND = os.environ.get('MAIL_SUPPRESS_SEND', 'false').lower() in ['true', 'on', '1']  # Set to true to disable emails in dev
+    APPLICATION_ROOT_URL = os.environ.get('APPLICATION_ROOT_URL', '')  # Base URL for links in emails (e.g. https://yourapp.com)
     
     # Database
     SQLALCHEMY_TRACK_MODIFICATIONS = False

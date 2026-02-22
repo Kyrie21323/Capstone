@@ -1,0 +1,31 @@
+You've been matched at {{ event_name }}!
+
+Hi {{ recipient_name }},
+
+Great news — you've been matched with {{ matched_name }} at {{ event_name }}.
+
+Your match
+---------
+Name: {{ matched_name }}
+Email: {{ matched_email }}
+{% if profile_summary %}Profile: {{ profile_summary }}{% endif %}
+
+{% if meeting %}
+Meeting scheduled
+-----------------
+When: {{ meeting_time }}
+Duration: 15 minutes
+Location: {{ meeting_location }}
+Session: {{ session_name }}
+
+A calendar invite is attached to this email. Open the attachment to add the meeting to your calendar.
+{% else %}
+We couldn't assign an automatic meeting slot. You can coordinate a time directly with your match.
+{% endif %}
+
+We encourage you to reach out and connect.
+
+{% if platform_url %}View your matches: {{ platform_url }}{% endif %}
+
+—
+This is an automated message from {{ event_name }}. Powered by Prophere.
