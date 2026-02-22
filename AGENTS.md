@@ -13,7 +13,7 @@ Flask-based networking platform for events with intelligent NLP matching (Senten
 
 **Stack:** Flask 3.1.2 · SQLAlchemy · Sentence Transformers · Jinja2 · Cytoscape.js
 
-**Strategic Positioning:** "Tinder for Events" - See [STRATEGY.md](STRATEGY.md)
+**Strategic Positioning:** "Tinder for Events" - See [STRATEGY.md](docs/STRATEGY.md)
 
 ---
 
@@ -21,10 +21,10 @@ Flask-based networking platform for events with intelligent NLP matching (Senten
 
 **New to the project?** Follow this reading order:
 1. **AGENTS.md** (this file) - Project structure and quick reference
-2. **[STRATEGY.md](STRATEGY.md)** - Competitive positioning, market analysis
-3. **[ROADMAP.md](ROADMAP.md)** - 12-week development plan
-4. **[DATABASE.md](DATABASE.md)** - Model schemas and operations
-5. **[API.md](API.md)** - Route reference
+2. **[STRATEGY.md](docs/STRATEGY.md)** - Competitive positioning, market analysis
+3. **[ROADMAP.md](docs/ROADMAP.md)** - 12-week development plan
+4. **[DATABASE.md](docs/DATABASE.md)** - Model schemas and operations
+5. **[API.md](docs/API.md)** - Route reference
 
 **Sub-navigation:**
 - **[src/AGENTS.md](src/AGENTS.md)** - Core application structure
@@ -37,6 +37,8 @@ Flask-based networking platform for events with intelligent NLP matching (Senten
 ```
 Capstone/
 ├── main.py              # Entry point (Python path setup + app.run)
+├── README.md            # Project overview and quick-start
+├── AGENTS.md            # AI navigation guide (this file)
 ├── src/                 # Application core → see src/AGENTS.md
 │   ├── app.py          # Factory pattern (create_app), blueprint registration
 │   ├── models.py       # SQLAlchemy models (User, Event, Match, etc.)
@@ -47,6 +49,16 @@ Capstone/
 │   ├── utils/          # Shared helpers → see src/utils/AGENTS.md
 │   ├── templates/      # Jinja2 HTML → see src/templates/AGENTS.md
 │   └── static/         # CSS + JS modules
+├── docs/                # All project documentation
+│   ├── STRATEGY.md     # Competitive positioning, market analysis
+│   ├── ROADMAP.md      # 12-week development plan
+│   ├── DATABASE.md     # Model schemas, migrations, operations
+│   ├── API.md          # Route reference
+│   ├── SETUP.md        # Installation and configuration guide
+│   ├── CHANGELOG.md    # Version history
+│   ├── EMAIL_SETUP.md  # Email/SMTP configuration
+│   ├── SHOWCASE_MODE.md     # Showcase installation mode (NFC demo)
+│   └── SCRIPT_MIGRATION_GUIDE.md  # CLI script migration reference
 ├── scripts/            # CLI tools (manage_users.py, import_database.py, setup_database.py)
 ├── migrations/         # Flask-Migrate schema versions
 ├── uploads/            # User resume storage
@@ -81,7 +93,7 @@ Capstone/
 - **Blueprint organization**: Feature-based (auth, user, admin, matching, scheduling)
 
 ### Database
-- **Migrations**: ALL schema changes via `flask db migrate` (see DATABASE.md)
+- **Migrations**: ALL schema changes via `flask db migrate` (see docs/DATABASE.md)
 - **Cascade deletes**: Defined in model relationships
 - **Constraints**: Unique constraints + check constraints enforced at DB level
 
@@ -169,11 +181,11 @@ cd src && flask db downgrade                      # Rollback last
 - **ALWAYS export** before major migrations or schema changes
 - **Exports include**: All tables + uploaded files
 - **Location**: `./exports/database_export_TIMESTAMP.json`
-- **Use `--no-files`** for faster DB-only exports (see [DATABASE.md](DATABASE.md))
+- **Use `--no-files`** for faster DB-only exports (see [DATABASE.md](docs/DATABASE.md))
 
 ### Testing
 - Single test file: `tests/test_scheduling.py`
-- **TODO**: Expand test coverage (see [ROADMAP.md](ROADMAP.md) Week 3)
+- **TODO**: Expand test coverage (see [ROADMAP.md](docs/ROADMAP.md) Week 3)
 
 ### Large Files
 - `src/routes/matching.py` (30KB) - Tinder-style UI + session filtering
@@ -186,5 +198,5 @@ cd src && flask db downgrade                      # Rollback last
 **Current State:** v1.4.0 academic prototype  
 **Target State:** v2.0.0 production-ready (12 weeks)
 
-**Read next:** [STRATEGY.md](STRATEGY.md) for competitive analysis  
-**Implementation plan:** [ROADMAP.md](ROADMAP.md) for 12-week sprint breakdown
+**Read next:** [STRATEGY.md](docs/STRATEGY.md) for competitive analysis  
+**Implementation plan:** [ROADMAP.md](docs/ROADMAP.md) for 12-week sprint breakdown

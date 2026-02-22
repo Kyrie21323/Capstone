@@ -302,16 +302,16 @@ After successful setup:
 
 1. **Access the Application**: Open http://127.0.0.1:5000
 2. **Login as Admin**: Use `admin@nfcnetworking.com` / `admin123`
-3. **Explore Features**: See [README.md](README.md) for feature overview
+3. **Explore Features**: See [README.md](../README.md) for feature overview
 4. **Join an Event**: Use one of the sample event codes (e.g., NYUAD2025)
 5. **Upload Resume**: Test the matching system by uploading a resume
 
 For more information:
-- **Features**: See [README.md](README.md)
+- **Features**: See [README.md](../README.md)
 - **Database**: See [DATABASE.md](DATABASE.md)
 - **API**: See [API.md](API.md)
 - **Strategy**: See [STRATEGY.md](STRATEGY.md) and [ROADMAP.md](ROADMAP.md)
-- **Development**: See [AGENTS.md](AGENTS.md)
+- **Development**: See [AGENTS.md](../AGENTS.md)
 
 ---
 
