@@ -415,5 +415,5 @@ Keep multiple timestamped exports for safety.
 
 For more information:
 - [SETUP.md](SETUP.md) - Installation guide
-- [FEATURES.md](FEATURES.md) - Platform features
-- [DEVELOPMENT.md](DEVELOPMENT.md) - Technical details
+- [README.md](README.md) - Platform features
+- [AGENTS.md](AGENTS.md) - Technical details

@@ -388,5 +388,5 @@ Routes with `@admin_required` check `current_user.is_admin`.
 
 ---
 
-For implementation details, see [DEVELOPMENT.md](DEVELOPMENT.md).  
-For feature descriptions, see [FEATURES.md](FEATURES.md).
+For implementation details, see [AGENTS.md](AGENTS.md).  
+For feature descriptions, see [README.md](README.md).
