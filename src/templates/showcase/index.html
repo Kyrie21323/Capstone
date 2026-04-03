@@ -17,45 +17,89 @@
   <!-- ── Main ───────────────────────────────────────────────── -->
   <main class="sc-main">
 
-    {% if matched %}
-      <!-- Already matched — redirect to match page instead of showing tap -->
+    {% if locked %}
+      <!-- Both slots filled and interface locked → redirect to match screen -->
       <script>window.location.href = "{{ url_for('showcase.match') }}";</script>
 
-    {% elif scanned | length == 0 %}
-      <!-- ── State 0: No taps yet ──────────────────────────── -->
+    {% elif user1 is none %}
+      <!-- ── State 0: No users active ──────────────────────── -->
       <div class="sc-hero fade-in">
         <div class="sc-pulse-ring"></div>
         <div class="sc-nfc-icon">⬡</div>
         <h1 class="sc-title">Tap to Connect</h1>
         <p class="sc-subtitle">
-          Hold your badge to the reader — or press the button below<br>
-          to simulate an NFC tap and discover who you might meet.
+          Hold your badge to the reader — or enter a badge ID below<br>
+          to test without NFC hardware.
         </p>
 
-        <form action="{{ url_for('showcase.tap') }}" method="POST">
-          <button type="submit" class="sc-btn sc-btn-primary sc-btn-xl">
-            <span class="sc-btn-icon">📲</span>
-            Simulate NFC Tap
-          </button>
+        <!--
+          ── TEMPORARY: manual badge-entry testing mode ─────────────────────
+          In production, this input is replaced by the NFC reader posting
+          the scanned nfc_id directly to /showcase/tap. The backend /tap
+          route is identical — only this input method changes.
+
+          To restore the original per-button simulation, uncomment the
+          sc-badge-buttons section below and remove this form.
+          ────────────────────────────────────────────────────────────────── -->
+        <form action="{{ url_for('showcase.tap') }}" method="POST"
+              class="sc-manual-entry" id="tap-form-0"
+              onsubmit="return validateEntry('nfc_input_0')">
+          <label for="nfc_input_0" class="sc-entry-label">Enter badge ID</label>
+          <div class="sc-entry-row">
+            <input
+              type="text"
+              id="nfc_input_0"
+              name="nfc_id"
+              placeholder="1–10"
+              maxlength="10"
+              autocomplete="off"
+              inputmode="numeric"
+              class="sc-entry-input"
+            />
+            <button type="submit" class="sc-btn sc-btn-primary sc-btn-lg">
+              <span class="sc-btn-icon">📲</span>
+              Simulate Tap
+            </button>
+          </div>
+          <p class="sc-hint" id="tap-hint-0"></p>
         </form>
 
-        <p class="sc-hint">{{ remaining }} profiles available</p>
+        <!--
+          Original per-badge simulation buttons (10 buttons, one per user).
+          Uncomment to restore when NFC hardware replaces the input above.
+
+          <div class="sc-badge-buttons">
+            {% for u in all_users %}
+            <form action="{{ url_for('showcase.tap') }}" method="POST">
+              <input type="hidden" name="nfc_id" value="{{ u.nfc_id }}" />
+              <button type="submit" class="sc-btn sc-btn-primary sc-btn-lg"
+                      style="--profile-color: {{ u.color }}">
+                <span class="sc-btn-icon">{{ u.emoji }}</span>
+                Scan Badge {{ u.nfc_id }}
+              </button>
+            </form>
+            {% endfor %}
+          </div>
+          <p class="sc-hint">{{ all_users | length }} badge{{ 's' if all_users | length != 1 else '' }} available</p>
+        -->
+
+        <p class="sc-hint">Valid IDs: 1 – {{ all_users | length }}</p>
       </div>
 
-    {% elif scanned | length == 1 %}
-      <!-- ── State 1: One tap complete ─────────────────────── -->
-      {% set p = scanned[0] %}
+    {% else %}
+      <!-- ── State 1: One user active, waiting for second ──── -->
       <div class="sc-hero fade-in">
+
         <div class="sc-single-profile">
-          <div class="sc-profile-card sc-profile-solo" style="--profile-color: {{ p.color }}">
-            <div class="sc-profile-emoji">{{ p.emoji }}</div>
-            <div class="sc-profile-name">{{ p.name }}</div>
+          <div class="sc-profile-card sc-profile-solo" style="--profile-color: {{ user1.color }}">
+            <div class="sc-profile-emoji">{{ user1.emoji }}</div>
+            <div class="sc-profile-name">{{ user1.name }}</div>
             <div class="sc-profile-interests">
-              {% for interest in p.interests %}
-                <span class="sc-tag">{{ interest }}</span>
+              {% for kw in user1.keywords %}
+                <span class="sc-tag">{{ kw }}</span>
               {% endfor %}
             </div>
-            <p class="sc-profile-bio">{{ p.bio }}</p>
+            <p class="sc-profile-bio">{{ user1.profile_text }}</p>
           </div>
         </div>
 
@@ -63,30 +107,95 @@
           <div class="sc-dots">
             <span></span><span></span><span></span>
           </div>
-          <p class="sc-waiting-label">Waiting for a second tap…</p>
+          <p class="sc-waiting-label">Waiting for a second badge tap…</p>
         </div>
 
-        <form action="{{ url_for('showcase.tap') }}" method="POST">
-          <button type="submit" class="sc-btn sc-btn-primary sc-btn-xl">
-            <span class="sc-btn-icon">📲</span>
-            Simulate Second NFC Tap
-          </button>
+        <!--
+          ── TEMPORARY: manual badge-entry testing mode ─────────────────────
+          Same as State 0 above. In production, the NFC reader handles input.
+          Entering the same ID that is already active will log that user out.
+          ────────────────────────────────────────────────────────────────── -->
+        <form action="{{ url_for('showcase.tap') }}" method="POST"
+              class="sc-manual-entry" id="tap-form-1"
+              onsubmit="return validateEntry('nfc_input_1')">
+          <label for="nfc_input_1" class="sc-entry-label">Enter badge ID</label>
+          <div class="sc-entry-row">
+            <input
+              type="text"
+              id="nfc_input_1"
+              name="nfc_id"
+              placeholder="1–10"
+              maxlength="10"
+              autocomplete="off"
+              inputmode="numeric"
+              class="sc-entry-input"
+            />
+            <button type="submit" class="sc-btn sc-btn-primary sc-btn-lg">
+              <span class="sc-btn-icon">📲</span>
+              Simulate Tap
+            </button>
+          </div>
+          <p class="sc-hint" id="tap-hint-1">
+            Re-enter <strong>{{ user1.nfc_id }}</strong> to remove {{ user1.name }}.
+          </p>
         </form>
 
-        <p class="sc-hint">{{ remaining }} profiles remaining</p>
+        <!--
+          Original per-badge simulation buttons.
+          Uncomment to restore when NFC hardware replaces the input above.
+
+          <div class="sc-badge-buttons">
+            {% for u in all_users %}
+            <form action="{{ url_for('showcase.tap') }}" method="POST">
+              <input type="hidden" name="nfc_id" value="{{ u.nfc_id }}" />
+              <button type="submit"
+                      class="sc-btn sc-btn-lg {% if u.id == user1.id %}sc-btn-ghost{% else %}sc-btn-primary{% endif %}"
+                      style="--profile-color: {{ u.color }}">
+                <span class="sc-btn-icon">{{ u.emoji }}</span>
+                {% if u.id == user1.id %}
+                  Tap again to remove
+                {% else %}
+                  Scan Badge {{ u.nfc_id }}
+                {% endif %}
+              </button>
+            </form>
+            {% endfor %}
+          </div>
+          <p class="sc-hint">Tap the same badge again to remove that user.</p>
+        -->
+
       </div>
     {% endif %}
 
   </main>
 
-  <!-- ── Reset footer ───────────────────────────────────────── -->
-  {% if scanned | length > 0 %}
+  <!-- ── Reset footer (shown whenever at least one user is active) ── -->
+  {% if user1 is not none %}
   <footer class="sc-footer">
     <form action="{{ url_for('showcase.reset') }}" method="POST">
       <button type="submit" class="sc-btn sc-btn-ghost sc-btn-sm">↺ Reset Showcase</button>
     </form>
   </footer>
   {% endif %}
+
+  <!--
+    ── TEMPORARY: client-side validation for manual badge-entry ───────────
+    Provides immediate feedback if a blank or clearly invalid value is
+    submitted. The backend /tap route already handles unknown IDs safely
+    (it silently ignores them and redirects back), so this is convenience only.
+    Remove this block when NFC hardware takes over the tap path.
+    ────────────────────────────────────────────────────────────────────── -->
+  <script>
+    function validateEntry(inputId) {
+      var input = document.getElementById(inputId);
+      var val   = input ? input.value.trim() : '';
+      if (!val) {
+        input.focus();
+        return false; // prevent empty submission
+      }
+      return true; // let the form POST proceed normally to /showcase/tap
+    }
+  </script>
 
 </body>
 </html>

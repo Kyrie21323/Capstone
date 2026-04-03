@@ -1,41 +1,53 @@
 """
 Showcase Mode blueprint — isolated installation experience.
 No authentication, no database. Uses Flask session only.
-All state resets when the session is cleared.
+All state resets when the session is cleared or reset is called manually.
+
+Session keys
+------------
+showcase_active_users  : {"user_1_id": int|None, "user_2_id": int|None}
+showcase_locked        : bool — True once a pair is formed; ignores further taps
+showcase_interactions  : list of {source_id, target_id, timestamp} — visualization only
+showcase_questions     : dict — recent question strings per direction (memory de-dup)
 """
-import random
-from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request
+from datetime import datetime, timezone
+
+from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
+
+from showcase.question_engine import generate_question
+from showcase.showcase_users import (
+    get_all_showcase_users,
+    get_showcase_user_by_id,
+    get_showcase_user_by_nfc_id,
+)
 
 showcase_bp = Blueprint("showcase", __name__, url_prefix="/showcase")
-
-# Import profiles at module level (pure in-memory, no DB)
-from showcase.demo_profiles import DEMO_PROFILES, get_profile_by_id, generate_question
 
 # ---------------------------------------------------------------------------
 # Session key constants
 # ---------------------------------------------------------------------------
-_SCANNED_KEY   = "showcase_scanned"    # list of profile IDs tapped so far
-_MATCHED_KEY   = "showcase_matched"    # bool — True once a pair is formed
-_QUESTIONS_KEY = "showcase_questions"  # dict — recent questions per direction
+_ACTIVE_USERS_KEY  = "showcase_active_users"   # {"user_1_id": int|None, "user_2_id": int|None}
+_LOCKED_KEY        = "showcase_locked"          # bool
+_INTERACTIONS_KEY  = "showcase_interactions"    # list[dict] — visualization only
+_QUESTIONS_KEY     = "showcase_questions"       # dict[direction_key, list[str]]
 
-# How many recent questions to remember per direction before allowing repeats
-_MEMORY_DEPTH = 3
+_MEMORY_DEPTH = 3  # max questions remembered per direction before repeats allowed
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Session helpers
 # ---------------------------------------------------------------------------
 
-def _get_scanned_profiles() -> list[dict]:
-    """Return full profile dicts for IDs stored in session."""
-    ids = session.get(_SCANNED_KEY, [])
-    return [get_profile_by_id(pid) for pid in ids if get_profile_by_id(pid)]
+def _get_active_users() -> dict:
+    return session.get(_ACTIVE_USERS_KEY, {"user_1_id": None, "user_2_id": None})
 
 
-def _available_profiles() -> list[dict]:
-    """Return profiles not yet scanned this session."""
-    used_ids = set(session.get(_SCANNED_KEY, []))
-    return [p for p in DEMO_PROFILES if p["id"] not in used_ids]
+def _set_active_users(state: dict) -> None:
+    session[_ACTIVE_USERS_KEY] = state
+
+
+def _is_locked() -> bool:
+    return session.get(_LOCKED_KEY, False)
 
 
 def _direction_key(from_id: int, to_id: int) -> str:
@@ -43,13 +55,11 @@ def _direction_key(from_id: int, to_id: int) -> str:
 
 
 def _get_recent_questions(from_id: int, to_id: int) -> list[str]:
-    """Return the list of recently shown questions for this direction."""
     memory = session.get(_QUESTIONS_KEY, {})
     return memory.get(_direction_key(from_id, to_id), [])
 
 
 def _record_question(from_id: int, to_id: int, question: str) -> None:
-    """Append question to session memory for this direction, capped at _MEMORY_DEPTH."""
     memory = session.get(_QUESTIONS_KEY, {})
     key = _direction_key(from_id, to_id)
     recent = memory.get(key, [])
@@ -60,67 +70,135 @@ def _record_question(from_id: int, to_id: int, question: str) -> None:
     session[_QUESTIONS_KEY] = memory
 
 
+def get_current_showcase_pair() -> tuple[dict | None, dict | None]:
+    """
+    Return the two active showcase user dicts as (user_1, user_2).
+    Returns (None, None) if either slot is empty.
+
+    This is the canonical source for the current interface pair.
+    Do NOT use showcase_interactions for this purpose.
+    """
+    state = _get_active_users()
+    user1 = get_showcase_user_by_id(state["user_1_id"]) if state["user_1_id"] else None
+    user2 = get_showcase_user_by_id(state["user_2_id"]) if state["user_2_id"] else None
+    return user1, user2
+
+
+def _record_interaction(user1_id: int, user2_id: int) -> None:
+    """
+    Append a visualization-only interaction record.
+    This is for graph/history display ONLY.
+    Do NOT use this to determine the current active pair.
+    """
+    interactions = session.get(_INTERACTIONS_KEY, [])
+    interactions.append({
+        "source_id": user1_id,
+        "target_id": user2_id,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
+    session[_INTERACTIONS_KEY] = interactions
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
 
 @showcase_bp.route("/", methods=["GET"])
 def index():
-    """Landing page — shows the NFC tap button and any already-scanned profiles."""
-    scanned = _get_scanned_profiles()
-    matched = session.get(_MATCHED_KEY, False)
-    remaining = len(_available_profiles())
+    """Landing page — shows active users and NFC tap controls."""
+    state  = _get_active_users()
+    locked = _is_locked()
+    user1  = get_showcase_user_by_id(state["user_1_id"]) if state["user_1_id"] else None
+    user2  = get_showcase_user_by_id(state["user_2_id"]) if state["user_2_id"] else None
+
     return render_template(
         "showcase/index.html",
-        scanned=scanned,
-        matched=matched,
-        remaining=remaining,
+        user1=user1,
+        user2=user2,
+        locked=locked,
+        all_users=get_all_showcase_users(),
     )
 
 
 @showcase_bp.route("/tap", methods=["POST"])
 def tap():
     """
-    Simulate an NFC tap: pick a random unused profile and add it to the session.
-    - If this is the 2nd tap → set matched flag and redirect to match screen.
-    - If already matched → ignore and redirect back.
-    - If no profiles remain → redirect back (all used up).
-    """
-    if session.get(_MATCHED_KEY):
-        return redirect(url_for("showcase.match"))
+    Handle an NFC tap — real hardware or simulated button.
 
-    available = _available_profiles()
-    if not available:
+    Expects form field 'nfc_id' (str).
+    Also accepts JSON body {"nfc_id": "..."} for programmatic use.
+
+    Tap logic
+    ---------
+    - Unknown nfc_id          → ignore, redirect to index (safe)
+    - Interface is locked     → ignore, redirect to match (safe)
+    - Same badge as user_1    → log out user_1, unlock interface
+    - Same badge as user_2    → log out user_2, unlock interface (shouldn't
+                                happen while locked, but handled defensively)
+    - Slot 1 empty            → assign user to slot 1, wait for second tap
+    - Slot 2 empty            → assign user to slot 2, lock interface,
+                                record interaction, redirect to match
+    """
+    # Accept both form POST and JSON body
+    data   = request.get_json(silent=True) or {}
+    nfc_id = str(request.form.get("nfc_id") or data.get("nfc_id", "")).strip()
+
+    # Unknown badge — ignore silently
+    user = get_showcase_user_by_nfc_id(nfc_id)
+    if not user:
         return redirect(url_for("showcase.index"))
 
-    chosen = random.choice(available)
+    user_id = user["id"]
+    state   = _get_active_users()
 
-    scanned_ids = session.get(_SCANNED_KEY, [])
-    scanned_ids.append(chosen["id"])
-    session[_SCANNED_KEY] = scanned_ids
-
-    if len(scanned_ids) >= 2:
-        session[_MATCHED_KEY] = True
+    # Interface locked → ignore further taps
+    if _is_locked():
         return redirect(url_for("showcase.match"))
 
+    # Same badge as slot 1 → log out user_1
+    if state["user_1_id"] == user_id:
+        state["user_1_id"] = None
+        _set_active_users(state)
+        return redirect(url_for("showcase.index"))
+
+    # Same badge as slot 2 → log out user_2 (defensive; normally locked by now)
+    if state["user_2_id"] == user_id:
+        state["user_2_id"] = None
+        _set_active_users(state)
+        return redirect(url_for("showcase.index"))
+
+    # Slot 1 is empty → assign and wait
+    if state["user_1_id"] is None:
+        state["user_1_id"] = user_id
+        _set_active_users(state)
+        return redirect(url_for("showcase.index"))
+
+    # Slot 2 is empty → pair formed, lock, record visualization interaction
+    if state["user_2_id"] is None:
+        state["user_2_id"] = user_id
+        _set_active_users(state)
+        session[_LOCKED_KEY] = True
+        _record_interaction(state["user_1_id"], user_id)
+        return redirect(url_for("showcase.match"))
+
+    # Fallback (should not be reached if lock check is correct)
     return redirect(url_for("showcase.index"))
 
 
 @showcase_bp.route("/match", methods=["GET"])
 def match():
-    """Match screen — shown after two profiles have been scanned."""
-    scanned = _get_scanned_profiles()
-    if len(scanned) < 2:
+    """Match screen — shown once both slots are filled."""
+    user1, user2 = get_current_showcase_pair()
+    if not user1 or not user2:
         return redirect(url_for("showcase.index"))
 
-    profile1, profile2 = scanned[0], scanned[1]
-    shared_interests = [i for i in profile1["interests"] if i in profile2["interests"]]
+    shared_keywords = [k for k in user1["keywords"] if k in user2["keywords"]]
 
     return render_template(
         "showcase/match.html",
-        profile1=profile1,
-        profile2=profile2,
-        shared_interests=shared_interests,
+        profile1=user1,
+        profile2=user2,
+        shared_interests=shared_keywords,
     )
 
 
@@ -134,55 +212,60 @@ def generate_question_route():
 
     Response (JSON):
         {
-            "question":   str,
-            "from_name":  str,
-            "from_emoji": str,
-            "from_color": str,
-            "to_name":    str,
-            "to_emoji":   str,
-            "to_color":   str,
+            "question":    str,
+            "from_name":   str,
+            "from_emoji":  str,
+            "from_color":  str,
+            "to_name":     str,
+            "to_emoji":    str,
+            "to_color":    str,
         }
     """
-    data = request.get_json(silent=True) or {}
+    data    = request.get_json(silent=True) or {}
     from_id = data.get("from_id")
     to_id   = data.get("to_id")
 
-    from_profile = get_profile_by_id(from_id)
-    to_profile   = get_profile_by_id(to_id)
+    from_user = get_showcase_user_by_id(from_id)
+    to_user   = get_showcase_user_by_id(to_id)
 
-    if not from_profile or not to_profile:
-        return jsonify(error="Invalid profile IDs"), 400
+    if not from_user or not to_user:
+        return jsonify(error="Invalid user IDs"), 400
 
     recent   = _get_recent_questions(from_id, to_id)
-    question = generate_question(from_profile, to_profile, exclude=recent)
+    question = generate_question(from_user, to_user, exclude=recent)
     _record_question(from_id, to_id, question)
 
     return jsonify(
         question   = question,
-        from_name  = from_profile["name"],
-        from_emoji = from_profile["emoji"],
-        from_color = from_profile["color"],
-        to_name    = to_profile["name"],
-        to_emoji   = to_profile["emoji"],
-        to_color   = to_profile["color"],
+        from_name  = from_user["name"],
+        from_emoji = from_user["emoji"],
+        from_color = from_user["color"],
+        to_name    = to_user["name"],
+        to_emoji   = to_user["emoji"],
+        to_color   = to_user["color"],
     )
 
 
 @showcase_bp.route("/reset", methods=["POST"])
 def reset():
-    """Clear all showcase session state and return to landing."""
-    session.pop(_SCANNED_KEY,   None)
-    session.pop(_MATCHED_KEY,   None)
-    session.pop(_QUESTIONS_KEY, None)
+    """
+    Manual-only reset.
+    Clears all showcase session state and returns to landing page.
+    """
+    session.pop(_ACTIVE_USERS_KEY, None)
+    session.pop(_LOCKED_KEY,       None)
+    session.pop(_INTERACTIONS_KEY, None)
+    session.pop(_QUESTIONS_KEY,    None)
     return redirect(url_for("showcase.index"))
 
 
 @showcase_bp.route("/status", methods=["GET"])
 def status():
-    """Return current showcase state as JSON (debug helper)."""
-    scanned = _get_scanned_profiles()
+    """Return current showcase state as JSON (debug / NFC hardware helper)."""
+    user1, user2 = get_current_showcase_pair()
     return jsonify(
-        scanned=[{"id": p["id"], "name": p["name"]} for p in scanned],
-        matched=session.get(_MATCHED_KEY, False),
-        remaining=len(_available_profiles()),
+        user_1        = {"id": user1["id"], "name": user1["name"]} if user1 else None,
+        user_2        = {"id": user2["id"], "name": user2["name"]} if user2 else None,
+        locked        = _is_locked(),
+        interactions  = session.get(_INTERACTIONS_KEY, []),
     )

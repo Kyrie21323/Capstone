@@ -1,6 +1,8 @@
 """
-Hardcoded demo profiles for the Interactive Media Showcase installation.
-These are pure in-memory objects — no database, no ORM.
+DEPRECATED — superseded by showcase_users.py and question_engine.py.
+
+This file is kept for reference only and is no longer imported by the
+showcase blueprint. Do not add new profiles or logic here.
 """
 import random
 

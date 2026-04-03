@@ -47,11 +47,11 @@
           <div class="sc-profile-emoji">{{ profile1.emoji }}</div>
           <div class="sc-profile-name">{{ profile1.name }}</div>
           <div class="sc-profile-interests">
-            {% for interest in profile1.interests %}
-              <span class="sc-tag">{{ interest }}</span>
+            {% for kw in profile1.keywords %}
+              <span class="sc-tag">{{ kw }}</span>
             {% endfor %}
           </div>
-          <p class="sc-profile-bio">{{ profile1.bio }}</p>
+          <p class="sc-profile-bio">{{ profile1.profile_text }}</p>
         </div>
 
         <!-- Connector ────────────────────────────────────── -->
@@ -79,11 +79,11 @@
           <div class="sc-profile-emoji">{{ profile2.emoji }}</div>
           <div class="sc-profile-name">{{ profile2.name }}</div>
           <div class="sc-profile-interests">
-            {% for interest in profile2.interests %}
-              <span class="sc-tag">{{ interest }}</span>
+            {% for kw in profile2.keywords %}
+              <span class="sc-tag">{{ kw }}</span>
             {% endfor %}
           </div>
-          <p class="sc-profile-bio">{{ profile2.bio }}</p>
+          <p class="sc-profile-bio">{{ profile2.profile_text }}</p>
         </div>
 
       </div>

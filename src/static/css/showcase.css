@@ -566,6 +566,65 @@
   justify-content: center;
 }
 
+/* NFC badge simulation buttons on the landing / waiting screen */
+.sc-badge-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* ── TEMPORARY: manual badge-entry testing mode ──────────────────────────
+   Replace .sc-manual-entry with real NFC reader integration later.
+   ─────────────────────────────────────────────────────────────────────── */
+.sc-manual-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.sc-entry-label {
+  font-size: 13px;
+  color: var(--text-muted, rgba(255,255,255,0.45));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sc-entry-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.sc-entry-input {
+  background: var(--surface-2, rgba(255,255,255,0.06));
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: var(--radius-sm, 8px);
+  color: var(--text, #fff);
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 12px 0;
+  width: 72px;
+  text-align: center;
+  outline: none;
+  transition: border-color var(--transition, 0.18s ease);
+}
+
+.sc-entry-input:focus {
+  border-color: var(--accent, #7C3AED);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.18);
+}
+
+.sc-entry-input::placeholder {
+  color: rgba(255,255,255,0.25);
+  font-weight: 400;
+  font-size: 14px;
+}
+
 /* Profile-coloured outlined button */
 .sc-btn-profile {
   background: var(--surface-2);
