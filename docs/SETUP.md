@@ -112,6 +112,24 @@ python main.py
 
 ---
 
+## Email Configuration
+
+To enable email notifications (match alerts and calendar invites), configure the following environment variables in a `.env` file or your deployment environment:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `MAIL_SERVER` | SMTP Server | `smtp.gmail.com` |
+| `MAIL_PORT` | SMTP Port | `587` |
+| `MAIL_USE_TLS` | Use TLS | `true` |
+| `MAIL_USERNAME` | SMTP Username | `user@gmail.com` |
+| `MAIL_PASSWORD` | SMTP Password | `app-password` |
+| `MAIL_DEFAULT_SENDER` | From Address | `noreply@prophere.com` |
+| `MAIL_SUPPRESS_SEND` | Disable sending (dev) | `false` |
+
+> **Note for Gmail users**: You must use an [App Password](https://support.google.com/accounts/answer/185833), not your regular password.
+
+---
+
 ## User Management Setup
 
 ### Create Admin Account

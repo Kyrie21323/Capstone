@@ -185,6 +185,62 @@ GET /uploads/<filename>
 
 ---
 
+## Showcase Routes
+
+Isolated routes for the Interactive Media Showcase kiosk mode. No authentication required.
+
+### Showcase Landing
+```
+GET /showcase/
+```
+**Description**: Kiosk landing page  
+**Returns**: HTML page
+
+### Simulate Tap
+```
+POST /showcase/tap
+```
+**Description**: Simulate NFC tap (picks random profile)  
+**Returns**: Redirect
+
+### Specific Tap (NFC)
+```
+POST /showcase/tap/<profile_id>
+GET /showcase/tap/<profile_id>
+```
+**Description**: Tap a specific profile (via NFC tag)  
+**Parameters**:
+- `profile_id` (int) - ID of the profile (1-10)
+
+**Returns**: Redirect
+
+### Match Screen
+```
+GET /showcase/match
+```
+**Description**: Match reveal screen  
+**Returns**: HTML page (requires 2 tapped profiles in session)
+
+### Generate Question
+```
+POST /showcase/generate_question
+```
+**Description**: Get a directional conversation question  
+**Parameters (JSON)**:
+- `from_id` (int) - Asking profile ID
+- `to_id` (int) - Answering profile ID
+
+**Returns**: JSON question object
+
+### Reset Session
+```
+POST /showcase/reset
+```
+**Description**: Clear showcase session  
+**Returns**: Redirect to landing
+
+---
+
 ## Admin Routes
 
 All routes require admin authentication (`@login_required` + `@admin_required`).

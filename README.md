@@ -45,6 +45,7 @@ At large events, attendees struggle to track connections and coordinate meetings
 ✅ Analytics dashboard 
 ✅ Export/import database 
 ✅ Dual Notification System (Email + Web Push)
+✅ Showcase Mode (Kiosk/iPad experience)
 
 📖 **Technical documentation**: [AGENTS.md](AGENTS.md) | [DATABASE.md](DATABASE.md) | [API.md](API.md)
 

@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prophere — A hybrid conference networking experience addressing the cold start problem through goal-aware matching and staged interactions.">
+    <meta name="referrer" content="strict-origin-when-cross-origin"/>
+    <title>Prophere — Project Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+    <style>
+/* ============================================
+   1. TOKENS
+   ============================================ */
+:root {
+    --bg: #050404;
+    --bg-elevated: #0c0c0a;
+    --surface: #111110;
+    --surface-2: #1a1a17;
+    --surface-3: #222220;
+    --accent: #E2FF32;
+    --accent-dim: rgba(226, 255, 50, 0.08);
+    --accent-mid: rgba(226, 255, 50, 0.20);
+    --accent-glow: rgba(226, 255, 50, 0.35);
+    --text: #f0f0e8;
+    --text-muted: #b4b4ab;
+    --text-dim: #8c8c85;
+    --border: rgba(255, 255, 255, 0.06);
+    --border-mid: rgba(255, 255, 255, 0.10);
+    --match-green: #34D399;
+    --like-green: #22c55e;
+    --pass-red: #ef4444;
+    --purple: #7C3AED;
+    --amber: #F59E0B;
+    --pink: #EC4899;
+    --cyan: #06B6D4;
+    --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+    --font-mono: 'DM Mono', 'Menlo', monospace;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --section-pad-x: clamp(1.5rem, 5vw, 6rem);
+    --section-pad-y: clamp(5rem, 12vh, 10rem);
+}
+
+/* ============================================
+   2. RESET + BASE
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+img { max-width: 100%; display: block; }
+
+a { color: inherit; text-decoration: none; }
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+}
+
+/* ============================================
+   3. NAVIGATION
+   ============================================ */
+.nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem var(--section-pad-x);
+    mix-blend-mode: difference;
+    transition: padding 0.4s var(--ease-out);
+}
+
+.nav-logo {
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    transition: color 0.3s;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.4s var(--ease-out);
+}
+
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+
+/* ============================================
+   4. HERO
+   ============================================ */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 var(--section-pad-x);
+    overflow: hidden;
+}
+
+#network-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+}
+
+.hero-title {
+    font-size: clamp(4.5rem, 12vw, 11rem);
+    font-weight: 800;
+    line-height: 0.88;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0;
+}
+
+.hero-subtitle {
+    font-family: var(--font-mono);
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 3rem;
+    opacity: 0;
+}
+
+.hero-thesis {
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    color: var(--text-muted);
+    line-height: 1.5;
+    max-width: 640px;
+    opacity: 0;
+}
+
+.hero-thesis strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.hero-thesis em {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: 600;
+}
+
+.hero-context {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0;
+}
+
+.hero-context span { white-space: nowrap; }
+.hero-context span::before {
+    content: '·';
+    margin-right: 0.5rem;
+    color: var(--text-dim);
+}
+.hero-context span:first-child::before { display: none; }
+
+/* ============================================
+   5. SHARED SECTION STYLES
+   ============================================ */
+.section {
+    padding: var(--section-pad-y) var(--section-pad-x);
+    position: relative;
+    border-top: 1px solid var(--border);
+}
+
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.section-num { color: var(--accent); }
+.section-tag { color: var(--text-dim); }
+
+.section-title {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+.section-desc {
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+    color: var(--text-muted);
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 4rem;
+}
+
+/* ============================================
+   6. PROBLEM SECTION
+   ============================================ */
+.problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.gap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: clamp(2rem, 4vw, 3.5rem);
+    position: relative;
+    overflow: hidden;
+}
+
+.gap-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.8s var(--ease-out);
+}
+
+.gap-card:hover::before { transform: scaleX(1); }
+
+.gap-card-num {
+    font-family: var(--font-mono);
+    font-size: 4rem;
+    font-weight: 200;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 1.5rem;
+}
+
+.gap-card h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+}
+
+.gap-card p {
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+.gap-card .gap-keyword {
+    display: inline;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* ============================================
+   7. DEMO SECTIONS (SHARED)
+   ============================================ */
+.demo-section {
+    padding: var(--section-pad-y) var(--section-pad-x);
+    border-top: 1px solid var(--border);
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.demo-section .section-label {
+    align-self: flex-start;
+}
+
+.demo-header {
+    text-align: center;
+    max-width: 640px;
+    margin-bottom: 4rem;
+}
+
+.demo-header h2 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+}
+
+.demo-header p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.demo-stage {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ============================================
+   8. SWIPE DEMO
+   ============================================ */
+.swipe-container {
+    position: relative;
+    width: 480px;
+    height: 420px;
+    perspective: 1000px;
+}
+
+.swipe-card {
+    position: absolute;
+    inset: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-mid);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.5s var(--ease-out), opacity 0.5s;
+    will-change: transform;
+    touch-action: none;
+    user-select: none;
+}
+
+.swipe-card[data-index="1"] { transform: scale(0.95) translateY(16px); opacity: 0.7; z-index: 2; }
+.swipe-card[data-index="2"] { transform: scale(0.90) translateY(32px); opacity: 0.4; z-index: 1; }
+.swipe-card[data-index="0"] { z-index: 3; }
+
+.swipe-card .card-emoji {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.swipe-card .card-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.swipe-card .card-interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+}
+
+.card-interest-pill {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border-mid);
+    border-radius: 2rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.swipe-card .card-bio {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+.swipe-card .card-goal {
+    margin-top: auto;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.swipe-card .card-goal strong {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.swipe-actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+.swipe-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: 2px solid var(--border-mid);
+    transition: all 0.3s var(--ease-out);
+}
+
+.swipe-btn-pass:hover { border-color: var(--pass-red); background: rgba(239, 68, 68, 0.1); transform: scale(1.1); }
+.swipe-btn-like:hover { border-color: var(--like-green); background: rgba(34, 197, 94, 0.1); transform: scale(1.1); }
+
+.swipe-indicator {
+    position: absolute;
+    top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 1rem;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.swipe-indicator-like {
+    right: 1.5rem;
+    color: var(--like-green);
+    border: 2px solid var(--like-green);
+}
+
+.swipe-indicator-pass {
+    left: 1.5rem;
+    color: var(--pass-red);
+    border: 2px solid var(--pass-red);
+}
+
+.swipe-match-flash {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5, 4, 4, 0.85);
+    border-radius: 16px;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+}
+
+.swipe-match-flash.active { opacity: 1; }
+
+.swipe-match-flash span {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    animation: pulseGlow 1s ease infinite;
+}
+
+/* ============================================
+   9. MATCH REVEAL DEMO
+   ============================================ */
+.match-reveal-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    min-height: 220px;
+}
+
+.match-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 2;
+    opacity: 0;
+}
+
+.match-node-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border: 2px solid var(--border-mid);
+    background: var(--surface);
+    transition: border-color 0.6s, box-shadow 0.6s;
+}
+
+.match-node-name {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 120px;
+}
+
+.match-connector {
+    flex-grow: 1;
+    height: 2px;
+    position: relative;
+    margin: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.match-connector-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.2s var(--ease-out);
+}
+
+.match-connector-label {
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    background: var(--bg);
+    padding: 0.2rem 0.8rem;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.match-reveal-banner {
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    opacity: 0;
+    white-space: nowrap;
+}
+
+.match-shared-interests {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 4rem;
+    opacity: 0;
+}
+
+.match-shared-pill {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--accent-mid);
+    border-radius: 2rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+}
+
+/* Match reveal states */
+.match-reveal-stage.revealed .match-node { opacity: 1; }
+.match-reveal-stage.revealed .match-node-circle { border-color: var(--accent-mid); box-shadow: 0 0 30px var(--accent-dim); }
+.match-reveal-stage.revealed .match-connector-line { transform: scaleX(1); }
+.match-reveal-stage.revealed .match-connector-label { color: var(--accent); }
+.match-reveal-stage.revealed .match-reveal-banner { opacity: 1; }
+.match-reveal-stage.revealed .match-shared-interests { opacity: 1; }
+
+/* ============================================
+   10. PROMPT DIRECTION DEMO
+   ============================================ */
+.prompt-demo-container {
+    width: 100%;
+    max-width: 560px;
+}
+
+.prompt-profiles {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.prompt-profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-mid);
+    border-radius: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: border-color 0.3s;
+}
+
+.prompt-profile-chip.active { border-color: var(--accent-mid); color: var(--accent); }
+
+.prompt-arrow {
+    font-size: 1.2rem;
+    color: var(--text-dim);
+    transition: transform 0.4s var(--ease-out);
+}
+
+.prompt-arrow.flipped { transform: scaleX(-1); }
+
+.prompt-direction-btns {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.prompt-dir-btn {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.6rem 1.25rem;
+    border: 1px solid var(--border-mid);
+    border-radius: 2rem;
+    color: var(--text-muted);
+    transition: all 0.3s var(--ease-out);
+}
+
+.prompt-dir-btn:hover { border-color: var(--text-dim); color: var(--text); }
+.prompt-dir-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+.prompt-display {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 2rem 2.5rem;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    transition: opacity 0.3s;
+}
+
+.prompt-text {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+    font-weight: 200;
+}
+
+.prompt-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prompt-meta-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+}
+
+.prompt-cycle-btn {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 2rem;
+    transition: all 0.3s;
+}
+
+.prompt-cycle-btn:hover { border-color: var(--accent-mid); color: var(--accent); }
+
+/* ============================================
+   11. VIDEO SECTION
+   ============================================ */
+.video-section {
+    padding: var(--section-pad-y) var(--section-pad-x);
+    border-top: 1px solid var(--border);
+}
+
+.video-wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: 0;
+}
+
+/* ============================================
+   12. THREE-TAP DEMO
+   ============================================ */
+.tap-flow-container {
+    width: 100%;
+    max-width: 800px;
+}
+
+.tap-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 3rem;
+}
+
+.tap-node {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.4s var(--ease-out);
+    position: relative;
+    background: var(--bg);
+    z-index: 2;
+}
+
+.tap-node:hover { border-color: var(--text-muted); color: var(--text-muted); }
+.tap-node.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-dim);
+    background: var(--accent-dim);
+}
+.tap-node.completed {
+    border-color: var(--accent-mid);
+    color: var(--accent);
+    background: var(--accent-dim);
+}
+
+.tap-line {
+    width: 80px;
+    height: 2px;
+    background: var(--border);
+    position: relative;
+    z-index: 1;
+}
+
+.tap-line-fill {
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.6s var(--ease-out);
+}
+
+.tap-line.filled .tap-line-fill { width: 100%; }
+
+.tap-card-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-height: 220px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.tap-card-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 160px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.tap-reveal {
+    display: none;
+    animation: fadeSlideUp 0.5s var(--ease-out);
+}
+
+.tap-reveal.active { display: block; }
+
+.tap-reveal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.tap-reveal-emoji { font-size: 2rem; }
+
+.tap-reveal-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.tap-reveal-detail {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.tap-reveal-detail .label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 0.35rem;
+}
+
+.tap-reveal-prompt {
+    margin-top: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--accent-dim);
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+    font-weight: 200;
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.tap-reveal-contact {
+    margin-top: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.tap-contact-btn {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.5rem 1.2rem;
+    border: 1px solid var(--accent);
+    border-radius: 2rem;
+    color: var(--accent);
+    transition: all 0.3s;
+}
+
+.tap-contact-btn:hover { background: var(--accent); color: var(--bg); }
+
+.tap-reset-btn {
+    display: block;
+    margin: 1.5rem auto 0;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.tap-reset-btn:hover { color: var(--text-muted); }
+
+/* ============================================
+   13. IMPACT SECTION
+   ============================================ */
+.impact-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.stat-number {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.bar-chart {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.bar-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 50px;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.bar-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.bar-track {
+    height: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent-mid));
+    width: 0;
+    transition: width 1.2s var(--ease-out);
+    position: relative;
+}
+
+.bar-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+}
+
+.bar-value {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    text-align: right;
+}
+
+.bar-chart-note {
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
+}
+
+/* ============================================
+   14. PHILOSOPHY SECTION
+   ============================================ */
+.pull-quote {
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 200;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text);
+    max-width: 800px;
+    margin: 0 auto 4rem;
+    position: relative;
+    padding-left: 2rem;
+    border-left: 3px solid var(--accent);
+}
+
+.pull-quote .pq-source {
+    display: block;
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+}
+
+.ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+}
+
+.ref-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color 0.3s;
+}
+
+.ref-card:hover { border-color: var(--border-mid); }
+
+.ref-year {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.ref-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.ref-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.second-quote {
+    margin-top: 5rem;
+    text-align: center;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    color: var(--text-muted);
+    font-style: italic;
+    font-weight: 200;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.second-quote em {
+    color: var(--text);
+    font-style: italic;
+}
+
+/* ============================================
+   15. FOOTER
+   ============================================ */
+.footer {
+    padding: 3rem var(--section-pad-x);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-left {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.footer-stack {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.footer-badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+}
+
+/* ============================================
+   16. KEYFRAME ANIMATIONS
+   ============================================ */
+@keyframes pulseGlow {
+    0%, 100% { text-shadow: 0 0 8px var(--accent-glow); }
+    50% { text-shadow: 0 0 24px var(--accent-glow), 0 0 48px var(--accent-dim); }
+}
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes searchPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+@keyframes nodePulse {
+    0% { box-shadow: 0 0 0 0 var(--accent-glow); }
+    70% { box-shadow: 0 0 0 15px rgba(226, 255, 50, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(226, 255, 50, 0); }
+}
+
+/* ============================================
+   17. RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+    .problem-grid { grid-template-columns: 1fr; }
+    .impact-stats { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .impact-stats { grid-template-columns: 1fr; }
+    .bar-row { grid-template-columns: 100px 1fr 40px; }
+    .match-reveal-stage { flex-direction: column; gap: 1rem; }
+    .match-connector { width: 2px; height: 60px; margin: 0; flex-grow: 0; }
+    .match-connector-line { width: 2px; height: 100%; transform: scaleY(0); transform-origin: top; }
+    .match-reveal-stage.revealed .match-connector-line { transform: scaleY(1); }
+    .swipe-container { width: 340px; height: 460px; }
+    .swipe-card { padding: 2rem; }
+    .swipe-card .card-emoji { font-size: 3rem; margin-bottom: 1rem; }
+    .swipe-card .card-name { font-size: 1.5rem; }
+    .swipe-card .card-bio { font-size: 1rem; }
+    .tap-progress { gap: 0; }
+    .tap-line { width: 40px; }
+    .tap-node { width: 46px; height: 46px; font-size: 0.6rem; }
+    .prompt-profiles { flex-wrap: wrap; }
+    .prompt-direction-btns { flex-wrap: wrap; }
+    .hero-context { flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+    .footer { flex-direction: column; align-items: flex-start; }
+    .ref-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    .swipe-container { width: 300px; height: 420px; }
+    .hero-title { font-size: 3.5rem; }
+    .section-title { font-size: 2rem; }
+}
+    </style>
+</head>
+<body>
+
+<!-- ============================================
+     NAVIGATION
+     ============================================ -->
+<nav class="nav" id="main-nav">
+    <div class="nav-logo">Prophere</div>
+    <div class="nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#design">Design</a>
+        <a href="#video">Video</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#impact">Impact</a>
+        <a href="#philosophy">Philosophy</a>
+    </div>
+</nav>
+
+<!-- ============================================
+     01. HERO
+     ============================================ -->
+<section class="hero" id="hero">
+    <canvas id="network-canvas"></canvas>
+    <div class="hero-content">
+        <h1 class="hero-title" id="hero-title">Prophere</h1>
+        <p class="hero-subtitle" id="hero-subtitle">A hybrid conference networking experience</p>
+        <div class="hero-thesis" id="hero-thesis">
+            <p>We identified conference networking's <em>cold start problem</em> that fails at two points — <strong>discovery</strong> and <strong>encounter</strong>.</p>
+            <p style="margin-top: 0.8rem;">And addressed it with <em>goal-aware matching</em> and <em>staged interactions</em>.</p>
+        </div>
+        <div class="hero-context" id="hero-context">
+            <span>NYU Abu Dhabi</span>
+            <span>Capstone 2026</span>
+            <span>Interactive Media</span>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     02. THE PROBLEM
+     ============================================ -->
+<section class="section" id="problem">
+    <div class="section-label">
+        <span class="section-num">02</span>
+        <span class="section-tag">The Problem</span>
+    </div>
+    <h2 class="section-title">Two Gaps in<br>Conference Networking</h2>
+    <p class="section-desc">Existing tools address matching at scale, but the limiting factor is often emotional — the fear of awkwardness, the fear of wasting time, the fear of being subjected to a sales pitch.</p>
+
+    <div class="problem-grid">
+        <div class="gap-card" id="gap-discovery">
+            <div class="gap-card-num">01</div>
+            <h3>The Discovery Gap</h3>
+            <p>Most matchmaking tools treat attendees as <span class="gap-keyword">static interest vectors</span> compared for overlap. But attendees pursue different, often complementary goals. A designer seeks an engineer. A founder seeks an investor. <span class="gap-keyword">Similarity-only matching misses these cases entirely.</span> And matching is inherently two-sided — a recommendation that only one party values is a failed recommendation.</p>
+        </div>
+        <div class="gap-card" id="gap-encounter">
+            <div class="gap-card-num">02</div>
+            <h3>The Encounter Gap</h3>
+            <p>Even well-matched pairs produce shallow interactions without designing for the <span class="gap-keyword">fragile cold-open moment</span>. A frictionless tap that instantly resolves the exchange leaves no impression, no shared task. The cold start problem is social risk — negotiating attention, relevance, and mutual interest <span class="gap-keyword">without sounding rehearsed or opportunistic.</span></p>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     03a. DESIGN — SWIPE DEMO
+     ============================================ -->
+<section class="demo-section" id="design">
+    <div class="section-label">
+        <span class="section-num">03</span>
+        <span class="section-tag">The Design</span>
+    </div>
+    <div class="demo-header">
+        <h2>Tinder-Style<br>Matching</h2>
+        <p>Attendees express interest through a familiar swipe interface. Goal-aware matching surfaces both similar and complementary profiles. Mutual likes trigger an instant match.</p>
+    </div>
+    <div class="demo-stage" id="swipe-demo-stage">
+        <div class="swipe-container" id="swipe-container">
+            <!-- Cards injected by JS -->
+            <div class="swipe-match-flash" id="swipe-match-flash">
+                <span>✦ Matched ✦</span>
+            </div>
+        </div>
+        <div class="swipe-actions">
+            <button class="swipe-btn swipe-btn-pass" id="swipe-pass" aria-label="Pass">✕</button>
+            <button class="swipe-btn swipe-btn-like" id="swipe-like" aria-label="Like">♥</button>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     03b. DESIGN — MATCH REVEAL DEMO
+     ============================================ -->
+<section class="demo-section">
+    <div class="demo-header">
+        <h2>The Match<br>Reveal</h2>
+        <p>The match reveal is the emotional anchor of the flow — a designed moment of anticipation that makes connection feel earned. Scored 4.45/5 on visual engagement in testing.</p>
+    </div>
+    <div class="demo-stage">
+        <div class="match-reveal-stage" id="match-reveal">
+            <div class="match-node" id="match-node-a">
+                <div class="match-node-circle" style="border-color: rgba(124,58,237,0.3);">🔮</div>
+                <div class="match-node-name">Speculative<br>Designer</div>
+            </div>
+            <div class="match-connector">
+                <div class="match-connector-line"></div>
+                <div class="match-connector-label" id="match-status">Analyzing…</div>
+            </div>
+            <div class="match-node" id="match-node-b">
+                <div class="match-node-circle" style="border-color: rgba(245,158,11,0.3);">🧠</div>
+                <div class="match-node-name">AI<br>Researcher</div>
+            </div>
+            <div class="match-reveal-banner" id="match-banner">✦ You've been matched ✦</div>
+        </div>
+        <div class="match-shared-interests" id="match-shared">
+            <span class="match-shared-pill">Shared: AI Ethics</span>
+            <span class="match-shared-pill">Complementary Goals</span>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     03c. DESIGN — DIRECTIONAL PROMPTS
+     ============================================ -->
+<section class="demo-section">
+    <div class="demo-header">
+        <h2>Directional<br>Conversation</h2>
+        <p>Prompts shift meaning depending on who is framed as the initiator. The same pair produces different exchanges depending on who asks, introducing productive asymmetry.</p>
+    </div>
+    <div class="demo-stage">
+        <div class="prompt-demo-container" id="prompt-demo">
+            <div class="prompt-profiles">
+                <span class="prompt-profile-chip active" id="prompt-chip-a">🔮 Designer</span>
+                <span class="prompt-arrow" id="prompt-arrow">→</span>
+                <span class="prompt-profile-chip" id="prompt-chip-b">🧠 Researcher</span>
+            </div>
+            <div class="prompt-direction-btns">
+                <button class="prompt-dir-btn active" id="prompt-dir-ab" data-from="a" data-to="b">🔮 asks 🧠</button>
+                <button class="prompt-dir-btn" id="prompt-dir-ba" data-from="b" data-to="a">🧠 asks 🔮</button>
+            </div>
+            <div class="prompt-display" id="prompt-display">
+                <p class="prompt-text" id="prompt-text">You work with machine learning — where do you draw the line on what machines should learn from us?</p>
+            </div>
+            <div class="prompt-meta">
+                <span class="prompt-meta-label" id="prompt-meta-label">Prompt informed by: shared interest in AI Ethics</span>
+                <button class="prompt-cycle-btn" id="prompt-cycle">Ask Another →</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     04. VIDEO
+     ============================================ -->
+<section class="video-section section" id="video">
+    <div class="section-label">
+        <span class="section-num">04</span>
+        <span class="section-tag">In Action</span>
+    </div>
+    <h2 class="section-title" style="text-align:center; margin-bottom: 3rem;">Watch the Demo</h2>
+    <div class="video-wrapper">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/tWbkOkJJwkg?si=csOAbBtFtGPhoCFB" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+</section>
+
+<!-- ============================================
+     05. HOW IT WORKS — THREE TAPS
+     ============================================ -->
+<section class="demo-section" id="how-it-works">
+    <div class="section-label">
+        <span class="section-num">05</span>
+        <span class="section-tag">How It Works</span>
+    </div>
+    <div class="demo-header">
+        <h2>Three Taps,<br>Three Layers</h2>
+        <p>Each NFC tap reveals a new layer of identity. Progressive disclosure creates permission structures — making it socially acceptable to linger and ask a question.</p>
+    </div>
+    <div class="demo-stage">
+        <div class="tap-flow-container" id="tap-flow">
+            <div class="tap-progress">
+                <div class="tap-node" data-tap="1" id="tap-1">Tap 1</div>
+                <div class="tap-line" id="tap-line-1"><div class="tap-line-fill"></div></div>
+                <div class="tap-node" data-tap="2" id="tap-2">Tap 2</div>
+                <div class="tap-line" id="tap-line-2"><div class="tap-line-fill"></div></div>
+                <div class="tap-node" data-tap="3" id="tap-3">Tap 3</div>
+            </div>
+
+            <div class="tap-card-area" id="tap-card-area">
+                <div class="tap-card-placeholder" id="tap-placeholder">Tap a node to begin ↑</div>
+
+                <div class="tap-reveal" id="tap-reveal-1">
+                    <div class="tap-reveal-header">
+                        <span class="tap-reveal-emoji">🔮</span>
+                        <span class="tap-reveal-name">Speculative Designer</span>
+                    </div>
+                    <div class="tap-reveal-detail">
+                        <div class="label">Shared interest</div>
+                        <span class="card-interest-pill" style="border-color: var(--accent-mid); color: var(--accent);">AI Ethics</span>
+                    </div>
+                    <div class="tap-reveal-detail">
+                        <div class="label">Why you were matched</div>
+                        <p>Complementary goals — you seek technical feedback, they seek design critique.</p>
+                    </div>
+                </div>
+
+                <div class="tap-reveal" id="tap-reveal-2">
+                    <div class="tap-reveal-header">
+                        <span class="tap-reveal-emoji">🔮</span>
+                        <span class="tap-reveal-name">Speculative Designer</span>
+                    </div>
+                    <div class="tap-reveal-detail">
+                        <div class="label">Interests</div>
+                        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.3rem;">
+                            <span class="card-interest-pill">AI Ethics</span>
+                            <span class="card-interest-pill">Futures Thinking</span>
+                            <span class="card-interest-pill">Participatory Design</span>
+                        </div>
+                    </div>
+                    <div class="tap-reveal-detail">
+                        <div class="label">Bio</div>
+                        <p>Designing artifacts from futures that don't exist yet. Researching how speculative objects can make abstract policy tangible.</p>
+                    </div>
+                    <div class="tap-reveal-prompt">
+                        "Since you both think about AI Ethics — where is the line between a useful constraint and an unnecessary one?"
+                    </div>
+                </div>
+
+                <div class="tap-reveal" id="tap-reveal-3">
+                    <div class="tap-reveal-header">
+                        <span class="tap-reveal-emoji">🔮</span>
+                        <span class="tap-reveal-name">Speculative Designer</span>
+                    </div>
+                    <div class="tap-reveal-detail">
+                        <div class="label">Full Profile</div>
+                        <p>Designing artifacts from futures that don't exist yet. Researching how speculative objects can make abstract policy tangible. Currently exploring participatory foresight methods at NYU.</p>
+                    </div>
+                    <div class="tap-reveal-detail">
+                        <div class="label">Goal</div>
+                        <p style="color:var(--accent);">Looking for collaborators in AI governance research</p>
+                    </div>
+                    <div class="tap-reveal-contact">
+                        <button class="tap-contact-btn">Connect on LinkedIn</button>
+                        <button class="tap-contact-btn">Exchange Contact</button>
+                    </div>
+                </div>
+            </div>
+            <button class="tap-reset-btn" id="tap-reset">↺ Reset Demo</button>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     06. IMPACT
+     ============================================ -->
+<section class="section" id="impact">
+    <div class="section-label">
+        <span class="section-num">06</span>
+        <span class="section-tag">Impact</span>
+    </div>
+    <h2 class="section-title">What We<br>Measured</h2>
+    <p class="section-desc">User testing with 20 participants across a 22-question Likert-scale survey measuring usability and experiential quality.</p>
+
+    <div class="impact-stats" id="impact-stats">
+        <div class="stat-card">
+            <div class="stat-number" data-target="1.60" data-prefix="+">+0</div>
+            <div class="stat-label">Comprehension shift<br>(before vs after use)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-target="4.45">0</div>
+            <div class="stat-label">Match reveal<br>visual engagement</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-target="4.30">0</div>
+            <div class="stat-label">Real-world<br>viability convergence</div>
+        </div>
+    </div>
+
+    <div class="bar-chart" id="bar-chart">
+        <div class="bar-row">
+            <div class="bar-label">Match Reveal</div>
+            <div class="bar-track"><div class="bar-fill" data-width="88"></div></div>
+            <div class="bar-value">4.40</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Viability</div>
+            <div class="bar-track"><div class="bar-fill" data-width="86"></div></div>
+            <div class="bar-value">4.30</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Directional Model</div>
+            <div class="bar-track"><div class="bar-fill" data-width="85"></div></div>
+            <div class="bar-value">4.25</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Prompt Relevance</div>
+            <div class="bar-track"><div class="bar-fill" data-width="82"></div></div>
+            <div class="bar-value">4.10</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Conversation Engine</div>
+            <div class="bar-track"><div class="bar-fill" data-width="75"></div></div>
+            <div class="bar-value">3.73</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Onboarding</div>
+            <div class="bar-track"><div class="bar-fill" data-width="69"></div></div>
+            <div class="bar-value">3.45</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Prompt Naturalness</div>
+            <div class="bar-track"><div class="bar-fill" data-width="66"></div></div>
+            <div class="bar-value">3.30</div>
+        </div>
+    </div>
+    <p class="bar-chart-note">Section-level means · N = 20 · 5-point Likert scale</p>
+</section>
+
+<!-- ============================================
+     07. PHILOSOPHY
+     ============================================ -->
+<section class="section" id="philosophy">
+    <div class="section-label">
+        <span class="section-num">07</span>
+        <span class="section-tag">Design Philosophy</span>
+    </div>
+    <h2 class="section-title">Why Friction<br>Is the Feature</h2>
+
+    <blockquote class="pull-quote">
+        "The limiting factor is often emotional — the fear of awkwardness, the fear of wasting time, and the fear of being subjected to a sales pitch. These concerns are addressed through pacing, prompts, and permission structures in ways that algorithms alone cannot reach."
+        <span class="pq-source">— From the capstone paper</span>
+    </blockquote>
+
+    <p class="section-desc" style="margin-bottom: 3rem;">Prophere draws on five research threads, connecting literatures that have rarely been joined empirically.</p>
+
+    <div class="ref-grid">
+        <div class="ref-card">
+            <div class="ref-year">2010</div>
+            <div>
+                <div class="ref-title">Reciprocal Recommenders</div>
+                <div class="ref-text">Pizzato et al. — Accounting for mutual interest nearly doubles match success rates. A recommendation found valuable by only one party is a failed recommendation.</div>
+            </div>
+        </div>
+        <div class="ref-card">
+            <div class="ref-year">2017</div>
+            <div>
+                <div class="ref-title">User-Controllable Matching</div>
+                <div class="ref-text">Tsai &amp; Brusilovsky — Giving users control over matching dimensions (via interactive sliders) increased trust and satisfaction versus fixed algorithms.</div>
+            </div>
+        </div>
+        <div class="ref-card">
+            <div class="ref-year">2016</div>
+            <div>
+                <div class="ref-title">Design Frictions</div>
+                <div class="ref-text">Cox et al. — Microboundaries disrupt mindless interaction and create opportunities for reflection and intention. Friction becomes a design material.</div>
+            </div>
+        </div>
+        <div class="ref-card">
+            <div class="ref-year">2001</div>
+            <div>
+                <div class="ref-title">Embodied Interaction</div>
+                <div class="ref-text">Dourish — Situated practice matters. A badge tap is a public gesture that both participants acknowledge, grounding digital interaction in physical co-presence.</div>
+            </div>
+        </div>
+        <div class="ref-card">
+            <div class="ref-year">2014</div>
+            <div>
+                <div class="ref-title">Perspective-Taking</div>
+                <div class="ref-text">Duran &amp; Dale — Social constraints shape perspective. A prompt framed from one participant's perspective produces a different exchange than the same prompt framed from the other's.</div>
+            </div>
+        </div>
+        <div class="ref-card">
+            <div class="ref-year">2022</div>
+            <div>
+                <div class="ref-title">Similarity vs Complementarity</div>
+                <div class="ref-text">Talaga &amp; Nowak — Many valuable conference connections are complementary, yet most tools assume similarity is the goal. Prophere surfaces productive tension.</div>
+            </div>
+        </div>
+    </div>
+
+    <p class="second-quote">
+        "Some of the most productive conversations occurred when matches were <em>imperfect</em> — suggesting that the tension between matching precision and serendipity is a design variable worth preserving."
+    </p>
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer class="footer">
+    <div class="footer-left">Built at NYU Abu Dhabi · 2026</div>
+    <div class="footer-stack">
+        <span class="footer-badge">Flask 3.1</span>
+        <span class="footer-badge">SQLAlchemy</span>
+        <span class="footer-badge">Sentence Transformers</span>
+        <span class="footer-badge">NFC / NTAG215</span>
+        <span class="footer-badge">Cytoscape.js</span>
+    </div>
+</footer>
+
+<!-- ============================================
+     SCRIPTS
+     ============================================ -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    /* ========================================
+       NETWORK CANVAS (Hero Background)
+       ======================================== */
+    const canvas = document.getElementById('network-canvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let w, h, particles = [];
+        const PARTICLE_COUNT = 50;
+
+        function resize() {
+            w = canvas.width = canvas.offsetWidth;
+            h = canvas.height = canvas.offsetHeight;
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    r: Math.random() * 1.5 + 0.5
+                });
+            }
+        }
+
+        function drawNetwork() {
+            ctx.clearRect(0, 0, w, h);
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > w) p.vx *= -1;
+                if (p.y < 0 || p.y > h) p.vy *= -1;
+
+                // Connections
+                for (let j = i + 1; j < particles.length; j++) {
+                    const q = particles[j];
+                    const dist = Math.hypot(p.x - q.x, p.y - q.y);
+                    if (dist < 180) {
+                        ctx.strokeStyle = `rgba(226, 255, 50, ${0.12 * (1 - dist / 180)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(q.x, q.y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Node
+                ctx.fillStyle = `rgba(226, 255, 50, 0.5)`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(drawNetwork);
+        }
+
+        resize();
+        initParticles();
+        drawNetwork();
+        window.addEventListener('resize', () => { resize(); initParticles(); });
+    }
+
+    /* ========================================
+       HERO ENTRANCE ANIMATION
+       ======================================== */
+    const heroTL = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    heroTL
+        .fromTo('#hero-title',
+            { y: 60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1.2 }, 0.2)
+        .fromTo('#hero-subtitle',
+            { y: 30, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1 }, 0.6)
+        .fromTo('#hero-thesis',
+            { y: 30, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1 }, 0.9)
+        .fromTo('#hero-context',
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8 }, 1.2);
+
+    /* ========================================
+       SCROLL REVEAL SYSTEM
+       ======================================== */
+    // General section reveals
+    const revealEls = document.querySelectorAll(
+        '.section-label, .section-title, .section-desc, .gap-card, .demo-header, ' +
+        '.stat-card, .bar-row, .ref-card, .pull-quote, .second-quote, .video-wrapper'
+    );
+
+    revealEls.forEach((el, i) => {
+        gsap.from(el, {
+            y: 40,
+            opacity: 0,
+            duration: 0.8,
+            delay: (el.closest('.problem-grid, .impact-stats, .ref-grid, .bar-chart'))
+                ? (Array.from(el.parentElement.children).indexOf(el) * 0.08)
+                : 0,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: el,
+                start: 'top 88%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
+
+    // Demo stage appear/dissolve on scroll
+    document.querySelectorAll('.demo-stage').forEach(stage => {
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: stage,
+                start: 'top 90%',
+                end: 'bottom 5%',
+                scrub: 0.6,
+            }
+        });
+        tl.fromTo(stage,
+            { opacity: 0, y: 60 },
+            { opacity: 1, y: 0, duration: 0.25 }
+        )
+        .to(stage, { opacity: 1, y: 0, duration: 0.5 })
+        .to(stage, { opacity: 0, y: -30, duration: 0.25 });
+    });
+
+    /* ========================================
+       SWIPE DEMO
+       ======================================== */
+    const profiles = [
+        { name: "AI Researcher", emoji: "🧠", interests: ["Machine Learning", "AI Ethics", "Data Visualization"], bio: "Teaching machines to understand context, not just content. Focused on interpretability in large language models.", goal: "Find a collaborator", color: "#F59E0B" },
+        { name: "Sound Artist", emoji: "🎵", interests: ["Spatial Audio", "Physical Computing", "Participatory Design"], bio: "Sculpting environments where sound becomes architecture. Building instruments that play themselves.", goal: "Get design feedback", color: "#EC4899" },
+        { name: "Creative Technologist", emoji: "⚡", interests: ["Physical Computing", "Data Visualization", "Interaction Design"], bio: "Building bridges between digital logic and physical intuition. Currently prototyping tangible data interfaces.", goal: "Explore a new field", color: "#06B6D4" },
+        { name: "Speculative Designer", emoji: "🔮", interests: ["AI Ethics", "Futures Thinking", "Participatory Design"], bio: "Designing artifacts from futures that don't exist yet. Researching how speculative objects make abstract policy tangible.", goal: "Meet someone different", color: "#7C3AED" },
+    ];
+
+    let currentCardIndex = 0;
+    const swipeContainer = document.getElementById('swipe-container');
+    const flashEl = document.getElementById('swipe-match-flash');
+
+    function renderSwipeCards() {
+        const existing = swipeContainer.querySelectorAll('.swipe-card');
+        existing.forEach(c => c.remove());
+
+        for (let offset = 2; offset >= 0; offset--) {
+            const idx = (currentCardIndex + offset) % profiles.length;
+            const p = profiles[idx];
+            const card = document.createElement('div');
+            card.className = 'swipe-card';
+            card.setAttribute('data-index', offset);
+            card.style.setProperty('--card-color', p.color);
+            card.innerHTML = `
+                <span class="card-emoji">${p.emoji}</span>
+                <h3 class="card-name" style="color:${p.color}">${p.name}</h3>
+                <div class="card-interests">
+                    ${p.interests.map(i => `<span class="card-interest-pill">${i}</span>`).join('')}
+                </div>
+                <p class="card-bio">${p.bio}</p>
+                <div class="card-goal">Goal: <strong>${p.goal}</strong></div>
+            `;
+            // Add swipe indicators to front card
+            if (offset === 0) {
+                card.innerHTML += `
+                    <div class="swipe-indicator swipe-indicator-like" id="si-like">Like</div>
+                    <div class="swipe-indicator swipe-indicator-pass" id="si-pass">Pass</div>
+                `;
+            }
+            swipeContainer.insertBefore(card, flashEl);
+        }
+    }
+
+    function animateSwipe(direction) {
+        const frontCard = swipeContainer.querySelector('.swipe-card[data-index="0"]');
+        if (!frontCard) return;
+
+        const xTarget = direction === 'right' ? window.innerWidth : -window.innerWidth;
+        const rotate = direction === 'right' ? 15 : -15;
+
+        // Show indicator briefly
+        const indicator = frontCard.querySelector(direction === 'right' ? '#si-like' : '#si-pass');
+        if (indicator) indicator.style.opacity = '1';
+
+        gsap.to(frontCard, {
+            x: xTarget,
+            rotation: rotate,
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power3.out',
+            onComplete: () => {
+                currentCardIndex = (currentCardIndex + 1) % profiles.length;
+                renderSwipeCards();
+
+                // Show match flash on every 2nd like
+                if (direction === 'right' && currentCardIndex % 2 === 0) {
+                    flashEl.classList.add('active');
+                    setTimeout(() => flashEl.classList.remove('active'), 1200);
+                }
+            }
+        });
+    }
+
+    document.getElementById('swipe-like').addEventListener('click', () => animateSwipe('right'));
+    document.getElementById('swipe-pass').addEventListener('click', () => animateSwipe('left'));
+
+    // Touch/drag support for front card
+    let isDragging = false, startX = 0, dragX = 0;
+
+    swipeContainer.addEventListener('pointerdown', (e) => {
+        const frontCard = swipeContainer.querySelector('.swipe-card[data-index="0"]');
+        if (!frontCard || !frontCard.contains(e.target)) return;
+        isDragging = true;
+        startX = e.clientX;
+        dragX = 0;
+        frontCard.style.transition = 'none';
+        frontCard.setPointerCapture(e.pointerId);
+    });
+
+    swipeContainer.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const frontCard = swipeContainer.querySelector('.swipe-card[data-index="0"]');
+        if (!frontCard) return;
+        dragX = e.clientX - startX;
+        const rotate = dragX * 0.08;
+        frontCard.style.transform = `translateX(${dragX}px) rotate(${rotate}deg)`;
+
+        const likeInd = frontCard.querySelector('#si-like');
+        const passInd = frontCard.querySelector('#si-pass');
+        if (likeInd) likeInd.style.opacity = dragX > 40 ? Math.min((dragX - 40) / 60, 1) : 0;
+        if (passInd) passInd.style.opacity = dragX < -40 ? Math.min((-dragX - 40) / 60, 1) : 0;
+    });
+
+    swipeContainer.addEventListener('pointerup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        if (Math.abs(dragX) > 100) {
+            animateSwipe(dragX > 0 ? 'right' : 'left');
+        } else {
+            const frontCard = swipeContainer.querySelector('.swipe-card[data-index="0"]');
+            if (frontCard) {
+                frontCard.style.transition = '0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                frontCard.style.transform = '';
+                const likeInd = frontCard.querySelector('#si-like');
+                const passInd = frontCard.querySelector('#si-pass');
+                if (likeInd) likeInd.style.opacity = '0';
+                if (passInd) passInd.style.opacity = '0';
+            }
+        }
+    });
+
+    renderSwipeCards();
+
+    /* ========================================
+       MATCH REVEAL ANIMATION
+       ======================================== */
+    const matchReveal = document.getElementById('match-reveal');
+    const matchStatus = document.getElementById('match-status');
+    const matchBanner = document.getElementById('match-banner');
+    const matchShared = document.getElementById('match-shared');
+
+    let matchPlayed = false;
+
+    ScrollTrigger.create({
+        trigger: matchReveal,
+        start: 'top 70%',
+        onEnter: () => {
+            if (matchPlayed) return;
+            matchPlayed = true;
+            playMatchReveal();
+        }
+    });
+
+    function playMatchReveal() {
+        const nodes = matchReveal.querySelectorAll('.match-node');
+        const line = matchReveal.querySelector('.match-connector-line');
+
+        // Phase 1: Nodes appear with pulse
+        gsap.to(nodes, {
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.2,
+            ease: 'power2.out'
+        });
+
+        // Status pulsing
+        matchStatus.style.animation = 'searchPulse 1s ease infinite';
+
+        // Phase 2: After delay, reveal match
+        setTimeout(() => {
+            matchStatus.style.animation = 'none';
+            matchStatus.textContent = 'Match Found';
+            matchStatus.style.color = 'var(--accent)';
+
+            matchReveal.classList.add('revealed');
+
+            // Banner
+            gsap.fromTo(matchBanner,
+                { opacity: 0, y: 10 },
+                { opacity: 1, y: 0, duration: 0.6, delay: 0.6, ease: 'power2.out' }
+            );
+
+            // Shared interests
+            gsap.fromTo(matchShared,
+                { opacity: 0, y: 10 },
+                { opacity: 1, y: 0, duration: 0.5, delay: 0.9, ease: 'power2.out' }
+            );
+
+            // Node pulse
+            matchReveal.querySelectorAll('.match-node-circle').forEach(circle => {
+                circle.style.animation = 'nodePulse 1.5s ease 1';
+            });
+        }, 1800);
+    }
+
+    /* ========================================
+       DIRECTIONAL PROMPT DEMO
+       ======================================== */
+    const promptsAtoB = [
+        "You work with machine learning — where do you draw the line on what machines should learn from us?",
+        "Your research focuses on interpretability. What does a 'legible' AI system look like to you, and who gets to read it?",
+        "I'm curious about your data pipelines — what gets lost in translation between raw data and insight?",
+        "What's a research question you've walked away from, and why?"
+    ];
+    const promptsBtoA = [
+        "You speculate about futures — which future keeps you up at night?",
+        "How do you decide which speculations are worth building into physical form?",
+        "What does 'responsible imagination' look like in your practice?",
+        "Your work sits between design and policy. Who's your real audience?"
+    ];
+
+    let currentDir = 'ab';
+    let promptIdx = { ab: 0, ba: 0 };
+
+    const promptText = document.getElementById('prompt-text');
+    const promptMetaLabel = document.getElementById('prompt-meta-label');
+    const chipA = document.getElementById('prompt-chip-a');
+    const chipB = document.getElementById('prompt-chip-b');
+    const promptArrow = document.getElementById('prompt-arrow');
+    const promptDisplay = document.getElementById('prompt-display');
+
+    function updatePrompt(animate = true) {
+        const prompts = currentDir === 'ab' ? promptsAtoB : promptsBtoA;
+        const idx = promptIdx[currentDir] % prompts.length;
+        const text = prompts[idx];
+        const meta = currentDir === 'ab'
+            ? 'Prompt informed by: shared interest in AI Ethics'
+            : 'Prompt informed by: complementary research domains';
+
+        if (animate) {
+            gsap.to(promptDisplay, {
+                opacity: 0, y: 8, duration: 0.2,
+                onComplete: () => {
+                    promptText.textContent = text;
+                    promptMetaLabel.textContent = meta;
+                    gsap.to(promptDisplay, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+                }
+            });
+        } else {
+            promptText.textContent = text;
+            promptMetaLabel.textContent = meta;
+        }
+
+        // Update chips
+        chipA.classList.toggle('active', currentDir === 'ab');
+        chipB.classList.toggle('active', currentDir === 'ba');
+        promptArrow.classList.toggle('flipped', currentDir === 'ba');
+
+        // Update direction buttons
+        document.getElementById('prompt-dir-ab').classList.toggle('active', currentDir === 'ab');
+        document.getElementById('prompt-dir-ba').classList.toggle('active', currentDir === 'ba');
+    }
+
+    document.querySelectorAll('.prompt-dir-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const dir = btn.dataset.from === 'a' ? 'ab' : 'ba';
+            if (dir === currentDir) return;
+            currentDir = dir;
+            updatePrompt(true);
+        });
+    });
+
+    document.getElementById('prompt-cycle').addEventListener('click', () => {
+        promptIdx[currentDir]++;
+        updatePrompt(true);
+    });
+
+    /* ========================================
+       THREE-TAP DEMO
+       ======================================== */
+    let currentTap = 0;
+
+    const tapNodes = document.querySelectorAll('.tap-node');
+    const tapLines = [document.getElementById('tap-line-1'), document.getElementById('tap-line-2')];
+    const tapPlaceholder = document.getElementById('tap-placeholder');
+    const tapReveals = [
+        document.getElementById('tap-reveal-1'),
+        document.getElementById('tap-reveal-2'),
+        document.getElementById('tap-reveal-3')
+    ];
+
+    function setTap(tapNum) {
+        if (tapNum < 1 || tapNum > 3) return;
+        if (tapNum <= currentTap) return; // Only forward
+
+        currentTap = tapNum;
+
+        // Update nodes
+        tapNodes.forEach(node => {
+            const n = parseInt(node.dataset.tap);
+            node.classList.remove('active', 'completed');
+            if (n < currentTap) node.classList.add('completed');
+            if (n === currentTap) node.classList.add('active');
+        });
+
+        // Update lines
+        tapLines.forEach((line, i) => {
+            line.classList.toggle('filled', i < currentTap - 1);
+        });
+
+        // Update card
+        tapPlaceholder.style.display = 'none';
+        tapReveals.forEach((r, i) => {
+            r.classList.remove('active');
+            if (i === currentTap - 1) r.classList.add('active');
+        });
+    }
+
+    tapNodes.forEach(node => {
+        node.addEventListener('click', () => setTap(parseInt(node.dataset.tap)));
+    });
+
+    document.getElementById('tap-reset').addEventListener('click', () => {
+        currentTap = 0;
+        tapNodes.forEach(n => n.classList.remove('active', 'completed'));
+        tapLines.forEach(l => l.classList.remove('filled'));
+        tapReveals.forEach(r => r.classList.remove('active'));
+        tapPlaceholder.style.display = 'flex';
+    });
+
+    /* ========================================
+       IMPACT DATA VISUALIZATION
+       ======================================== */
+    // Animated bar chart fills
+    const barFills = document.querySelectorAll('.bar-fill');
+    barFills.forEach(fill => {
+        const targetWidth = fill.dataset.width + '%';
+        ScrollTrigger.create({
+            trigger: fill,
+            start: 'top 90%',
+            onEnter: () => {
+                fill.style.width = targetWidth;
+            }
+        });
+    });
+
+    // Animated stat counters
+    document.querySelectorAll('.stat-number').forEach(el => {
+        const target = parseFloat(el.dataset.target);
+        const prefix = el.dataset.prefix || '';
+
+        ScrollTrigger.create({
+            trigger: el,
+            start: 'top 85%',
+            onEnter: () => {
+                gsap.to({ val: 0 }, {
+                    val: target,
+                    duration: 2,
+                    ease: 'power2.out',
+                    onUpdate: function () {
+                        el.textContent = prefix + this.targets()[0].val.toFixed(2);
+                    }
+                });
+            },
+            once: true
+        });
+    });
+
+    /* ========================================
+       SMOOTH NAV SCROLL
+       ======================================== */
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+                gsap.to(window, {
+                    scrollTo: { y: target, offsetY: 50 },
+                    duration: 0.5,
+                    ease: 'power3.out'
+                });
+            }
+        });
+    });
+
+}); // end DOMContentLoaded
+</script>
+
+</body>
+</html>
