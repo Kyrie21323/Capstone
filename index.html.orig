@@ -1169,7 +1169,7 @@
         /* ============================================
    13. PRODUCTION PROCESS SECTION
    ============================================ */
-        .process-header {
+                .process-header {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--text);
@@ -1187,7 +1187,7 @@
             grid-template-columns: 1fr;
             gap: 4rem;
         }
-
+        
         @media (min-width: 768px) {
             .process-timeline {
                 grid-template-columns: 1fr 1fr;
@@ -1256,15 +1256,15 @@
    14. PHILOSOPHY SECTION
    ============================================ */
         .pull-quote {
-            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
             font-weight: 200;
             font-style: italic;
             line-height: 1.5;
             color: var(--text);
-            max-width: 880px;
-            margin: 0 auto 3rem;
+            max-width: 800px;
+            margin: 0 auto 4rem;
             position: relative;
-            padding: 1.75rem 0 1.75rem 2rem;
+            padding-left: 2rem;
             border-left: 3px solid var(--accent);
         }
 
@@ -1279,169 +1279,44 @@
             color: var(--text-dim);
         }
 
-        .philosophy-lab {
+        .ref-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-            gap: 1.5rem;
-            align-items: start;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 3rem;
         }
 
-        .philosophy-panel,
-        .philosophy-controls {
-            background: linear-gradient(180deg, rgba(17, 17, 16, 0.96), rgba(12, 12, 10, 0.96));
+        .ref-card {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--surface);
             border: 1px solid var(--border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.3s;
         }
 
-        .philosophy-panel {
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
+        .ref-card:hover {
+            border-color: var(--border-mid);
         }
 
-        .philosophy-panel::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at top right, rgba(226, 255, 50, 0.08), transparent 40%);
-            pointer-events: none;
-        }
-
-        .philosophy-kicker {
+        .ref-year {
             font-family: var(--font-mono);
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--text-dim);
-            margin-bottom: 1rem;
-        }
-
-        .philosophy-panel h3 {
-            font-size: clamp(1.5rem, 2.4vw, 2.1rem);
-            line-height: 1.1;
-            letter-spacing: -0.03em;
-            margin-bottom: 1rem;
-        }
-
-        .philosophy-panel p {
-            color: var(--text-muted);
-            line-height: 1.7;
-            margin-bottom: 1rem;
-            max-width: 60ch;
-        }
-
-        .philosophy-stats {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 0.75rem;
-            margin-top: 1.5rem;
-        }
-
-        .philosophy-stat {
-            padding: 0.9rem 1rem;
-            border: 1px solid var(--border);
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .philosophy-stat .label {
-            display: block;
-            font-family: var(--font-mono);
-            font-size: 0.62rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-dim);
-            margin-bottom: 0.35rem;
-        }
-
-        .philosophy-stat .value {
-            font-size: 0.95rem;
-            color: var(--text);
-            line-height: 1.35;
-        }
-
-        .philosophy-controls {
-            padding: 1.25rem;
-        }
-
-        .philosophy-controls .section-label {
-            margin-bottom: 1.25rem;
-        }
-
-        .philosophy-control-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.75rem;
-        }
-
-        .philosophy-control {
-            text-align: left;
-            padding: 1rem 1rem 1.05rem;
-            border: 1px solid var(--border-mid);
-            background: transparent;
-            transition: all 0.3s var(--ease-out);
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .philosophy-control::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: var(--accent-dim);
-            opacity: 0;
-            transform: scaleY(0.75);
-            transform-origin: bottom;
-            transition: all 0.3s var(--ease-out);
-        }
-
-        .philosophy-control:hover {
-            border-color: var(--accent-mid);
-            transform: translateY(-1px);
-        }
-
-        .philosophy-control:hover::before,
-        .philosophy-control.active::before {
-            opacity: 1;
-            transform: scaleY(1);
-        }
-
-        .philosophy-control.active {
-            border-color: var(--accent);
-            box-shadow: 0 0 24px var(--accent-dim);
-        }
-
-        .philosophy-control .year {
-            display: block;
-            position: relative;
-            z-index: 1;
-            font-family: var(--font-mono);
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            font-size: 0.75rem;
             color: var(--accent);
-            margin-bottom: 0.45rem;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        .philosophy-control .title {
-            display: block;
-            position: relative;
-            z-index: 1;
-            font-size: 0.92rem;
+        .ref-title {
+            font-size: 0.9rem;
             font-weight: 600;
-            line-height: 1.3;
-            color: var(--text);
+            margin-bottom: 0.3rem;
         }
 
-        .philosophy-control .text {
-            display: block;
-            position: relative;
-            z-index: 1;
-            margin-top: 0.45rem;
-            font-size: 0.78rem;
-            line-height: 1.5;
+        .ref-text {
+            font-size: 0.8rem;
             color: var(--text-muted);
+            line-height: 1.5;
         }
 
         .second-quote {
@@ -1594,34 +1469,6 @@
                 gap: 1rem;
             }
 
-            .philosophy-lab {
-                grid-template-columns: 1fr;
-            }
-
-            .philosophy-control-grid,
-            .philosophy-stats {
-                grid-template-columns: 1fr;
-            }
-
-            .philosophy-panel,
-            .philosophy-controls {
-                padding: 1.25rem;
-            }
-
-            .timeline-item {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .timeline-date {
-                margin-bottom: 0.5rem;
-            }
-
-            .process-header {
-                font-size: 1.2rem;
-                margin-bottom: 1.5rem;
-            }
-
             .match-connector {
                 width: 2px;
                 height: 60px;
@@ -1725,11 +1572,11 @@
         <div class="nav-logo">Prophere</div>
         <div class="nav-links">
             <a href="#problem">Problem</a>
-            <a href="#theory">Theory</a>
-            <a href="#solution">Solution</a>
-            <a href="#demo">Demo</a>
+            <a href="#design">Design</a>
+            <a href="#video">Video</a>
             <a href="#production">Production</a>
             <a href="#impact">Impact</a>
+            <a href="#philosophy">Philosophy</a>
         </div>
     </nav>
 
@@ -1761,12 +1608,12 @@
     </section>
 
     <!-- ============================================
-     01. PROBLEM
+     02. THE PROBLEM
      ============================================ -->
     <section class="section" id="problem">
         <div class="section-label">
-            <span class="section-num">01</span>
-            <span class="section-tag">Problem</span>
+            <span class="section-num">02</span>
+            <span class="section-tag">The Problem</span>
         </div>
         <h2 class="section-title">Two Gaps in<br>Conference Networking</h2>
         <p class="section-desc">Existing tools address matching at scale, but the limiting factor is often emotional —
@@ -1795,103 +1642,17 @@
     </section>
 
     <!-- ============================================
-     02. THEORY
+     03a. DESIGN — SWIPE DEMO
      ============================================ -->
-    <section class="section" id="theory">
-        <div class="section-label">
-            <span class="section-num">02</span>
-            <span class="section-tag">Theory</span>
-        </div>
-        <h2 class="section-title">Desk Research<br>Made Friction Intentional</h2>
-        <p class="section-desc" style="margin-bottom: 2.5rem;">This section is grounded in literature-rich desk research, explaining why Prophere uses reciprocity, friction, embodied gesture, and perspective shifts instead of treating speed as the only good outcome.</p>
-
-        <blockquote class="pull-quote">
-            "The limiting factor is often emotional — the fear of awkwardness, the fear of wasting time, and the fear of
-            being subjected to a sales pitch. These concerns are addressed through pacing, prompts, and permission
-            structures in ways that algorithms alone cannot reach."
-            <span class="pq-source">— From the capstone paper</span>
-        </blockquote>
-
-        <div class="philosophy-lab">
-            <div class="philosophy-panel" id="philosophy-panel">
-                <div class="philosophy-kicker">Current lens</div>
-                <h3 id="philosophy-title">Mutuality over similarity</h3>
-                <p id="philosophy-copy">Prophere starts with the idea that a recommendation only matters when both people value it. That is why the system treats matching as reciprocal, not one-sided.</p>
-                <p id="philosophy-implication">The design implication is simple: surface pairs that each person can actually use, even if their goals are different rather than identical.</p>
-
-                <div class="philosophy-stats">
-                    <div class="philosophy-stat">
-                        <span class="label">Design move</span>
-                        <span class="value" id="philosophy-move">Mutual interest instead of one-way similarity</span>
-                    </div>
-                    <div class="philosophy-stat">
-                        <span class="label">Shows up in</span>
-                        <span class="value" id="philosophy-show">Goal-aware matching and mutual likes</span>
-                    </div>
-                    <div class="philosophy-stat">
-                        <span class="label">Why it matters</span>
-                        <span class="value" id="philosophy-matters">It reduces empty matches and makes the exchange worth starting.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="philosophy-controls">
-                <div class="section-label" style="margin-bottom: 1rem;">
-                    <span class="section-num">EVIDENCE</span>
-                    <span class="section-tag">Click a thread to inspect the literature review behind the design</span>
-                </div>
-                <div class="philosophy-control-grid" id="philosophy-controls">
-                    <button type="button" class="philosophy-control active" data-key="mutuality">
-                        <span class="year">2010</span>
-                        <span class="title">Reciprocal Recommenders</span>
-                        <span class="text">A match only counts when both sides find it useful.</span>
-                    </button>
-                    <button type="button" class="philosophy-control" data-key="control">
-                        <span class="year">2017</span>
-                        <span class="title">User-Controllable Matching</span>
-                        <span class="text">Control increases trust when the system is complex.</span>
-                    </button>
-                    <button type="button" class="philosophy-control" data-key="friction">
-                        <span class="year">2016</span>
-                        <span class="title">Design Frictions</span>
-                        <span class="text">Small obstacles can create reflection, intent, and meaning.</span>
-                    </button>
-                    <button type="button" class="philosophy-control" data-key="embodied">
-                        <span class="year">2001</span>
-                        <span class="title">Embodied Interaction</span>
-                        <span class="text">A tap is a public gesture, not just a hidden data transfer.</span>
-                    </button>
-                    <button type="button" class="philosophy-control" data-key="perspective">
-                        <span class="year">2014</span>
-                        <span class="title">Perspective-Taking</span>
-                        <span class="text">Framing changes what a prompt means for each participant.</span>
-                    </button>
-                    <button type="button" class="philosophy-control" data-key="complementarity">
-                        <span class="year">2022</span>
-                        <span class="title">Similarity vs Complementarity</span>
-                        <span class="text">Good conference matches are often different, not identical.</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <p class="second-quote">
-            "Some of the most productive conversations occurred when matches were <em>imperfect</em> — suggesting that
-            the tension between matching precision and serendipity is a design variable worth preserving."
-        </p>
-    </section>
-
-    <!-- ============================================
-     03. SOLUTION
-     ============================================ -->
-    <section class="demo-section" id="solution">
+    <section class="demo-section" id="design">
         <div class="section-label">
             <span class="section-num">03</span>
-            <span class="section-tag">Solution</span>
+            <span class="section-tag">The Design</span>
         </div>
         <div class="demo-header">
-            <h2>A Designed<br>Encounter</h2>
-            <p>The solution combines goal-aware matching, staged reveal, directional prompts, and NFC taps so the digital match turns into an intentional physical conversation.</p>
+            <h2>Tinder-Style<br>Matching</h2>
+            <p>Attendees express interest through a familiar swipe interface. Goal-aware matching surfaces both similar
+                and complementary profiles. Mutual likes trigger an instant match.</p>
         </div>
         <div class="demo-stage" id="swipe-demo-stage">
             <div class="swipe-container" id="swipe-container">
@@ -1908,7 +1669,7 @@
     </section>
 
     <!-- ============================================
-     03b. SOLUTION — MATCH REVEAL DEMO
+     03b. DESIGN — MATCH REVEAL DEMO
      ============================================ -->
     <section class="demo-section" style="border-top: none;">
         <div class="demo-header">
@@ -1940,7 +1701,7 @@
     </section>
 
     <!-- ============================================
-     03c. SOLUTION — DIRECTIONAL PROMPTS
+     03c. DESIGN — DIRECTIONAL PROMPTS
      ============================================ -->
     <section class="demo-section" style="border-top: none;">
         <div class="demo-header">
@@ -1974,7 +1735,7 @@
     </section>
 
     <!-- ============================================
-     03d. SOLUTION — NFC (THREE TAPS)
+     03d. DESIGN — NFC (THREE TAPS)
      ============================================ -->
     <section class="demo-section" style="border-top: none;">
         <div class="demo-header">
@@ -2066,14 +1827,14 @@
     </section>
 
     <!-- ============================================
-     04. DEMO
+     04. VIDEO
      ============================================ -->
-    <section class="video-section section" id="demo">
+    <section class="video-section section" id="video">
         <div class="section-label">
             <span class="section-num">04</span>
-            <span class="section-tag">Demo</span>
+            <span class="section-tag">In Action</span>
         </div>
-        <h2 class="section-title" style="text-align:center; margin-bottom: 3rem;">See It<br>In Motion</h2>
+        <h2 class="section-title" style="text-align:center; margin-bottom: 3rem;">Watch the Demo</h2>
         <div class="video-wrapper">
             <iframe width="560" height="315" src="https://www.youtube.com/embed/tWbkOkJJwkg?si=csOAbBtFtGPhoCFB"
                 title="YouTube video player" frameborder="0"
@@ -2094,7 +1855,7 @@
         <div class="section-desc">The journey from concept to prototype spanned 7 months. Each iteration built on the
             last, grounded in user testing and iterative refinement.</div>
 
-        <div class="process-timeline" id="process-timeline">
+                <div class="process-timeline" id="process-timeline">
             <!-- Yiyang's timeline -->
             <div class="contributor-timeline" id="yiyang-timeline">
                 <h3 class="process-header">Yiyang's Contributions</h3>
@@ -2153,6 +1914,15 @@
                     </div>
                 </div>
                 <div class="timeline-item">
+                    <div class="timeline-date">2/10</div>
+                    <div class="timeline-content">
+                        <h4>User Testing Plan</h4>
+                        <p>Designed two-track plan: Track 1 (task-based usability, 5–8 participants, think-aloud +
+                            screen recording, 5 scripted tasks, ≥6/8 success rate and &lt;3s tap-to-profile benchmark on
+                            Android); Track 2 (structured IM faculty critique using "I Like / I Wish / What If").</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
                     <div class="timeline-date">2/12</div>
                     <div class="timeline-content">
                         <h4>NFC Cross-Platform Testing</h4>
@@ -2167,11 +1937,11 @@
                 <div class="timeline-item">
                     <div class="timeline-date">2/19</div>
                     <div class="timeline-content">
-                        <h4>In-Person Kiosk Architecture</h4>
+                        <h4>NFC Kiosk Architecture</h4>
                         <p>Investigated WebNFC/WebUSB gaps on iPad/macOS/desktop; selected HID keyboard emulation (Path
                             A) as primary cross-platform solution; designed three-path data architecture (URL/phone,
                             UID/HID kiosk, NDEF/middleware kiosk); specified hardware procurement (2× ACR1552U USB-C
-                            readers); documented platform verdicts (Windows best, MacOS OK, iPad bad).</p>
+                            readers); documented platform verdicts (Windows ✅, iPad ⚠️, macOS ❌).</p>
                     </div>
                 </div>
                 <div class="timeline-item">
@@ -2287,13 +2057,11 @@
                 <div class="timeline-item">
                     <div class="timeline-date">~4/7</div>
                     <div class="timeline-content">
-                        <h4>User Testing Design and Collection</h4>
+                        <h4>User Testing Design</h4>
                         <p>Designed the 22-question Likert-scale survey across 6 sections (first impression, entry,
-                            match reveal, prompts, directionality, overall). Recruited 20 participants and conducted
-                            user testing sessions.</p>
+                            match reveal, prompts, directionality, overall).</p>
                     </div>
                 </div>
-            </div>
         </div>
     </section>
 
@@ -2379,47 +2147,102 @@
     </section>
 
     <!-- ============================================
-     07. REPOSITORY
+     07. PHILOSOPHY
+     ============================================ -->
+    <section class="section" id="philosophy">
+        <div class="section-label">
+            <span class="section-num">07</span>
+            <span class="section-tag">Design Philosophy</span>
+        </div>
+        <h2 class="section-title">Why Friction<br>Is the Feature</h2>
+
+        <blockquote class="pull-quote">
+            "The limiting factor is often emotional — the fear of awkwardness, the fear of wasting time, and the fear of
+            being subjected to a sales pitch. These concerns are addressed through pacing, prompts, and permission
+            structures in ways that algorithms alone cannot reach."
+            <span class="pq-source">— From the capstone paper</span>
+        </blockquote>
+
+        <p class="section-desc" style="margin-bottom: 3rem;">Prophere draws on five research threads, connecting
+            literatures that have rarely been joined empirically.</p>
+
+        <div class="ref-grid">
+            <div class="ref-card">
+                <div class="ref-year">2010</div>
+                <div>
+                    <div class="ref-title">Reciprocal Recommenders</div>
+                    <div class="ref-text">Pizzato et al. — Accounting for mutual interest nearly doubles match success
+                        rates. A recommendation found valuable by only one party is a failed recommendation.</div>
+                </div>
+            </div>
+            <div class="ref-card">
+                <div class="ref-year">2017</div>
+                <div>
+                    <div class="ref-title">User-Controllable Matching</div>
+                    <div class="ref-text">Tsai &amp; Brusilovsky — Giving users control over matching dimensions (via
+                        interactive sliders) increased trust and satisfaction versus fixed algorithms.</div>
+                </div>
+            </div>
+            <div class="ref-card">
+                <div class="ref-year">2016</div>
+                <div>
+                    <div class="ref-title">Design Frictions</div>
+                    <div class="ref-text">Cox et al. — Microboundaries disrupt mindless interaction and create
+                        opportunities for reflection and intention. Friction becomes a design material.</div>
+                </div>
+            </div>
+            <div class="ref-card">
+                <div class="ref-year">2001</div>
+                <div>
+                    <div class="ref-title">Embodied Interaction</div>
+                    <div class="ref-text">Dourish — Situated practice matters. A badge tap is a public gesture that both
+                        participants acknowledge, grounding digital interaction in physical co-presence.</div>
+                </div>
+            </div>
+            <div class="ref-card">
+                <div class="ref-year">2014</div>
+                <div>
+                    <div class="ref-title">Perspective-Taking</div>
+                    <div class="ref-text">Duran &amp; Dale — Social constraints shape perspective. A prompt framed from
+                        one participant's perspective produces a different exchange than the same prompt framed from the
+                        other's.</div>
+                </div>
+            </div>
+            <div class="ref-card">
+                <div class="ref-year">2022</div>
+                <div>
+                    <div class="ref-title">Similarity vs Complementarity</div>
+                    <div class="ref-text">Talaga &amp; Nowak — Many valuable conference connections are complementary,
+                        yet most tools assume similarity is the goal. Prophere surfaces productive tension.</div>
+                </div>
+            </div>
+        </div>
+
+        <p class="second-quote">
+            "Some of the most productive conversations occurred when matches were <em>imperfect</em> — suggesting that
+            the tension between matching precision and serendipity is a design variable worth preserving."
+        </p>
+    </section>
+
+    <!-- ============================================
+     08. REPOSITORY
      ============================================ -->
     <section class="section"
         style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 40vh; text-align: center;">
         <p
             style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2.5rem;">
             Explore the Implementation</p>
-
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
-            <!-- GitHub Link (Primary) -->
-            <a href="https://github.com/Kyrie21323/Capstone" target="_blank" rel="noopener noreferrer"
-                style="display: inline-flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 2rem; color: var(--accent); border: 1px solid var(--accent); border-radius: 4rem; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); text-decoration: none;"
-                onmouseover="this.style.background='var(--accent)'; this.style.color='var(--bg)'; this.style.boxShadow='0 0 30px var(--accent-dim)'; this.style.transform='translateY(-2px)';"
-                onmouseout="this.style.background='transparent'; this.style.color='var(--accent)'; this.style.boxShadow='none'; this.style.transform='translateY(0)';">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M12 2C6.477 2 2 6.477 2 12C2 16.418 4.865 20.166 8.839 21.49C9.339 21.582 9.52 21.272 9.52 21.006C9.52 20.766 9.511 20.147 9.506 19.324C6.726 19.927 6.139 17.985 6.139 17.985C5.684 16.83 5.03 16.523 5.03 16.523C4.125 15.904 5.098 15.916 5.098 15.916C6.098 15.987 6.624 16.942 6.624 16.942C7.513 18.465 8.956 18.025 9.54 17.768C9.63 17.106 9.897 16.666 10.194 16.414C7.973 16.161 5.637 15.303 5.637 11.516C5.637 10.437 6.022 9.553 6.638 8.86C6.538 8.607 6.198 7.599 6.734 6.223C6.734 6.223 7.55 5.962 9.507 7.287C10.285 7.07 11.134 6.962 11.974 6.958C12.813 6.962 13.662 7.07 14.441 7.287C16.397 5.961 17.212 6.223 17.212 6.223C17.749 7.6 17.409 8.608 17.31 8.86C17.928 9.554 18.31 10.438 18.31 11.516C18.31 15.311 15.968 16.158 13.738 16.406C14.108 16.726 14.437 17.353 14.437 18.315C14.437 19.693 14.425 20.803 14.425 21.006C14.425 21.275 14.604 21.589 15.111 21.488C19.083 20.162 21.947 16.416 21.947 12C21.947 6.477 17.476 2 12 2Z">
-                    </path>
-                </svg>
-                View on GitHub
-            </a>
-
-            <!-- Blog Links (Secondary) -->
-            <div
-                style="display: flex; flex-direction: row; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-                <a href="https://www.notion.so/Kyrie-s-Capstone-Blog-2614f12d1a82808a8106d7f8c0333b22" target="_blank"
-                    rel="noopener noreferrer"
-                    style="display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.75rem 1.5rem; color: var(--text-muted); border: 1px solid var(--border-mid); border-radius: 4rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); text-decoration: none;"
-                    onmouseover="this.style.borderColor='var(--accent-mid)'; this.style.color='var(--accent)'; this.style.boxShadow='0 0 15px var(--accent-dim)';"
-                    onmouseout="this.style.borderColor='var(--border-mid)'; this.style.color='var(--text-muted)'; this.style.boxShadow='none';">
-                    Kyrie's Blog
-                </a>
-                <a href="https://www.notion.so/Prophere-IM-Capstone-26-Yiyang-s-Capstone-Blog-2f7a6e3d247c802fae5ec98846cde85a?source=copy_link"
-                    target="_blank" rel="noopener noreferrer"
-                    style="display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.75rem 1.5rem; color: var(--text-muted); border: 1px solid var(--border-mid); border-radius: 4rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); text-decoration: none;"
-                    onmouseover="this.style.borderColor='var(--accent-mid)'; this.style.color='var(--accent)'; this.style.boxShadow='0 0 15px var(--accent-dim)';"
-                    onmouseout="this.style.borderColor='var(--border-mid)'; this.style.color='var(--text-muted)'; this.style.boxShadow='none';">
-                    Yiyang's Blog
-                </a>
-            </div>
-        </div>
+        <a href="https://github.com/Kyrie21323/Capstone" target="_blank" rel="noopener noreferrer"
+            style="display: inline-flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 2rem; color: var(--accent); border: 1px solid var(--accent); border-radius: 4rem; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); text-decoration: none;"
+            onmouseover="this.style.background='var(--accent)'; this.style.color='var(--bg)'; this.style.boxShadow='0 0 30px var(--accent-dim)'; this.style.transform='translateY(-2px)';"
+            onmouseout="this.style.background='transparent'; this.style.color='var(--accent)'; this.style.boxShadow='none'; this.style.transform='translateY(0)';">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M12 2C6.477 2 2 6.477 2 12C2 16.418 4.865 20.166 8.839 21.49C9.339 21.582 9.52 21.272 9.52 21.006C9.52 20.766 9.511 20.147 9.506 19.324C6.726 19.927 6.139 17.985 6.139 17.985C5.684 16.83 5.03 16.523 5.03 16.523C4.125 15.904 5.098 15.916 5.098 15.916C6.098 15.987 6.624 16.942 6.624 16.942C7.513 18.465 8.956 18.025 9.54 17.768C9.63 17.106 9.897 16.666 10.194 16.414C7.973 16.161 5.637 15.303 5.637 11.516C5.637 10.437 6.022 9.553 6.638 8.86C6.538 8.607 6.198 7.599 6.734 6.223C6.734 6.223 7.55 5.962 9.507 7.287C10.285 7.07 11.134 6.962 11.974 6.958C12.813 6.962 13.662 7.07 14.441 7.287C16.397 5.961 17.212 6.223 17.212 6.223C17.749 7.6 17.409 8.608 17.31 8.86C17.928 9.554 18.31 10.438 18.31 11.516C18.31 15.311 15.968 16.158 13.738 16.406C14.108 16.726 14.437 17.353 14.437 18.315C14.437 19.693 14.425 20.803 14.425 21.006C14.425 21.275 14.604 21.589 15.111 21.488C19.083 20.162 21.947 16.416 21.947 12C21.947 6.477 17.476 2 12 2Z">
+                </path>
+            </svg>
+            View on GitHub
+        </a>
     </section>
 
     <!-- ============================================
@@ -2533,7 +2356,7 @@
             const revealEls = document.querySelectorAll(
                 '.section-label, .section-title, .section-desc, .gap-card, .demo-header, ' +
                 '.stat-card, .bar-row, .ref-card, .pull-quote, .second-quote, .video-wrapper, ' +
-                '.timeline-item, .philosophy-panel, .philosophy-control'
+                '.timeline-item'
             );
 
             revealEls.forEach((el, i) => {
@@ -2884,98 +2707,6 @@
             });
 
             /* ========================================
-               PHILOSOPHY THREAD EXPLORER
-               ======================================== */
-            const philosophyData = {
-                mutuality: {
-                    title: 'Mutuality over similarity',
-                    copy: 'Prophere starts with the idea that a recommendation only matters when both people value it. That is why the system treats matching as reciprocal, not one-sided.',
-                    implication: 'The design implication is simple: surface pairs that each person can actually use, even if their goals are different rather than identical.',
-                    move: 'Mutual interest instead of one-way similarity',
-                    show: 'Goal-aware matching and mutual likes',
-                    matters: 'It reduces empty matches and makes the exchange worth starting.'
-                },
-                control: {
-                    title: 'User control builds trust',
-                    copy: 'When users can see and shape the logic, the system feels less like a black box. That matters in settings where a recommendation has social consequences.',
-                    implication: 'Prophere gives people visible choices through matching, prompts, and staged disclosure so the experience feels guided rather than imposed.',
-                    move: 'Visible choices instead of hidden ranking',
-                    show: 'Swiping, prompt direction, and tap progression',
-                    matters: 'Trust rises when people can predict and steer the outcome.'
-                },
-                friction: {
-                    title: 'Friction creates intent',
-                    copy: 'The design does not remove every obstacle. It uses small pauses and staged reveals to make the exchange feel deliberate rather than instant and disposable.',
-                    implication: 'The tap sequence adds just enough structure to move people from passive browsing into a more thoughtful encounter.',
-                    move: 'Staged disclosure instead of instant reveal',
-                    show: 'The three-tap NFC sequence',
-                    matters: 'A little friction can create attention, memory, and follow-through.'
-                },
-                embodied: {
-                    title: 'Embodied interaction grounds the exchange',
-                    copy: 'A badge tap is public and physical. It turns matching into a shared gesture that both participants acknowledge in the room, not just on a screen.',
-                    implication: 'That physical gesture gives the interaction weight and helps the digital system feel tied to the event itself.',
-                    move: 'Public gesture instead of invisible transfer',
-                    show: 'NFC badge taps and in-person handoffs',
-                    matters: 'Physical co-presence makes the interaction feel real and memorable.'
-                },
-                perspective: {
-                    title: 'Perspective changes the prompt',
-                    copy: 'The same question can mean something different depending on who is asking. Prophere uses that asymmetry to turn prompts into role-aware conversation starters.',
-                    implication: 'By switching who frames the prompt, the system invites both sides to see the exchange from the other person’s position.',
-                    move: 'Role-aware prompts instead of generic icebreakers',
-                    show: 'Directional conversation and Ask as A / Ask as B',
-                    matters: 'Perspective-taking creates more useful, less scripted conversations.'
-                },
-                complementarity: {
-                    title: 'Complementarity beats sameness',
-                    copy: 'Many good conference connections are not between people who are identical. They happen when one person has what the other needs.',
-                    implication: 'Prophere keeps that productive difference visible instead of flattening everyone into a single similarity score.',
-                    move: 'Complementary goals alongside shared interests',
-                    show: 'Goal-aware matching and match explanation',
-                    matters: 'Different people can still be the right match when the exchange is useful to both.'
-                }
-            };
-
-            const philosophyTitle = document.getElementById('philosophy-title');
-            const philosophyCopy = document.getElementById('philosophy-copy');
-            const philosophyImplication = document.getElementById('philosophy-implication');
-            const philosophyMove = document.getElementById('philosophy-move');
-            const philosophyShow = document.getElementById('philosophy-show');
-            const philosophyMatters = document.getElementById('philosophy-matters');
-            const philosophyPanel = document.getElementById('philosophy-panel');
-            const philosophyButtons = document.querySelectorAll('.philosophy-control');
-
-            function setPhilosophyThread(key) {
-                const data = philosophyData[key];
-                if (!data) return;
-
-                philosophyButtons.forEach(button => {
-                    button.classList.toggle('active', button.dataset.key === key);
-                });
-
-                if (philosophyPanel) {
-                    gsap.fromTo(philosophyPanel,
-                        { opacity: 0.7, y: 6 },
-                        { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
-                    );
-                }
-
-                philosophyTitle.textContent = data.title;
-                philosophyCopy.textContent = data.copy;
-                philosophyImplication.textContent = data.implication;
-                philosophyMove.textContent = data.move;
-                philosophyShow.textContent = data.show;
-                philosophyMatters.textContent = data.matters;
-            }
-
-            philosophyButtons.forEach(button => {
-                button.addEventListener('click', () => setPhilosophyThread(button.dataset.key));
-            });
-
-            setPhilosophyThread('mutuality');
-
-            /* ========================================
                IMPACT DATA VISUALIZATION
                ======================================== */
             // Animated bar chart fills
@@ -3029,6 +2760,9 @@
                     }
                 });
             });
+
+            /* ========================================
+               ======================================== */
         }); // end DOMContentLoaded
     </script>
 
