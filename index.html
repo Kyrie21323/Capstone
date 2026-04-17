@@ -2120,9 +2120,8 @@
                         <p>Named the project <strong>Prophere</strong>; decomposed the system into four interaction
                             modes (Pre-Event Matching, In-Event Planned Meet/Kiosk, Spontaneous Meet/Phone-to-tag,
                             Proxel Neural Panel); designed and budgeted the Proxel LED visualization installation (P4
-                            LED Matrix + Leap Motion); conducted NFC feasibility analysis (iOS Core NFC restrictions,
-                            Android HCE, iOS 18 policy shift); validated NTAG215 badge-sticker model as the universal
-                            hardware solution; budget approved.</p>
+                            LED Matrix + Leap Motion); conducted NFC feasibility analysis and validated the NTAG215
+                            badge-sticker model as the universal hardware solution; budget approved.</p>
                     </div>
                 </div>
                 <div class="timeline-item">
@@ -2136,6 +2135,24 @@
                             notifications; fixed the interactive Proxel network graph (resolved a Jinja2/JavaScript
                             escaping bug); refactored monolithic <code>app.py</code> into modular Flask Blueprints
                             (Auth, Admin, Matching, Scheduling).</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">12/17</div>
+                    <div class="timeline-content">
+                        <h4>Organizer Dashboard & Workflow</h4>
+                        <p>Designed and built the full organizer-facing product layer: session and location
+                            management, attendee oversight, match review, and the stepped workflow UI that guides
+                            organizers through setup rather than exposing raw controls.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">1/22</div>
+                    <div class="timeline-content">
+                        <h4>Calendar-Based Auto-Scheduling & Notification System</h4>
+                        <p>Implemented availability slot modeling, time-slot generation logic with conflict detection,
+                            and auto-assignment of 10–15 minute micro-meetings; paired with in-app and browser-based
+                            notifications to alert attendees of confirmed meeting times.</p>
                     </div>
                 </div>
                 <div class="timeline-item">
@@ -2159,25 +2176,15 @@
                     </div>
                 </div>
                 <div class="timeline-item">
-                    <div class="timeline-date">2/12</div>
+                    <div class="timeline-date">2/12–2/19</div>
                     <div class="timeline-content">
-                        <h4>NFC Cross-Platform Testing</h4>
+                        <h4>NFC Cross-Platform Testing & Kiosk Architecture</h4>
                         <p>Tested NTAG215 tags on 5 devices; benchmarked tap-to-profile latency (Android ~1.2–1.4s,
                             iPhone ~3.5–4s); deployed a Vercel dynamic link redirect service with
                             <code>apple-app-site-association</code> Universal Links, reducing iPhone tap time to
-                            ~2.5–3s; implemented multi-layer NDEF encoding (URL + vCard + custom MIME on one tag);
-                            stress-tested ~30 concurrent taps at a live event.
+                            ~2.5–3s; designed a three-path data architecture (URL/phone, UID/HID kiosk,
+                            NDEF/middleware); specified hardware procurement (2× ACR1552U USB-C readers).
                         </p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">2/19</div>
-                    <div class="timeline-content">
-                        <h4>In-Person Kiosk Architecture</h4>
-                        <p>Investigated WebNFC/WebUSB gaps on iPad/macOS/desktop; selected HID keyboard emulation (Path
-                            A) as primary cross-platform solution; designed three-path data architecture (URL/phone,
-                            UID/HID kiosk, NDEF/middleware kiosk); specified hardware procurement (2× ACR1552U USB-C
-                            readers); documented platform verdicts (Windows best, MacOS OK, iPad bad).</p>
                     </div>
                 </div>
                 <div class="timeline-item">
@@ -2188,16 +2195,6 @@
                             3.88/5.00); identified 3 user archetypes; surfaced 7 design insights including the +1.60
                             Q1→Q2 experience gap, AI uncanny valley in prompt naturalness (Q11 vs. Q13 gap of 0.80), and
                             quantitative validation of the directional conversation model.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">4/9–4/16</div>
-                    <div class="timeline-content">
-                        <h4>Capstone Website & Festival Submission</h4>
-                        <p>Built the Prophere capstone website (demo video, blog, research paper); embedded into the
-                            Capstone Festival Google Sites template; authored the NFC work summary documenting all
-                            cross-semester research, implementation, and a 5-step future path to full NFC completion.
-                        </p>
                     </div>
                 </div>
             </div>
@@ -2266,6 +2263,15 @@
                             to organizer-only admin display; added floating node animation (±25px radius); built
                             synthetic stress-test datasets (20 / 100 / 300 nodes).
                         </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">~2/12</div>
+                    <div class="timeline-content">
+                        <h4>Automated Email Notification System</h4>
+                        <p>Integrated an email-sending service into the matching pipeline; triggered personalized match
+                            emails to both attendees simultaneously upon match confirmation; connected to DB transaction
+                            lifecycle to prevent duplicate or false-trigger emails.</p>
                     </div>
                 </div>
                 <div class="timeline-item">
