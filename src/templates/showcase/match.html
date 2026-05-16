@@ -20,7 +20,7 @@
   <!-- ── Header ─────────────────────────────────────────────── -->
   <header class="sc-header">
     <div class="sc-wordmark">PROPHERE</div>
-    <div class="sc-tagline">Interactive Media Showcase · NFC Networking Demo</div>
+    <div class="sc-tagline">Interactive Media Showcase · NFC Networking</div>
   </header>
 
   <!-- ── Main ───────────────────────────────────────────────── -->
@@ -35,7 +35,7 @@
       <div id="sc-announce" class="sc-match-announce">
         <div class="sc-match-burst">🎉</div>
         <h1 class="sc-title sc-title-match">You've Been Matched!</h1>
-        <p class="sc-subtitle">Two creators. One connection.</p>
+        <p class="sc-subtitle">NYUAD IM Capstone Exhibition 2026</p>
       </div>
 
       <!-- Profiles + animated connector ──────────────────── -->
@@ -46,6 +46,7 @@
              style="--profile-color: {{ profile1.color }}">
           <div class="sc-profile-emoji">{{ profile1.emoji }}</div>
           <div class="sc-profile-name">{{ profile1.name }}</div>
+          <div class="sc-profile-tag">{{ profile1.tag }}</div>
           <div class="sc-profile-interests">
             {% for kw in profile1.keywords %}
               <span class="sc-tag">{{ kw }}</span>
@@ -78,6 +79,7 @@
              style="--profile-color: {{ profile2.color }}">
           <div class="sc-profile-emoji">{{ profile2.emoji }}</div>
           <div class="sc-profile-name">{{ profile2.name }}</div>
+          <div class="sc-profile-tag">{{ profile2.tag }}</div>
           <div class="sc-profile-interests">
             {% for kw in profile2.keywords %}
               <span class="sc-tag">{{ kw }}</span>

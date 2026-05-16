@@ -4,7 +4,8 @@ Showcase User data access layer — single source of truth for NFC showcase user
 Schema per user:
   id           int   — internal numeric ID
   nfc_id       str   — string read from NFC badge (e.g. "1", "2", "A3F2...")
-  name         str   — display name shown on screen
+  name         str   — person's display name
+  tag          str   — short archetype / role label (1–2 words), shown under name
   emoji        str   — single emoji used as avatar
   color        str   — hex accent colour for UI theming
   keywords     list  — interests/skills used for question matching
@@ -18,98 +19,110 @@ SHOWCASE_USERS: list[dict] = [
     {
         "id": 1,
         "nfc_id": "1",
-        "name": "Speculative Designer",
-        "emoji": "🔮",
-        "color": "#7C3AED",
-        "keywords": ["Future Cities", "Critical Design", "AI Ethics"],
+        "name": "Kyrie Park",
+        "tag": "Interactive Developer",
+        "emoji": "💻",
+        "color": "#2563EB",
+        "keywords": ["Backend Developer", "Computer Vision", "Interactive Media"],
         "profile_text": (
-            "I design futures that don't exist yet — and question whether they should. "
-            "My practice sits at the intersection of critical design and speculative fiction, "
-            "using immersive installations to surface the social and ethical tensions embedded "
-            "in emerging technology. I'm particularly drawn to urban systems: how cities encode "
-            "power, how infrastructure shapes behaviour, and what it would mean to design a city "
-            "that genuinely listens. Lately I've been focused on AI governance — not as a policy "
-            "problem but as a design problem, asking what values get baked in when nobody is watching."
+            "I build the systems behind experiences people can see and touch — the servers, "
+            "services, and data paths that let an installation actually stay alive in a room. "
+            "Most of my work is backend engineering: APIs, streaming pipelines, and the glue that "
+            "keeps interactive pieces from stuttering when the crowd shows up. I'm drawn to "
+            "computer vision — how models parse images and video, and how that understanding "
+            "feeds interactive media in real time rather than as a canned demo. "
+            "I'm interested in the tension between expressive front-ends and honest infrastructure: "
+            "if the CV pipeline is fragile, the whole interaction becomes a performance you can't "
+            "trust. Lately I've been focused on closing that gap — so creative work feels immediate "
+            "because the engineering underneath is deliberate, not improvised."
         ),
     },
     {
         "id": 2,
         "nfc_id": "2",
-        "name": "Sound Artist",
-        "emoji": "🎧",
-        "color": "#0EA5E9",
-        "keywords": ["Generative Audio", "Spatial Sound", "Live Coding"],
+        "name": "Eunbom Jo",
+        "tag": "Filmmaker & Performer",
+        "emoji": "🎬",
+        "color": "#B91C1C",
+        "keywords": ["Film Media", "Acting", "Band Leader", "Base Guitar Player"],
         "profile_text": (
-            "I work with sound as a material — something to be shaped, positioned in space, "
-            "and set in motion algorithmically. My live sets are written in SuperCollider and "
-            "performed in real time, which means every performance is genuinely unrepeatable. "
-            "I'm interested in the boundary between noise and music: at what point does randomness "
-            "become composition? I've been building multichannel speaker arrays for gallery "
-            "installations where the listener's movement through space becomes the instrument. "
-            "My current obsession is using machine listening to generate sound that responds to "
-            "the acoustic signature of the room it's played in."
+            "I live in the overlap between film media and live performance — directing and acting "
+            "with the same stubborn curiosity about what makes a moment believable on camera "
+            "and in front of a crowd. On set I'm drawn to rhythm and blocking: how a scene breathes, "
+            "how a cut lands, how silence reads as loudly as a line. Off camera I lead a band and "
+            "play bass guitar — holding down the low end while everyone else stretches the arrangement. "
+            "I'm fascinated by how performance disciplines bleed into each other — screen grammar, "
+            "stage presence, and the physical honesty musicians bring when the take is live. "
+            "My current obsession is work where those worlds actually talk: film that respects "
+            "musical time, and live music that borrows tension from cinema."
         ),
     },
     {
         "id": 3,
         "nfc_id": "3",
-        "name": "Creative Technologist",
-        "emoji": "⚡",
-        "color": "#10B981",
-        "keywords": ["Physical Computing", "Tangible Interfaces", "Rapid Prototyping"],
+        "name": "Yiyang",
+        "tag": "Video Creator",
+        "emoji": "🎥",
+        "color": "#DB2777",
+        "keywords": ["Video Maker", "Movie Design", "Scripter"],
         "profile_text": (
-            "I bridge the gap between an idea on a whiteboard and a thing you can touch. "
-            "My work involves rapid prototyping with microcontrollers, custom PCBs, and whatever "
-            "sensing technology fits the concept — capacitive touch, LIDAR, thermal cameras. "
-            "I'm drawn to moments when hardware becomes expressive: when a circuit stops being "
-            "a component and starts feeling like a behaviour. Most of my projects are "
-            "collaborations — I tend to come in when someone has a vision that needs to "
-            "physically exist in the world and isn't sure how to get there. "
-            "I think the best interfaces are the ones people forget are there."
+            "I'm a video maker who cares as much about movie design as about what happens in the edit. "
+            "I build pieces from the script outward — structure first, then image, then motion — "
+            "because I'm convinced bad writing hides behind good colour grading more often than people admit. "
+            "As a scripter I'm obsessed with economy: lines that do two jobs at once, scenes that "
+            "earn their length, dialogue that sounds like constraint rather than improvisation. "
+            "I'm drawn to movie design as a language — lens choice, production design, and pacing "
+            "communicating tone before the audience can name it. Lately I've been focused on short-form "
+            "and narrative work where every cut has to justify itself, and where the script and the "
+            "edit stay in honest argument until something coherent wins."
         ),
     },
     {
         "id": 4,
         "nfc_id": "4",
-        "name": "AI Researcher",
-        "emoji": "🧠",
-        "color": "#F59E0B",
-        "keywords": ["Generative AI", "AI Ethics", "Human-AI Interaction"],
+        "name": "Junyong Moon",
+        "tag": "Software Engineer",
+        "emoji": "⚙️",
+        "color": "#0D9488",
+        "keywords": ["Computer Science", "Machine Learning", "Optimization", "DevOps", "Software Engineer"],
         "profile_text": (
-            "I study what happens when generative systems meet creative practice — and who "
-            "gets to decide what counts as good output. My research sits between machine learning "
-            "and the social sciences, looking at how bias propagates through large language models "
-            "and image generators, and what it means to call something 'creative' when it comes "
-            "from a statistical process. I'm particularly interested in consent and attribution: "
-            "what do artists owe AI systems trained on their work, and vice versa? "
-            "I try to bring rigour to conversations that often stay at the level of hype, "
-            "and I think the most important AI questions right now are the ones framed as ethics "
-            "problems but are actually political ones."
+            "I'm a software engineer who treats computer science as a habit, not a credential — "
+            "systems thinking, clear interfaces between components, and an allergy to magic. "
+            "A lot of my work sits at the intersection of machine learning and everything that "
+            "has to happen after the notebook: data contracts, training jobs, evaluation, "
+            "and the long boring path to something you can ship. I'm drawn to optimization — "
+            "faster training, tighter inference, but also smarter trade-offs when perfect is "
+            "the enemy of deployed. DevOps is part of how I think: reproducible builds, "
+            "observability, and never pretending reliability is someone else's problem. "
+            "Lately I've been focused on teams that move fast without lying to themselves about "
+            "what breaks when traffic spikes or the pipeline drifts."
         ),
     },
     {
         "id": 5,
         "nfc_id": "5",
-        "name": "Data Visualiser",
-        "emoji": "📊",
-        "color": "#EF4444",
-        "keywords": ["Information Design", "Live Data", "Future Cities"],
+        "name": "Minseok Kim",
+        "tag": "AI Developer",
+        "emoji": "🤖",
+        "color": "#6B21A8",
+        "keywords": ["Machine Learning", "AI", "Developer", "Backend"],
         "profile_text": (
-            "I make data legible — and sometimes uncomfortable. My practice is about finding "
-            "the visual language that lets a dataset tell its own story without simplifying "
-            "what's genuinely complex. I've worked on projects ranging from real-time air quality "
-            "dashboards for public screens to long-form narrative pieces about housing displacement. "
-            "I'm drawn to live data because it forces you to design for uncertainty: "
-            "what does your visualisation look like when the feed goes down, or when the "
-            "numbers are stranger than you expected? Right now I'm exploring what it means "
-            "to visualise a city as a living organism — tracking flows of people, energy, "
-            "and information simultaneously."
+            "I build the backend half of AI products — the services, storage, and orchestration "
+            "users never see but always depend on. My focus is machine learning in production: "
+            "feature pipelines, model deployment, monitoring, and the APIs that let a team iterate "
+            "without treating every release like a fire drill. I'm drawn to the gap between "
+            "benchmark scores and real traffic — latency, skewed inputs, and the ways models fail "
+            "when reality refuses to match the training set. As a developer I care about code that "
+            "future-me won't silently resent: clear boundaries, tests where they matter, and systems "
+            "that degrade honestly instead of lying with a 200 OK. Lately I've been obsessed with "
+            "making AI backends predictable enough that product experiments feel safe again."
         ),
     },
     {
         "id": 6,
         "nfc_id": "6",
-        "name": "XR Developer",
+        "name": "Ren Okada",
+        "tag": "XR Developer",
         "emoji": "🥽",
         "color": "#8B5CF6",
         "keywords": ["Mixed Reality", "Spatial Computing", "Generative AI"],
@@ -128,7 +141,8 @@ SHOWCASE_USERS: list[dict] = [
     {
         "id": 7,
         "nfc_id": "7",
-        "name": "Interaction Designer",
+        "name": "Camille Fournier",
+        "tag": "Interaction Designer",
         "emoji": "🖐️",
         "color": "#06B6D4",
         "keywords": ["Tangible Interfaces", "Human-AI Interaction", "Critical Design"],
@@ -146,7 +160,8 @@ SHOWCASE_USERS: list[dict] = [
     {
         "id": 8,
         "nfc_id": "8",
-        "name": "Computational Artist",
+        "name": "Jonah Mercer",
+        "tag": "Computational Artist",
         "emoji": "🎨",
         "color": "#EC4899",
         "keywords": ["Generative Art", "Live Coding", "Spatial Sound"],
@@ -165,7 +180,8 @@ SHOWCASE_USERS: list[dict] = [
     {
         "id": 9,
         "nfc_id": "9",
-        "name": "Urban Futurist",
+        "name": "Inés Valero",
+        "tag": "Urban Futurist",
         "emoji": "🏙️",
         "color": "#84CC16",
         "keywords": ["Future Cities", "Live Data", "Physical Computing"],
@@ -184,7 +200,8 @@ SHOWCASE_USERS: list[dict] = [
     {
         "id": 10,
         "nfc_id": "10",
-        "name": "Bio Artist",
+        "name": "Malik Osei",
+        "tag": "Bio Artist",
         "emoji": "🧬",
         "color": "#F97316",
         "keywords": ["Biofeedback", "AI Ethics", "Critical Design"],

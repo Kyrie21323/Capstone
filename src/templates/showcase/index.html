@@ -11,7 +11,7 @@
   <!-- ── Header ─────────────────────────────────────────────── -->
   <header class="sc-header">
     <div class="sc-wordmark">PROPHERE</div>
-    <div class="sc-tagline">Interactive Media Showcase · NFC Networking Demo</div>
+    <div class="sc-tagline">Interactive Media Showcase · NFC Networking</div>
   </header>
 
   <!-- ── Main ───────────────────────────────────────────────── -->
@@ -94,6 +94,7 @@
           <div class="sc-profile-card sc-profile-solo" style="--profile-color: {{ user1.color }}">
             <div class="sc-profile-emoji">{{ user1.emoji }}</div>
             <div class="sc-profile-name">{{ user1.name }}</div>
+            <div class="sc-profile-tag">{{ user1.tag }}</div>
             <div class="sc-profile-interests">
               {% for kw in user1.keywords %}
                 <span class="sc-tag">{{ kw }}</span>
